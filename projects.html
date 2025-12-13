@@ -99,6 +99,25 @@
       opacity: 0.7;
       font-style: italic;
     }
+
+    /* NEW: project button styling */
+    .project-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.7rem 1rem;
+      border-radius: 14px;
+      background: rgba(120,140,255,0.18);
+      border: 1px solid rgba(120,140,255,0.35);
+      color: #eef0ff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .project-btn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 
@@ -122,8 +141,8 @@
 
     <div class="projects-grid">
 
-      <!-- PROJECT PLACEHOLDER 1 -->
-      <div class="project-card coming-soon">
+      <!-- PROJECT 1 -->
+      <div class="project-card">
         <h3>AI Music Generation System</h3>
         <p>
           Machine learning system for generating short musical phrases with an emphasis
@@ -132,7 +151,9 @@
         <span class="tag">AI</span>
         <span class="tag">Audio</span>
         <span class="tag">Python</span>
-        <p><em>Details coming soon.</em></p>
+
+        <!-- NEW: link to your project page -->
+        <a class="project-btn" href="./projects/ai-music-generation/">Open project page</a>
       </div>
 
       <!-- PROJECT PLACEHOLDER 2 -->
