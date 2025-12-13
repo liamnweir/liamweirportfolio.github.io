@@ -9,229 +9,831 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liam Weir | AI • HCI • Music</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liam Weir | AI in Music • HCI • Cognitive Science</title>
 
-<style>
-:root {
-  --bg: #070710;
-  --panel: #12142b;
-  --text: #eef0ff;
-  --muted: #aab0ff;
-  --accent: #7c8cff;
-}
+  <!-- Performance hints -->
+  <link rel="preload" as="image" href="images/download (2).jpeg">
+  <link rel="preload" as="image" href="images/download (1).jpeg">
+  <link rel="preload" as="image" href="images/images.jpeg">
+  <link rel="preload" as="image" href="images/download.jpeg">
 
-body.light {
-  --bg: #f6f7ff;
-  --panel: #ffffff;
-  --text: #111222;
-  --muted: #444;
-  --accent: #5a6bff;
-}
+  <style>
+    :root{
+      --bg: #070711;
+      --bg2:#0b0b1a;
+      --panel:#12132a;
+      --panel2:#15173a;
+      --text:#eef0ff;
+      --muted:#c9ccff;
+      --muted2:#9ea5ff;
+      --line: rgba(255,255,255,0.10);
+      --shadow: 0 30px 70px rgba(0,0,0,0.45);
+      --accent:#7c8cff;
+      --accent2:#9aa7ff;
+      --good:#7dffcf;
+      --warn:#ffd37d;
+      --radius: 22px;
+    }
 
-* { box-sizing: border-box; }
+    /* Light mode */
+    body.light{
+      --bg:#f7f8ff;
+      --bg2:#eef0ff;
+      --panel:#ffffff;
+      --panel2:#ffffff;
+      --text:#0f1020;
+      --muted:#2a2c4a;
+      --muted2:#3b3f6e;
+      --line: rgba(10,10,20,0.12);
+      --shadow: 0 26px 60px rgba(20,20,40,0.15);
+      --accent:#5567ff;
+      --accent2:#7a86ff;
+    }
 
-body {
-  margin: 0;
-  font-family: system-ui;
-  background: var(--bg);
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(124,140,255,0.18), transparent 60%),
+        radial-gradient(800px 500px at 90% 25%, rgba(125,255,207,0.10), transparent 60%),
+        radial-gradient(900px 600px at 50% 95%, rgba(255,211,125,0.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow-x:hidden;
+    }
 
-/* NAV */
-nav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(10,10,25,0.75);
-  backdrop-filter: blur(14px);
-  z-index: 100;
-}
+    a{ color:inherit; }
 
-nav a {
-  color: var(--text);
-  text-decoration: none;
-  margin: 0 1rem;
-}
+    /* NAV */
+    nav{
+      position:fixed;
+      top:0;
+      width:100%;
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 1rem 1.2rem;
+      background: rgba(10,10,25,0.72);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    body.light nav{ background: rgba(250,250,255,0.78); }
 
-.toggle {
-  cursor: pointer;
-  font-size: 1.2rem;
-}
+    .nav-left{
+      display:flex;
+      align-items:center;
+      gap: 0.9rem;
+      font-weight:700;
+      letter-spacing:0.2px;
+    }
+    .logo-dot{
+      width:10px;height:10px;border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 6px rgba(124,140,255,0.14);
+    }
 
-/* HERO */
-header {
-  min-height: 100vh;
-  padding: 7rem 2rem 3rem;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0.6), var(--bg)),
-    url("https://images.unsplash.com/photo-1534759846116-5799c33ce22a"),
-    url("https://images.unsplash.com/photo-1511379938547-c1f69419868d");
-  background-size: cover, cover, cover;
-  background-blend-mode: overlay;
-  text-align: center;
-}
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap: 1.2rem;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .nav-links a{
+      text-decoration:none;
+      color: var(--muted);
+      font-weight:600;
+      font-size:0.95rem;
+      opacity:0.95;
+    }
+    .nav-links a:hover{ color:var(--text); }
 
-h1 {
-  font-size: 3.6rem;
-}
+    .nav-right{
+      display:flex;
+      align-items:center;
+      gap: 0.7rem;
+    }
 
-p.lead {
-  max-width: 700px;
-  margin: 1rem auto;
-  font-size: 1.25rem;
-  color: var(--muted);
-}
+    .icon-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.5rem;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 0.55rem 0.8rem;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight:700;
+      user-select:none;
+      transition: transform .15s ease, background .15s ease;
+    }
+    body.light .icon-btn{ background: rgba(10,10,20,0.04); }
+    .icon-btn:hover{ transform: translateY(-1px); }
 
-/* BUTTONS */
-.buttons {
-  margin-top: 2.5rem;
-}
+    /* HERO */
+    header{
+      position:relative;
+      min-height: 100vh;
+      padding: 7.2rem 1.6rem 3.2rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-.btn {
-  display: inline-block;
-  padding: 1rem 1.8rem;
-  margin: 0.5rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), #9aa7ff);
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  transition: transform 0.2s;
-}
+    .hero-wrap{
+      width: min(1120px, 100%);
+      display:grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1.8rem;
+      align-items:center;
+    }
 
-.btn.secondary {
-  background: var(--panel);
-  color: var(--text);
-}
+    @media (max-width: 920px){
+      .hero-wrap{ grid-template-columns: 1fr; }
+    }
 
-.btn:hover {
-  transform: translateY(-3px);
-}
+    .hero-copy{
+      position:relative;
+      z-index:2;
+      padding: 1.2rem 0;
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding: .45rem .75rem;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-weight:800;
+      font-size:0.85rem;
+      letter-spacing:.3px;
+    }
+    .kicker .pill{
+      padding:.18rem .55rem;
+      border-radius:999px;
+      background: rgba(124,140,255,0.18);
+      color: var(--text);
+      border:1px solid rgba(124,140,255,0.25);
+      font-weight:900;
+    }
 
-/* FLOATING SVG VISUALS */
-.svg-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.12;
-}
+    h1{
+      margin: 1rem 0 .65rem;
+      font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+      line-height: 1.05;
+      letter-spacing:-0.6px;
+    }
 
-/* SECTIONS */
-section {
-  max-width: 1100px;
-  margin: auto;
-  padding: 5rem 2rem;
-}
+    .lead{
+      margin:0.6rem 0 0;
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.55;
+      max-width: 58ch;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
-  gap: 2rem;
-}
+    .hero-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.55rem;
+      margin-top: 1.1rem;
+      color: var(--muted2);
+      font-weight:700;
+      font-size:0.95rem;
+    }
+    .tag{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: .45rem .7rem;
+      border-radius: 999px;
+    }
 
-.card {
-  background: var(--panel);
-  padding: 2rem;
-  border-radius: 22px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.35);
-  transition: transform 0.25s;
-}
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap: .7rem;
+      margin-top: 1.6rem;
+    }
 
-.card:hover {
-  transform: translateY(-6px);
-}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: .55rem;
+      padding: 0.95rem 1.2rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight:900;
+      border:1px solid transparent;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      box-shadow: 0 16px 40px rgba(124,140,255,0.35);
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,0.06);
+      border:1px solid var(--line);
+      color: var(--text);
+    }
+    body.light .btn.secondary{ background: rgba(10,10,20,0.04); }
+    .btn:hover{ transform: translateY(-2px); }
 
-/* STICKY RESUME CTA */
-.resume-cta {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, var(--accent), #9aa7ff);
-  padding: 0.9rem 1.5rem;
-  border-radius: 999px;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-}
+    /* Visual block (your images) */
+    .hero-visual{
+      position:relative;
+      z-index:1;
+      height: 520px;
+      min-height: 420px;
+    }
+    @media (max-width: 920px){
+      .hero-visual{ height: 440px; }
+    }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--muted);
-}
-</style>
+    .stack{
+      position:absolute;
+      inset:0;
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      border:1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .stack::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,140,255,0.35), transparent 40%),
+        radial-gradient(circle at 70% 40%, rgba(125,255,207,0.18), transparent 45%),
+        radial-gradient(circle at 40% 80%, rgba(255,211,125,0.18), transparent 45%);
+      filter: blur(10px);
+      transform: rotate(12deg);
+      animation: drift 18s linear infinite;
+      opacity: 0.85;
+    }
+    @keyframes drift{
+      0%{ transform: translate3d(0,0,0) rotate(12deg); }
+      100%{ transform: translate3d(-60px,-40px,0) rotate(12deg); }
+    }
+
+    .tile{
+      position:absolute;
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.38);
+      transform: translateZ(0);
+    }
+    .tile img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      filter: saturate(1.08) contrast(1.08);
+    }
+
+    .t1{ width: 64%; height: 52%; left: 6%; top: 10%; transform: rotate(-2deg); }
+    .t2{ width: 54%; height: 46%; right: 6%; top: 28%; transform: rotate(2deg); }
+    .t3{ width: 62%; height: 38%; left: 16%; bottom: 8%; transform: rotate(1deg); }
+
+    .glass{
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
+      pointer-events:none;
+    }
+
+    /* Floating notes */
+    .float-notes{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity: 0.18;
+      mix-blend-mode: screen;
+    }
+    body.light .float-notes{ mix-blend-mode: multiply; opacity:0.12; }
+
+    .note{
+      position:absolute;
+      font-weight:900;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      animation: floaty 8s ease-in-out infinite;
+      user-select:none;
+    }
+    body.light .note{ color: rgba(30,30,60,0.9); }
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-14px); }
+    }
+
+    /* Sections */
+    section{
+      width:min(1120px, 100%);
+      margin:0 auto;
+      padding: 4.4rem 1.6rem;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 1.2rem;
+      flex-wrap:wrap;
+      margin-bottom: 1.3rem;
+    }
+
+    h2{
+      margin:0;
+      font-size: clamp(1.5rem, 2.1vw, 2.0rem);
+      letter-spacing:-0.3px;
+    }
+
+    .sub{
+      margin: .35rem 0 0;
+      color: var(--muted);
+      font-weight:700;
+      max-width: 70ch;
+      line-height: 1.5;
+    }
+
+    /* Project search */
+    .project-tools{
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      flex-wrap:wrap;
+    }
+
+    .input{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: .7rem .9rem;
+      border-radius: 999px;
+      outline:none;
+      min-width: 240px;
+      font-weight:700;
+    }
+    body.light .input{ background: rgba(10,10,20,0.04); }
+
+    .chip{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight:800;
+      transition: transform .12s ease;
+      user-select:none;
+    }
+    body.light .chip{ background: rgba(10,10,20,0.04); }
+    .chip:hover{ transform: translateY(-1px); }
+    .chip.active{
+      background: rgba(124,140,255,0.18);
+      border-color: rgba(124,140,255,0.35);
+    }
+
+    /* Grids/cards */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .card{
+      position:relative;
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 40px 90px rgba(0,0,0,0.5);
+    }
+
+    .card-top{
+      height: 150px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card-top img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      transform: scale(1.02);
+      filter: saturate(1.05) contrast(1.08);
+    }
+    .card-top::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.55));
+    }
+
+    .card-body{
+      padding: 1.1rem 1.1rem 1.15rem;
+    }
+    .card-body h3{
+      margin:0 0 .45rem;
+      letter-spacing:-0.2px;
+    }
+    .card-body p{
+      margin:0;
+      color: var(--muted);
+      line-height:1.5;
+      font-weight:650;
+    }
+
+    .meta{
+      margin-top: .85rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+      color: var(--muted2);
+      font-weight:800;
+      font-size:0.9rem;
+    }
+
+    /* Gallery strip */
+    .strip{
+      display:grid;
+      grid-template-columns: 1.2fr 0.9fr 1.1fr;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    @media (max-width: 920px){
+      .strip{ grid-template-columns: 1fr; }
+    }
+    .strip .shot{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border:1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: var(--panel);
+      height: 240px;
+    }
+    .strip img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    /* Sticky resume CTA */
+    .sticky-cta{
+      position:fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 60;
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      padding: 0.9rem 1.05rem;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight:900;
+      color:white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 20px 55px rgba(124,140,255,0.36);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Footer */
+    footer{
+      padding: 3rem 1.6rem 4.6rem;
+      border-top:1px solid var(--line);
+      color: var(--muted2);
+      text-align:center;
+      font-weight:800;
+    }
+
+    /* Simple reveal animation */
+    .reveal{
+      opacity:0;
+      transform: translateY(16px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    /* Small helper */
+    .tiny{
+      font-size:0.92rem;
+      color: var(--muted2);
+      font-weight:800;
+    }
+  </style>
 </head>
 
 <body>
 
-<nav>
-  <div>
-    <a href="index.html">Home</a>
-    <a href="projects.html">Projects</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </div>
-  <div class="toggle" onclick="toggleMode()">🌗</div>
-</nav>
+  <nav>
+    <div class="nav-left">
+      <span class="logo-dot" aria-hidden="true"></span>
+      <span>Liam Weir</span>
+    </div>
 
-<header>
-  <svg class="svg-layer" viewBox="0 0 800 600">
-    <circle cx="200" cy="300" r="120" stroke="white" fill="none"/>
-    <circle cx="400" cy="200" r="160" stroke="white" fill="none"/>
-    <circle cx="600" cy="350" r="100" stroke="white" fill="none"/>
-  </svg>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
 
-  <h1>Liam Weir</h1>
-  <p class="lead">
-    Cognitive Science (AI & HCI) @ UCSC • Electronic Music Minor<br>
-    Building intelligent systems at the intersection of mind, machine, and sound
-  </p>
+    <div class="nav-right">
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">
+        🌗 <span class="tiny" id="themeLabel">Theme</span>
+      </button>
+    </div>
+  </nav>
 
-  <div class="buttons">
-    <a class="btn" href="projects.html">View Projects</a>
-    <a class="btn secondary" href="resume.html">My Resume</a>
-    <a class="btn secondary" href="contact.html">Contact Me</a>
-  </div>
-</header>
+  <header>
+    <div class="hero-wrap">
+      <div class="hero-copy reveal">
+        <div class="kicker">
+          <span class="pill">AI × Music</span>
+          <span>Creative ML • HCI • Cognitive Science</span>
+        </div>
 
-<section>
-<h2>Focus Areas</h2>
-<div class="grid">
-  <div class="card">
-    <h3>Artificial Intelligence</h3>
-    <p>Machine learning, modeling, and statistical reasoning grounded in cognition.</p>
-  </div>
-  <div class="card">
-    <h3>Human–Computer Interaction</h3>
-    <p>Interfaces designed around perception, usability, and trust.</p>
-  </div>
-  <div class="card">
-    <h3>Music & Creative Tech</h3>
-    <p>Sound synthesis, audio perception, and computational creativity.</p>
-  </div>
-</div>
-</section>
+        <h1>Building AI tools for music creation and perception.</h1>
 
-<footer>
-© 2025 Liam Weir
-</footer>
+        <p class="lead">
+          Cognitive Science (AI & HCI) @ UCSC • Electronic Music Minor.
+          I focus on <strong>AI in music</strong>: generative audio, intelligent interfaces for creators,
+          and experiments that connect machine learning with how humans hear, feel, and make sound.
+        </p>
 
-<a class="resume-cta" href="resume.html">View Resume</a>
+        <div class="hero-tags" aria-label="Key areas">
+          <span class="tag">Generative Audio</span>
+          <span class="tag">Music Information Retrieval</span>
+          <span class="tag">HCI for Creators</span>
+          <span class="tag">Audio Perception</span>
+        </div>
 
-<script>
-function toggleMode() {
-  document.body.classList.toggle("light");
-}
-</script>
+        <div class="hero-actions">
+          <a class="btn primary" href="projects.html">Explore AI Music Projects →</a>
+          <a class="btn secondary" href="resume.html">My Resume</a>
+          <a class="btn secondary" href="contact.html">Contact</a>
+        </div>
+
+        <p class="tiny" style="margin-top:1rem;">
+          Looking for internships/research in <strong>AI + music tech</strong>, creative ML, and HCI.
+        </p>
+      </div>
+
+      <div class="hero-visual reveal" aria-label="AI in music collage">
+        <div class="stack" aria-hidden="true"></div>
+
+        <!-- Floating music symbols -->
+        <div class="float-notes" aria-hidden="true">
+          <div class="note" style="left:8%; top:12%; font-size:54px; animation-delay:0s;">♪</div>
+          <div class="note" style="left:78%; top:8%; font-size:44px; animation-delay:1.4s;">♬</div>
+          <div class="note" style="left:66%; top:62%; font-size:58px; animation-delay:0.8s;">♫</div>
+          <div class="note" style="left:18%; top:72%; font-size:46px; animation-delay:2.0s;">♩</div>
+          <div class="note" style="left:48%; top:40%; font-size:36px; animation-delay:1.2s;">𝄞</div>
+        </div>
+
+        <!-- Your uploaded images (local paths in repo) -->
+        <div class="tile t1">
+          <img src="images/download (2).jpeg" alt="AI chip illustration" />
+          <div class="glass"></div>
+        </div>
+
+        <div class="tile t2">
+          <img src="images/images.jpeg" alt="Music notes and staff" />
+          <div class="glass"></div>
+        </div>
+
+        <div class="tile t3">
+          <img src="images/download (1).jpeg" alt="Hands playing piano keys" />
+          <div class="glass"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Featured projects section (AI in music focused) -->
+  <section>
+    <div class="section-head reveal">
+      <div>
+        <h2>Featured AI in Music Work</h2>
+        <p class="sub">
+          A few directions I’m building toward: intelligent composition tools, MIR analysis, and creator-first interfaces.
+          (These cards can link to full writeups on your Projects page.)
+        </p>
+      </div>
+
+      <div class="project-tools">
+        <input class="input" id="search" type="search" placeholder="Search projects (e.g., “MIR”, “Ableton”, “audio”)" aria-label="Search projects">
+        <button class="chip active" data-filter="all" type="button">All</button>
+        <button class="chip" data-filter="gen" type="button">Generative</button>
+        <button class="chip" data-filter="mir" type="button">MIR</button>
+        <button class="chip" data-filter="hci" type="button">HCI</button>
+      </div>
+    </div>
+
+    <div class="grid" id="projectGrid">
+      <article class="card reveal" data-tags="gen hci audio">
+        <div class="card-top">
+          <img src="images/download.jpeg" alt="Ableton Live interface screenshot">
+        </div>
+        <div class="card-body">
+          <h3>AI-Assisted Sound Design Workflow</h3>
+          <p>
+            Prototyping creator-first tools that suggest patches, timbres, or transformations based on musical intent—
+            designed for fast iteration inside a DAW workflow.
+          </p>
+          <div class="meta">
+            <span class="tag">Generative</span>
+            <span class="tag">Ableton</span>
+            <span class="tag">HCI</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card reveal" data-tags="mir audio analysis">
+        <div class="card-top">
+          <img src="images/images.jpeg" alt="Music notes visual">
+        </div>
+        <div class="card-body">
+          <h3>Music Similarity & Structure (MIR)</h3>
+          <p>
+            Building representations for rhythm, harmony, and texture to compare songs or sections—aimed at retrieval,
+            recommendation, and creative exploration.
+          </p>
+          <div class="meta">
+            <span class="tag">MIR</span>
+            <span class="tag">Embeddings</span>
+            <span class="tag">Audio</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card reveal" data-tags="hci perception audio">
+        <div class="card-top">
+          <img src="images/download (1).jpeg" alt="Hands playing piano">
+        </div>
+        <div class="card-body">
+          <h3>Perception-Informed Audio UI</h3>
+          <p>
+            Designing interfaces that match how people hear change—mapping controls to perceptual dimensions like brightness,
+            roughness, and spatial width.
+          </p>
+          <div class="meta">
+            <span class="tag">HCI</span>
+            <span class="tag">Perception</span>
+            <span class="tag">UX</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card reveal" data-tags="gen mir audio">
+        <div class="card-top">
+          <img src="images/download (2).jpeg" alt="AI chip visual">
+        </div>
+        <div class="card-body">
+          <h3>Generative Audio Experiments</h3>
+          <p>
+            Exploring sequence models and conditioning signals for controllable musical output—focusing on human-meaningful
+            controls rather than “black box” generation.
+          </p>
+          <div class="meta">
+            <span class="tag">Generative</span>
+            <span class="tag">Control</span>
+            <span class="tag">Audio ML</span>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="strip reveal" aria-label="Visual gallery">
+      <div class="shot"><img src="images/download (2).jpeg" alt="AI hardware themed image"></div>
+      <div class="shot"><img src="images/download (1).jpeg" alt="Piano performance image"></div>
+      <div class="shot"><img src="images/download.jpeg" alt="Ableton workflow image"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head reveal">
+      <div>
+        <h2>What I’m aiming to build</h2>
+        <p class="sub">
+          Tools that make music creation more expressive, accessible, and intelligent—where the interface and the model
+          feel like a single instrument.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal">
+        <div class="card-body">
+          <h3>Creator-first AI</h3>
+          <p>Models that respect artistic intent—fast control, editable outputs, and transparent iteration loops.</p>
+          <div class="meta"><span class="tag">HCI</span><span class="tag">UX</span><span class="tag">Creative ML</span></div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-body">
+          <h3>Music understanding</h3>
+          <p>Representation learning for rhythm, harmony, and texture—useful for retrieval, analysis, and new interfaces.</p>
+          <div class="meta"><span class="tag">MIR</span><span class="tag">Embeddings</span><span class="tag">Analysis</span></div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-body">
+          <h3>Sound as interaction</h3>
+          <p>Mapping controls to perception, not just parameters—so interfaces behave like instruments, not menus.</p>
+          <div class="meta"><span class="tag">Perception</span><span class="tag">Audio</span><span class="tag">Design</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Liam Weir • AI in Music • UCSC
+  </footer>
+
+  <!-- Sticky CTA goes to resume.html (NO PDFs anywhere on this page) -->
+  <a class="sticky-cta" href="resume.html" aria-label="View my resume">View Resume</a>
+
+  <script>
+    /* ========= Theme toggle (saved) ========= */
+    const themeBtn = document.getElementById('themeBtn');
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'light') document.body.classList.add('light');
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    /* ========= Simple scroll reveal ========= */
+    const revealEls = Array.from(document.querySelectorAll('.reveal'));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+
+    /* ========= Project search + filter ========= */
+    const search = document.getElementById('search');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const cards = Array.from(document.querySelectorAll('#projectGrid .card'));
+    let activeFilter = 'all';
+
+    function applyFilters(){
+      const q = (search.value || '').trim().toLowerCase();
+      cards.forEach(card => {
+        const tags = (card.getAttribute('data-tags') || '').toLowerCase();
+        const text = card.innerText.toLowerCase();
+
+        const matchFilter = activeFilter === 'all' ? true : tags.includes(activeFilter);
+        const matchQuery = q === '' ? true : (text.includes(q) || tags.includes(q));
+
+        card.style.display = (matchFilter && matchQuery) ? '' : 'none';
+      });
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    search.addEventListener('input', applyFilters);
+
+    /* ========= Basic click tracking (local only) ========= */
+    document.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        console.log('[click]', a.getAttribute('href'));
+      });
+    });
+  </script>
 
 </body>
 </html>
