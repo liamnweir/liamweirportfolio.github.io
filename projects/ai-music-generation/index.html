@@ -166,6 +166,184 @@
       color: #ffe9da;
       display:none;
     }
+
+    /* =========================================================
+       NEW: Piano roll (make it fully visible + scroll-free view)
+       ========================================================= */
+    .pianoroll-wrap{
+      margin-top: 14px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .pianoroll-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .pianoroll-title{
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      margin: 0;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    .pianoroll-actions{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      user-select:none;
+      cursor:pointer;
+      font-size: 0.88rem;
+      opacity: 0.95;
+    }
+
+    .toggle input{ transform: translateY(1px); }
+
+    /* The canvas is what we will dynamically size to fully show melody */
+    canvas#pianoRoll{
+      display:block;
+      width: 100%;
+      height: auto;       /* keep aspect ratio / show full content */
+      background: rgba(5,5,12,0.65);
+    }
+
+    .pianoroll-foot{
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* =========================================================
+       NEW: Extra sections to "transcend" the program (nice layout)
+       ========================================================= */
+    .stack{
+      display:grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 920px){ .two-col{ grid-template-columns: 1fr; } }
+
+    .list{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      opacity: 0.92;
+      line-height: 1.65;
+    }
+
+    .divider{
+      border:0;
+      border-top:1px solid rgba(255,255,255,0.08);
+      margin: 14px 0;
+    }
+
+    .chip{
+      display:inline-block;
+      margin: 6px 6px 0 0;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(120,140,255,0.10);
+      font-size: 0.86rem;
+      opacity: 0.95;
+    }
+
+    .rating-row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      margin-top: 8px;
+    }
+
+    .starbar{
+      display:inline-flex;
+      gap: 6px;
+      align-items:center;
+    }
+
+    .star{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      font-size: 18px;
+      transition: transform 0.12s ease, filter 0.12s ease;
+      user-select:none;
+    }
+    .star:hover{ transform: translateY(-1px); filter: brightness(1.1); }
+    .star.on{
+      background: rgba(120,140,255,0.22);
+      border-color: rgba(120,140,255,0.45);
+    }
+
+    .mini-btn{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      opacity: 0.95;
+    }
+    th, td{
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+    }
+    th{
+      text-align:left;
+      opacity: 0.85;
+      font-weight: 800;
+    }
   </style>
 </head>
 
@@ -273,6 +451,9 @@
             <button class="btn" id="generateBtn">Generate</button>
             <button class="btn" id="playBtn" disabled>Play</button>
             <button class="btn" id="stopBtn" disabled>Stop</button>
+            <!-- NEW: export + copy -->
+            <button class="btn" id="copyBtn" disabled>Copy Notes</button>
+            <button class="btn" id="exportMidiBtn" disabled>Export MIDI</button>
           </div>
         </div>
 
@@ -280,6 +461,34 @@
 
         <div class="label" style="margin-top: 12px;">Generated phrase (notes + durations)</div>
         <pre id="out">(click Generate)</pre>
+
+        <!-- NEW: Piano Roll (auto-sized to fully show melody) -->
+        <div class="pianoroll-wrap" aria-label="Piano roll">
+          <div class="pianoroll-head">
+            <p class="pianoroll-title">Piano Roll (full melody view)</p>
+            <div class="pianoroll-actions">
+              <label class="toggle" title="If enabled, the piano roll height expands to include all notes with padding.">
+                <input id="fitRoll" type="checkbox" checked />
+                Fit to melody
+              </label>
+              <label class="toggle" title="Shows a faint beat grid behind notes.">
+                <input id="gridRoll" type="checkbox" checked />
+                Grid
+              </label>
+              <label class="toggle" title="Shows note names on the left.">
+                <input id="labelsRoll" type="checkbox" checked />
+                Labels
+              </label>
+            </div>
+          </div>
+          <canvas id="pianoRoll" width="980" height="260"></canvas>
+          <div class="pianoroll-foot">
+            <div class="tiny muted">
+              Shortcuts: <span class="kbd">Space</span> play/stop • <span class="kbd">G</span> generate • <span class="kbd">C</span> copy • <span class="kbd">M</span> export MIDI
+            </div>
+            <div class="tiny muted" id="rollInfo">—</div>
+          </div>
+        </div>
 
         <p class="tiny muted" style="margin-top: 10px;">
           Tip: “Harmonic/Melodic minor” modes are great for showing musical structure in your writeup.
@@ -298,6 +507,13 @@
         <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
         <div class="metric"><span>Tonal Stability</span><strong id="tonalScore">—</strong></div>
 
+        <!-- NEW: musical explanation (auto-updated per phrase) -->
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
+        <h3 style="margin:0 0 8px;">Melody idea (why it works)</h3>
+        <p class="muted" style="margin-top:0;" id="melodyExplain">
+          Generate a phrase to see a short explanation of its contour + cadence.
+        </p>
+
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
 
         <h3 style="margin:0 0 8px;">What to write about</h3>
@@ -309,6 +525,109 @@
           • Demo (this page) + backend endpoint
         </p>
       </aside>
+    </div>
+
+    <!-- =========================================================
+         NEW: “Transcend the program” sections (ratings + research)
+         ========================================================= -->
+    <div class="stack">
+      <section class="card">
+        <h2 style="margin:0 0 6px;">Listening Study (User Ratings)</h2>
+        <p class="muted" style="margin-top:0;">
+          This adds a lightweight, on-page evaluation loop: listeners rate the generated phrase, and the page stores ratings locally (in your browser) so you can export a CSV later.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="label">Rate this phrase</div>
+            <div class="rating-row">
+              <div class="starbar" id="starBar" aria-label="Star rating">
+                <div class="star" data-star="1">★</div>
+                <div class="star" data-star="2">★</div>
+                <div class="star" data-star="3">★</div>
+                <div class="star" data-star="4">★</div>
+                <div class="star" data-star="5">★</div>
+              </div>
+              <span class="tiny muted" id="ratingHint">Generate a phrase, then rate it.</span>
+            </div>
+
+            <div class="label" style="margin-top:10px;">Optional comment</div>
+            <input id="ratingComment" type="text" placeholder="e.g., 'Nice cadence but too repetitive'" style="width:100%; min-width: unset;" />
+
+            <div class="row" style="margin-top:12px;">
+              <button class="btn mini-btn" id="saveRatingBtn" disabled>Save Rating</button>
+              <button class="btn mini-btn" id="exportRatingsBtn">Export Ratings (CSV)</button>
+              <button class="btn mini-btn" id="clearRatingsBtn">Clear Local Ratings</button>
+            </div>
+            <div class="tiny muted" style="margin-top:10px;">
+              Stored locally via <span class="kbd">localStorage</span> (no server needed). If you later add a backend, you can POST these ratings to your database.
+            </div>
+          </div>
+
+          <div>
+            <div class="label">Saved ratings (this device)</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 110px;">Stars</th>
+                  <th>Key/Mode</th>
+                  <th style="width: 140px;">Length</th>
+                </tr>
+              </thead>
+              <tbody id="ratingsTable">
+                <tr><td colspan="3" class="tiny muted">No ratings yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 style="margin:0 0 6px;">Paper-Style Writeup (drop-in)</h2>
+        <p class="muted" style="margin-top:0;">
+          This is a ready-to-paste “mini paper” outline that matches what your demo actually does (baseline generator + metrics + listening study). You can expand it when you add a Transformer backend.
+        </p>
+
+        <hr class="divider"/>
+
+        <h3 style="margin:0;">Abstract</h3>
+        <p class="muted">
+          We present a browser-based system for generating short symbolic melodies under musical constraints (key/mode, contour bias, cadence bias). We evaluate phrases using simple structure metrics (repetition, stepwise motion, range, tonal stability) and collect listener ratings through an embedded survey interface. The system supports a local rule-based baseline and optional integration with a machine-learning backend via a Hugging Face Space endpoint.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <h3 style="margin:0;">Method</h3>
+            <ul class="list">
+              <li><strong>Generator:</strong> stepwise-biased random walk constrained to a mode; soft arch-shaped contour; cadence pull at phrase end.</li>
+              <li><strong>Interface:</strong> interactive controls for key, mode, tempo, phrase length, timbre.</li>
+              <li><strong>Playback:</strong> Tone.js synth approximations (no samples required).</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="margin:0;">Evaluation</h3>
+            <ul class="list">
+              <li><strong>Objective metrics:</strong> repetition, stepwise motion, range, tonal stability.</li>
+              <li><strong>Subjective:</strong> 1–5 star rating + optional comment stored locally (exportable CSV).</li>
+              <li><strong>Future:</strong> compare baseline vs. Transformer via AB tests.</li>
+            </ul>
+          </div>
+        </div>
+
+        <hr class="divider"/>
+
+        <h3 style="margin:0;">Results & Discussion (how to talk about it)</h3>
+        <p class="muted" style="margin-top:8px;">
+          The contour + cadence biases increase perceived “phrase-ness” (a sense of beginning, middle, end). Stepwise bias increases singability and reduces large leaps; tonal stability reflects how often tones land on chord tones, which often correlates with “resolved” sounding melodies. In future work, listener ratings can be analyzed against these metrics (e.g., do high-rated phrases have higher tonal stability but moderate repetition?).
+        </p>
+
+        <div style="margin-top:10px;">
+          <span class="chip">Baseline vs ML comparison</span>
+          <span class="chip">AB listening tests</span>
+          <span class="chip">Metric–rating correlation</span>
+          <span class="chip">Exportable dataset of ratings</span>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -363,6 +682,26 @@
 
     const warnBox = document.getElementById("warnBox");
 
+    // NEW UI
+    const copyBtn = document.getElementById("copyBtn");
+    const exportMidiBtn = document.getElementById("exportMidiBtn");
+
+    const pianoRoll = document.getElementById("pianoRoll");
+    const rollInfo = document.getElementById("rollInfo");
+    const fitRoll = document.getElementById("fitRoll");
+    const gridRoll = document.getElementById("gridRoll");
+    const labelsRoll = document.getElementById("labelsRoll");
+
+    const melodyExplain = document.getElementById("melodyExplain");
+
+    const starBar = document.getElementById("starBar");
+    const ratingHint = document.getElementById("ratingHint");
+    const ratingComment = document.getElementById("ratingComment");
+    const saveRatingBtn = document.getElementById("saveRatingBtn");
+    const exportRatingsBtn = document.getElementById("exportRatingsBtn");
+    const clearRatingsBtn = document.getElementById("clearRatingsBtn");
+    const ratingsTable = document.getElementById("ratingsTable");
+
     tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
     smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
 
@@ -372,6 +711,9 @@
     let phrase = null;      // [{midi, durBeats}, ...]
     let instrument = null;  // Tone instrument instance
     let part = null;        // Tone.Part
+
+    // NEW rating state
+    let currentStars = 0;
 
     // ----------------------------
     // Instrument factory (no external samples required)
@@ -621,6 +963,472 @@
       Tone.Transport.start();
     }
 
+    // ============================================================
+    // NEW: Piano roll rendering (auto-fit so whole melody is visible)
+    // ============================================================
+    function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
+
+    function computePhraseStats(notes){
+      const midis = notes.map(n => n.midi);
+      const lo = Math.min(...midis);
+      const hi = Math.max(...midis);
+      const totalBeats = sumBeats(notes);
+      return { lo, hi, totalBeats };
+    }
+
+    function drawPianoRoll(notes){
+      const ctx = pianoRoll.getContext("2d");
+      if (!notes || !notes.length){
+        // clear
+        ctx.clearRect(0,0,pianoRoll.width,pianoRoll.height);
+        rollInfo.textContent = "—";
+        return;
+      }
+
+      const { lo, hi, totalBeats } = computePhraseStats(notes);
+
+      // Padding in semitones so the full melody has breathing room
+      const pad = 2;
+      const minMidi = Math.max(24, lo - pad);
+      const maxMidi = Math.min(108, hi + pad);
+      const rows = Math.max(1, (maxMidi - minMidi + 1));
+
+      // Layout
+      const showLabels = labelsRoll.checked;
+      const showGrid = gridRoll.checked;
+      const fit = fitRoll.checked;
+
+      // Choose cell sizes. If fit mode: compute height so ALL rows are visible (no vertical crop).
+      const leftPad = showLabels ? 56 : 12;
+      const rightPad = 12;
+      const topPad = 12;
+      const bottomPad = 12;
+
+      // Width uses canvas width; height is dynamic if "Fit to melody" is checked.
+      const w = pianoRoll.width;
+      let rowH = 12; // default row height
+      if (fit){
+        // Cap row height so it doesn't get comically tall for small ranges; keep it readable.
+        // Total height = top + bottom + rows*rowH
+        rowH = clamp(Math.floor((520 - topPad - bottomPad) / rows), 8, 18);
+        const targetH = topPad + bottomPad + rows * rowH;
+        // Set canvas height directly; CSS keeps it responsive.
+        pianoRoll.height = targetH;
+      } else {
+        // Fixed size; user can still see most content
+        pianoRoll.height = 260;
+        rowH = Math.max(8, Math.floor((pianoRoll.height - topPad - bottomPad) / rows));
+      }
+      const h = pianoRoll.height;
+
+      // Background
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = "rgba(5,5,12,0.65)";
+      ctx.fillRect(0,0,w,h);
+
+      // Compute x scale
+      const usableW = w - leftPad - rightPad;
+      const beatW = usableW / Math.max(0.0001, totalBeats);
+
+      // Optional grid lines (beats)
+      if (showGrid){
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        // draw beat lines at every 0.5 beat (eighths) and stronger at integers
+        for (let b = 0; b <= Math.ceil(totalBeats * 2); b++){
+          const beat = b * 0.5;
+          const x = leftPad + beat * beatW;
+          ctx.beginPath();
+          ctx.strokeStyle = (b % 2 === 0) ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.10)";
+          ctx.lineWidth = (b % 2 === 0) ? 1.2 : 1.0;
+          ctx.moveTo(x, topPad);
+          ctx.lineTo(x, h - bottomPad);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Horizontal key stripes
+      ctx.save();
+      for (let m = minMidi; m <= maxMidi; m++){
+        const pc = m % 12;
+        const isBlack = [1,3,6,8,10].includes(pc);
+        const y = topPad + (maxMidi - m) * rowH;
+        ctx.fillStyle = isBlack ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)";
+        ctx.fillRect(leftPad, y, usableW, rowH);
+      }
+      ctx.restore();
+
+      // Labels (note names on the left)
+      if (showLabels){
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,0.72)";
+        ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+        // label every C line to avoid clutter
+        for (let m = minMidi; m <= maxMidi; m++){
+          if (m % 12 !== 0) continue; // C only
+          const y = topPad + (maxMidi - m) * rowH + Math.floor(rowH * 0.78);
+          ctx.fillText(midiToNoteName(m), 10, y);
+        }
+        ctx.restore();
+      }
+
+      // Draw notes (rectangles)
+      let t = 0;
+      for (let i=0; i<notes.length; i++){
+        const n = notes[i];
+        const x = leftPad + t * beatW;
+        const nw = Math.max(2, n.durBeats * beatW);
+        const y = topPad + (maxMidi - n.midi) * rowH + 1;
+        const nh = Math.max(2, rowH - 2);
+
+        // note body
+        ctx.save();
+        ctx.fillStyle = "rgba(120,140,255,0.35)";
+        ctx.strokeStyle = "rgba(120,140,255,0.65)";
+        ctx.lineWidth = 1;
+
+        roundRect(ctx, x + 1, y, nw - 2, nh, 6);
+        ctx.fill();
+        ctx.globalAlpha = 0.9;
+        ctx.stroke();
+
+        // tiny note label on long notes
+        if (nw > 44 && nh >= 10){
+          ctx.globalAlpha = 0.85;
+          ctx.fillStyle = "rgba(235,240,255,0.9)";
+          ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+          ctx.fillText(midiToNoteName(n.midi), x + 8, y + Math.floor(nh * 0.72));
+        }
+
+        ctx.restore();
+        t += n.durBeats;
+      }
+
+      // Border
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,255,255,0.10)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0.5, 0.5, w-1, h-1);
+      ctx.restore();
+
+      // Info line
+      rollInfo.textContent = `Range: ${hi - lo} semitones • Notes: ${notes.length} • Total: ${totalBeats.toFixed(2)} beats • Display: ${minMidi}-${maxMidi}`;
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x, y+h, rr);
+      ctx.arcTo(x, y+h, x, y, rr);
+      ctx.arcTo(x, y, x+w, y, rr);
+      ctx.closePath();
+    }
+
+    // Re-render piano roll when toggles change
+    fitRoll.addEventListener("change", () => drawPianoRoll(phrase));
+    gridRoll.addEventListener("change", () => drawPianoRoll(phrase));
+    labelsRoll.addEventListener("change", () => drawPianoRoll(phrase));
+
+    // ============================================================
+    // NEW: Melody explanation (why the phrase works)
+    // ============================================================
+    function describeMelody(notes, key, mode){
+      if (!notes || !notes.length) return "Generate a phrase to see a short explanation of its contour + cadence.";
+
+      const midis = notes.map(n => n.midi);
+      const N = midis.length;
+      const start = midis[0];
+      const end = midis[N-1];
+      const peak = Math.max(...midis);
+      const trough = Math.min(...midis);
+      const peakIdx = midis.indexOf(peak);
+      const troughIdx = midis.indexOf(trough);
+
+      // Step/leap breakdown
+      let steps = 0, leaps = 0;
+      for (let i=1;i<N;i++){
+        const iv = Math.abs(midis[i]-midis[i-1]);
+        if (iv <= 2) steps++; else leaps++;
+      }
+      const stepPct = Math.round(100 * steps / Math.max(1,(N-1)));
+
+      // Cadence check: last note near tonic or dominant
+      const root = NOTE_TO_SEMITONE[key];
+      const tonicPc = root % 12;
+      const domPc = (root + 7) % 12;
+      const endPc = end % 12;
+      const cadenceType = (endPc === tonicPc) ? "tonic (resolved)" : (endPc === domPc) ? "dominant (open)" : "non-triad tone (color)";
+
+      // Contour summary
+      const contour =
+        (peakIdx > 0 && peakIdx < N-1) ? "arch-shaped" :
+        (end > start) ? "overall rising" :
+        (end < start) ? "overall falling" : "balanced";
+
+      // Register mention
+      const range = peak - trough;
+
+      return (
+        `This phrase in ${key} ${mode.replaceAll("_"," ")} tends to feel coherent because it combines ` +
+        `a ${contour} contour (high point around note ${peakIdx+1}, low around note ${troughIdx+1}) ` +
+        `with mostly stepwise motion (${stepPct}% steps), which makes it singable and “connected.” ` +
+        `It closes by leaning toward the ${cadenceType}, giving a clear sense of ending. ` +
+        `The pitch range is ${range} semitones—wide enough to feel expressive, but not so wide that it becomes jumpy.`
+      );
+    }
+
+    // ============================================================
+    // NEW: Copy + MIDI export (no external libs)
+    // ============================================================
+    function notesToText(notes){
+      if (!notes) return "";
+      return notes.map(n => `${midiToNoteName(n.midi)}:${n.durBeats}`).join(", ");
+    }
+
+    copyBtn.addEventListener("click", async () => {
+      if (!phrase) return;
+      const text = notesToText(phrase);
+      try{
+        await navigator.clipboard.writeText(text);
+        setWarning(null);
+      }catch(e){
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    });
+
+    // Minimal Standard MIDI File writer (Format 0, single track)
+    // Uses PPQ = 480. Converts beats -> ticks (assuming 1 beat = quarter note).
+    function exportMIDI(notes, bpm){
+      const PPQ = 480;
+
+      // Variable-length quantity
+      function vlq(n){
+        let bytes = [n & 0x7F];
+        while ((n >>= 7)){
+          bytes.unshift((n & 0x7F) | 0x80);
+        }
+        return bytes;
+      }
+
+      function strBytes(s){
+        return Array.from(s).map(ch => ch.charCodeAt(0));
+      }
+
+      function u16(n){ return [(n>>8)&255, n&255]; }
+      function u32(n){ return [(n>>24)&255, (n>>16)&255, (n>>8)&255, n&255]; }
+
+      // Header chunk
+      const header = [
+        ...strBytes("MThd"),
+        ...u32(6),
+        ...u16(0),       // format 0
+        ...u16(1),       // 1 track
+        ...u16(PPQ)      // division
+      ];
+
+      // Track events
+      const ev = [];
+
+      // Tempo meta event (microseconds per quarter)
+      const mpqn = Math.round(60000000 / Math.max(1, bpm));
+      ev.push(
+        ...vlq(0),
+        0xFF, 0x51, 0x03,
+        (mpqn>>16)&255, (mpqn>>8)&255, mpqn&255
+      );
+
+      // Program change (Acoustic Grand Piano)
+      ev.push(...vlq(0), 0xC0, 0x00);
+
+      // Notes (channel 0)
+      let deltaTicks = 0;
+      for (const n of notes){
+        const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
+        // Note on
+        ev.push(...vlq(deltaTicks), 0x90, clamp(n.midi,0,127), 100);
+        // Note off after duration
+        ev.push(...vlq(durTicks), 0x80, clamp(n.midi,0,127), 0);
+        deltaTicks = 0;
+      }
+
+      // End of track
+      ev.push(...vlq(0), 0xFF, 0x2F, 0x00);
+
+      // Track chunk
+      const track = [
+        ...strBytes("MTrk"),
+        ...u32(ev.length),
+        ...ev
+      ];
+
+      const bytes = new Uint8Array([...header, ...track]);
+      const blob = new Blob([bytes], { type: "audio/midi" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "generated_phrase.mid";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    exportMidiBtn.addEventListener("click", () => {
+      if (!phrase) return;
+      const bpm = Number(document.getElementById("tempo").value);
+      exportMIDI(phrase, bpm);
+    });
+
+    // ============================================================
+    // NEW: Listening study storage + CSV export
+    // ============================================================
+    const RATINGS_KEY = "liam_ai_music_ratings_v1";
+
+    function loadRatings(){
+      try{
+        const raw = localStorage.getItem(RATINGS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){
+        return [];
+      }
+    }
+
+    function saveRatings(list){
+      localStorage.setItem(RATINGS_KEY, JSON.stringify(list));
+    }
+
+    function renderRatingsTable(){
+      const list = loadRatings();
+      if (!list.length){
+        ratingsTable.innerHTML = `<tr><td colspan="3" class="tiny muted">No ratings yet.</td></tr>`;
+        return;
+      }
+      // last 8
+      const view = list.slice(-8).reverse();
+      ratingsTable.innerHTML = view.map(r => `
+        <tr>
+          <td>${"★".repeat(r.stars)}${"☆".repeat(5-r.stars)}</td>
+          <td>${r.key} ${r.mode.replaceAll("_"," ")}</td>
+          <td>${r.length} notes</td>
+        </tr>
+      `).join("");
+    }
+
+    function setStars(n){
+      currentStars = n;
+      const stars = starBar.querySelectorAll(".star");
+      stars.forEach(s => {
+        const k = Number(s.dataset.star);
+        s.classList.toggle("on", k <= n);
+      });
+      if (phrase){
+        ratingHint.textContent = n ? `Selected ${n}/5. Click “Save Rating” to store it.` : "Click a star to rate.";
+      } else {
+        ratingHint.textContent = "Generate a phrase, then rate it.";
+      }
+      saveRatingBtn.disabled = !(phrase && currentStars > 0);
+    }
+
+    starBar.addEventListener("click", (e) => {
+      const target = e.target.closest(".star");
+      if (!target) return;
+      const n = Number(target.dataset.star);
+      setStars(n);
+    });
+
+    saveRatingBtn.addEventListener("click", () => {
+      if (!phrase || !currentStars) return;
+
+      const key = document.getElementById("key").value;
+      const mode = document.getElementById("mode").value;
+      const length = Number(document.getElementById("length").value);
+      const bpm = Number(document.getElementById("tempo").value);
+      const stepBias = Number(document.getElementById("smooth").value);
+
+      const metrics = computeMetrics(phrase, key, mode);
+
+      const entry = {
+        ts: new Date().toISOString(),
+        stars: currentStars,
+        comment: (ratingComment.value || "").trim(),
+        key, mode, length, bpm, stepBias,
+        metrics,
+        phrase: phrase.map(n => ({ midi: n.midi, durBeats: n.durBeats }))
+      };
+
+      const list = loadRatings();
+      list.push(entry);
+      saveRatings(list);
+
+      ratingComment.value = "";
+      setStars(0);
+      renderRatingsTable();
+      setWarning(null);
+    });
+
+    exportRatingsBtn.addEventListener("click", () => {
+      const list = loadRatings();
+      if (!list.length){
+        setWarning("No ratings to export yet.");
+        return;
+      }
+
+      const header = [
+        "ts","stars","comment","key","mode","length","bpm","stepBias",
+        "repetition","stepwise","range","tonal",
+        "phrase"
+      ];
+
+      const rows = list.map(r => {
+        const safe = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
+        const phraseText = r.phrase.map(n => `${midiToNoteName(n.midi)}:${n.durBeats}`).join(" ");
+        return [
+          safe(r.ts),
+          r.stars,
+          safe(r.comment),
+          safe(r.key),
+          safe(r.mode),
+          r.length,
+          r.bpm,
+          r.stepBias,
+          r.metrics?.repetition?.toFixed?.(4) ?? "",
+          r.metrics?.stepwise?.toFixed?.(4) ?? "",
+          r.metrics?.range ?? "",
+          r.metrics?.tonal?.toFixed?.(4) ?? "",
+          safe(phraseText)
+        ].join(",");
+      });
+
+      const csv = [header.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ai_music_ratings.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setWarning(null);
+    });
+
+    clearRatingsBtn.addEventListener("click", () => {
+      localStorage.removeItem(RATINGS_KEY);
+      renderRatingsTable();
+      setWarning(null);
+    });
+
     // ----------------------------
     // Button handlers
     // ----------------------------
@@ -663,12 +1471,31 @@
           renderMetrics(computeMetrics(phrase, key, mode));
         }
 
+        // NEW: enable extra actions + draw piano roll + explanation
         playBtn.disabled = false;
+        copyBtn.disabled = false;
+        exportMidiBtn.disabled = false;
+
+        drawPianoRoll(phrase);
+        melodyExplain.textContent = describeMelody(phrase, key, mode);
+
+        // Ratings UI now usable
+        ratingHint.textContent = "Click a star to rate this phrase.";
+        saveRatingBtn.disabled = !(currentStars > 0);
+        renderRatingsTable();
 
       } catch (e) {
         phrase = null;
         playBtn.disabled = true;
+        stopBtn.disabled = true;
+        copyBtn.disabled = true;
+        exportMidiBtn.disabled = true;
         out.textContent = "(generation failed)";
+        drawPianoRoll(null);
+        melodyExplain.textContent = "Generate a phrase to see a short explanation of its contour + cadence.";
+        ratingHint.textContent = "Generate a phrase, then rate it.";
+        saveRatingBtn.disabled = true;
+
         setWarning(e?.message || "Generation failed. Check console for details.");
         console.error(e);
       }
@@ -692,12 +1519,42 @@
 
     stopBtn.addEventListener("click", stopPlayback);
 
+    // ============================================================
+    // NEW: Keyboard shortcuts (fast demo mode)
+    // ============================================================
+    window.addEventListener("keydown", (e) => {
+      // avoid interfering when typing in an input
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+
+      if (e.code === "Space"){
+        e.preventDefault();
+        if (stopBtn.disabled === false){
+          stopPlayback();
+        } else if (!playBtn.disabled){
+          playBtn.click();
+        }
+      } else if (e.key.toLowerCase() === "g"){
+        generateBtn.click();
+      } else if (e.key.toLowerCase() === "c"){
+        if (!copyBtn.disabled) copyBtn.click();
+      } else if (e.key.toLowerCase() === "m"){
+        if (!exportMidiBtn.disabled) exportMidiBtn.click();
+      }
+    });
+
     window.addEventListener("beforeunload", () => {
       try { stopPlayback(); } catch(e) {}
     });
+
+    // initial render of ratings table
+    renderRatingsTable();
+    // initial draw
+    drawPianoRoll(null);
   </script>
 </body>
 </html>
+
 
 
 
