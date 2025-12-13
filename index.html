@@ -9,190 +9,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liam Weir | AI • HCI • Music</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liam Weir | AI • HCI • Music</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+:root {
+  --bg: #070710;
+  --panel: #12142b;
+  --text: #eef0ff;
+  --muted: #aab0ff;
+  --accent: #7c8cff;
+}
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
-      color: #eef0ff;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(120,140,255,0.15), transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(180,140,255,0.12), transparent 45%),
-        radial-gradient(circle at 50% 80%, rgba(120,255,220,0.12), transparent 45%),
-        linear-gradient(180deg, #070710, #0a0a18);
-      overflow-x: hidden;
-    }
+body.light {
+  --bg: #f6f7ff;
+  --panel: #ffffff;
+  --text: #111222;
+  --muted: #444;
+  --accent: #5a6bff;
+}
 
-    /* Floating background icons */
-    body::before {
-      content: "♪ ♫ ♬ ⦿ ◯ ▢ ⧉ ⬡";
-      position: fixed;
-      inset: 0;
-      font-size: 6rem;
-      letter-spacing: 6rem;
-      line-height: 10rem;
-      opacity: 0.035;
-      color: #bfc4ff;
-      pointer-events: none;
-      animation: drift 60s linear infinite;
-      white-space: pre-wrap;
-    }
+* { box-sizing: border-box; }
 
-    @keyframes drift {
-      from { transform: translateY(0); }
-      to { transform: translateY(-200px); }
-    }
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
 
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: rgba(10,10,25,0.85);
-      backdrop-filter: blur(12px);
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      padding: 1rem;
-      z-index: 100;
-    }
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10,10,25,0.75);
+  backdrop-filter: blur(14px);
+  z-index: 100;
+}
 
-    nav a {
-      color: #cfd3ff;
-      text-decoration: none;
-      font-weight: 500;
-    }
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  margin: 0 1rem;
+}
 
-    nav a:hover { color: white; }
+.toggle {
+  cursor: pointer;
+  font-size: 1.2rem;
+}
 
-    header {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
+/* HERO */
+header {
+  min-height: 100vh;
+  padding: 7rem 2rem 3rem;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.6), var(--bg)),
+    url("https://images.unsplash.com/photo-1534759846116-5799c33ce22a"),
+    url("https://images.unsplash.com/photo-1511379938547-c1f69419868d");
+  background-size: cover, cover, cover;
+  background-blend-mode: overlay;
+  text-align: center;
+}
 
-    h1 {
-      font-size: 3.4rem;
-      margin-bottom: 0.5rem;
-    }
+h1 {
+  font-size: 3.6rem;
+}
 
-    p.lead {
-      font-size: 1.25rem;
-      max-width: 720px;
-      margin: auto;
-      color: #d6d8ff;
-    }
+p.lead {
+  max-width: 700px;
+  margin: 1rem auto;
+  font-size: 1.25rem;
+  color: var(--muted);
+}
 
-    .buttons {
-      margin-top: 2.5rem;
-    }
+/* BUTTONS */
+.buttons {
+  margin-top: 2.5rem;
+}
 
-    .btn {
-      display: inline-block;
-      margin: 0.5rem;
-      padding: 1rem 1.8rem;
-      border-radius: 30px;
-      background: linear-gradient(135deg, #6a7bff, #8b9dff);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    }
+.btn {
+  display: inline-block;
+  padding: 1rem 1.8rem;
+  margin: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #9aa7ff);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
 
-    .btn.secondary {
-      background: #1e2038;
-    }
+.btn.secondary {
+  background: var(--panel);
+  color: var(--text);
+}
 
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 45px rgba(0,0,0,0.55);
-    }
+.btn:hover {
+  transform: translateY(-3px);
+}
 
-    section {
-      max-width: 1100px;
-      margin: auto;
-      padding: 5rem 2rem;
-    }
+/* FLOATING SVG VISUALS */
+.svg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2rem;
-    }
+/* SECTIONS */
+section {
+  max-width: 1100px;
+  margin: auto;
+  padding: 5rem 2rem;
+}
 
-    .card {
-      background: #15172b;
-      border-radius: 22px;
-      padding: 2rem;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.35);
-      transition: transform 0.25s ease;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap: 2rem;
+}
 
-    .card:hover { transform: translateY(-6px); }
+.card {
+  background: var(--panel);
+  padding: 2rem;
+  border-radius: 22px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+  transition: transform 0.25s;
+}
 
-    footer {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: #9aa0ff;
-      font-size: 0.9rem;
-    }
-  </style>
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* STICKY RESUME CTA */
+.resume-cta {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, var(--accent), #9aa7ff);
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+</style>
 </head>
 
 <body>
 
 <nav>
-  <a href="index.html">Home</a>
-  <a href="projects.html">Projects</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="toggle" onclick="toggleMode()">🌗</div>
 </nav>
 
 <header>
-  <div>
-    <h1>Liam Weir</h1>
-    <p class="lead">
-      Cognitive Science (AI & HCI) @ UCSC • Electronic Music Minor<br>
-      Human-centered AI, sound, and creative technology
-    </p>
+  <svg class="svg-layer" viewBox="0 0 800 600">
+    <circle cx="200" cy="300" r="120" stroke="white" fill="none"/>
+    <circle cx="400" cy="200" r="160" stroke="white" fill="none"/>
+    <circle cx="600" cy="350" r="100" stroke="white" fill="none"/>
+  </svg>
 
-    <div class="buttons">
-      <a class="btn" href="projects.html">View Projects</a>
-      <a class="btn secondary" href="resume.html">My Resume</a>
-      <a class="btn secondary" href="contact.html">Contact Me</a>
-    </div>
+  <h1>Liam Weir</h1>
+  <p class="lead">
+    Cognitive Science (AI & HCI) @ UCSC • Electronic Music Minor<br>
+    Building intelligent systems at the intersection of mind, machine, and sound
+  </p>
+
+  <div class="buttons">
+    <a class="btn" href="projects.html">View Projects</a>
+    <a class="btn secondary" href="resume.html">My Resume</a>
+    <a class="btn secondary" href="contact.html">Contact Me</a>
   </div>
 </header>
 
 <section>
-  <h2>Focus Areas</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>Artificial Intelligence</h3>
-      <p>Machine learning, statistics, and human-centered AI grounded in cognitive science.</p>
-    </div>
-    <div class="card">
-      <h3>Human–Computer Interaction</h3>
-      <p>Interfaces focused on usability, perception, trust, and cognition.</p>
-    </div>
-    <div class="card">
-      <h3>Music & Sound</h3>
-      <p>Electronic music, audio perception, and creative computation.</p>
-    </div>
+<h2>Focus Areas</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Artificial Intelligence</h3>
+    <p>Machine learning, modeling, and statistical reasoning grounded in cognition.</p>
   </div>
+  <div class="card">
+    <h3>Human–Computer Interaction</h3>
+    <p>Interfaces designed around perception, usability, and trust.</p>
+  </div>
+  <div class="card">
+    <h3>Music & Creative Tech</h3>
+    <p>Sound synthesis, audio perception, and computational creativity.</p>
+  </div>
+</div>
 </section>
 
 <footer>
-  © 2025 Liam Weir
+© 2025 Liam Weir
 </footer>
+
+<a class="resume-cta" href="resume.html">View Resume</a>
+
+<script>
+function toggleMode() {
+  document.body.classList.toggle("light");
+}
+</script>
 
 </body>
 </html>
