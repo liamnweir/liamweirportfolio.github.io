@@ -18,10 +18,11 @@
       color:#eef0ff;
     }
 
-    /* Top bar (Back only) */
+    /* REPLACEMENT TOP BAR (Back button only) */
     .top-bar{
       position:fixed;
-      top:0; left:0;
+      top:0;
+      left:0;
       width:100%;
       background: rgba(10,10,25,0.85);
       backdrop-filter: blur(12px);
@@ -46,6 +47,7 @@
       border: 1px solid rgba(120,140,255,0.35);
       transition: transform 0.15s ease, filter 0.15s ease;
     }
+
     .back-btn:hover{
       filter: brightness(1.15);
       transform: translateY(-1px);
@@ -54,7 +56,7 @@
     main{
       max-width: 1100px;
       margin: 0 auto;
-      padding: 96px 18px 56px;
+      padding: 96px 18px 48px; /* keeps spacing correct with fixed top bar */
     }
 
     h1{
@@ -67,7 +69,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.25fr 0.75fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 18px;
       margin-top: 18px;
     }
@@ -87,7 +89,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="range"], input[type="text"], input[type="number"], textarea{
+    select, input[type="range"], input[type="text"]{
       background: rgba(255,255,255,0.06);
       color: #eef0ff;
       border: 1px solid rgba(255,255,255,0.12);
@@ -95,13 +97,6 @@
       padding: 10px 12px;
       outline: none;
       min-width: 170px;
-    }
-
-    textarea{
-      min-width: 100%;
-      resize: vertical;
-      min-height: 90px;
-      line-height: 1.45;
     }
 
     input[type="range"]{
@@ -119,21 +114,9 @@
       font-weight: 700;
       letter-spacing: 0.2px;
       transition: transform 0.15s ease, filter 0.15s ease;
-      user-select: none;
     }
     .btn:hover{ filter: brightness(1.15); transform: translateY(-1px); }
     .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
-
-    .btn.secondary{
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      font-weight: 700;
-    }
-
-    .btn.danger{
-      background: rgba(255,120,120,0.14);
-      border: 1px solid rgba(255,120,120,0.28);
-    }
 
     pre{
       background: rgba(0,0,0,0.35);
@@ -143,11 +126,7 @@
       overflow:auto;
       white-space: pre;
       margin: 10px 0 0;
-      min-height: 160px;
-    }
-
-    code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      min-height: 180px;
     }
 
     .pill{
@@ -187,55 +166,11 @@
       color: #ffe9da;
       display:none;
     }
-
-    .ok{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(120,255,180,0.22);
-      background: rgba(120,255,180,0.08);
-      color: #ddffe9;
-      display:none;
-    }
-
-    /* Piano roll canvas */
-    .roll-wrap{ margin-top: 12px; }
-    #pianoRoll{
-      width: 100%;
-      height: 200px;
-      display:block;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-    }
-
-    details{
-      margin-top: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      border-radius: 16px;
-      padding: 12px 12px;
-    }
-    summary{
-      cursor: pointer;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      user-select: none;
-    }
-    details > .details-body{
-      margin-top: 12px;
-    }
-
-    .two-col{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 920px){ .two-col{ grid-template-columns: 1fr; } }
   </style>
 </head>
 
 <body>
+  <!-- Back button only (replaces broken nav) -->
   <div class="top-bar">
     <a class="back-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/">
       ← Back to Home
@@ -245,9 +180,8 @@
   <main>
     <h1>AI Music Generation System</h1>
     <p class="muted">
-      Generate short symbolic phrases with musical structure + perception metrics.
-      Includes: piano-roll visualization, MIDI export, listening study (ratings stored locally),
-      and downloads for a Transformer training notebook + HF backend template.
+      Generate short symbolic phrases with musical structure + simple perception metrics.
+      This page runs on GitHub Pages (static). If you want a real ML model, this UI can call a Hugging Face Spaces backend (optional).
     </p>
 
     <div>
@@ -255,9 +189,7 @@
       <span class="pill">Music</span>
       <span class="pill">Perception</span>
       <span class="pill">Tone.js</span>
-      <span class="pill">MIDI Export</span>
-      <span class="pill">Listening Study</span>
-      <span class="pill">Transformer Notebook</span>
+      <span class="pill">GitHub Pages</span>
     </div>
 
     <div class="grid">
@@ -333,7 +265,7 @@
             <div class="label">HF Space API URL (optional)</div>
             <input id="backendUrl" type="text" placeholder="https://YOUR-SPACE.hf.space/generate" />
             <div class="tiny">
-              If using HF mode, paste your endpoint (example: <code>https://your-space.hf.space/generate</code>).
+              Leave blank if using the browser generator. If using HF, paste your Space endpoint here.
             </div>
           </div>
 
@@ -341,167 +273,59 @@
             <button class="btn" id="generateBtn">Generate</button>
             <button class="btn" id="playBtn" disabled>Play</button>
             <button class="btn" id="stopBtn" disabled>Stop</button>
-            <button class="btn secondary" id="exportMidiBtn" disabled>Export MIDI</button>
           </div>
         </div>
 
         <div id="warnBox" class="warn"></div>
-        <div id="okBox" class="ok"></div>
 
         <div class="label" style="margin-top: 12px;">Generated phrase (notes + durations)</div>
         <pre id="out">(click Generate)</pre>
 
-        <div class="roll-wrap">
-          <div class="label">Piano Roll</div>
-          <canvas id="pianoRoll"></canvas>
-        </div>
-
-        <details>
-          <summary>Listening Study (User Ratings)</summary>
-          <div class="details-body">
-            <p class="muted" style="margin-top:0;">
-              Rate the current phrase. Stored locally in your browser (localStorage). Download as CSV.
-            </p>
-
-            <div class="two-col">
-              <div>
-                <div class="label">Musicality (1–7)</div>
-                <input id="rateMusicality" type="number" min="1" max="7" value="5" />
-              </div>
-              <div>
-                <div class="label">Coherence (1–7)</div>
-                <input id="rateCoherence" type="number" min="1" max="7" value="5" />
-              </div>
-              <div>
-                <div class="label">Pleasantness (1–7)</div>
-                <input id="ratePleasantness" type="number" min="1" max="7" value="5" />
-              </div>
-              <div>
-                <div class="label">Familiarity (1–7)</div>
-                <input id="rateFamiliarity" type="number" min="1" max="7" value="4" />
-              </div>
-            </div>
-
-            <div style="margin-top:12px;">
-              <div class="label">Comments (optional)</div>
-              <textarea id="rateComments" placeholder="What stood out?"></textarea>
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <button class="btn" id="saveRatingBtn" disabled>Save Rating</button>
-              <button class="btn secondary" id="downloadRatingsBtn">Download Ratings CSV</button>
-              <button class="btn danger" id="clearRatingsBtn">Clear Ratings</button>
-            </div>
-
-            <div class="two-col" style="margin-top:12px;">
-              <div class="card" style="padding:12px; border-radius:16px;">
-                <div class="label">Saved ratings</div>
-                <div style="font-size:1.3rem; font-weight:900;" id="ratingCount">0</div>
-              </div>
-              <div class="card" style="padding:12px; border-radius:16px;">
-                <div class="label">Averages (Mus / Coh / Pleas / Fam)</div>
-                <div style="font-size:1.1rem; font-weight:900;" id="ratingAverages">—</div>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <details>
-          <summary>Paper-Style Writeup (Portfolio)</summary>
-          <div class="details-body">
-            <h3 style="margin:10px 0 6px;">Abstract</h3>
-            <p class="muted">
-              This project explores phrase-level symbolic music generation with controllable musical constraints and perception-motivated evaluation.
-              A browser baseline generator provides immediate interactive demos, while the same interface can call a Hugging Face backend for model-based generation.
-              Evaluation includes heuristic structure metrics and a pilot listening study with user ratings.
-            </p>
-
-            <h3 style="margin:10px 0 6px;">Methods</h3>
-            <ul class="muted">
-              <li><b>Controls:</b> key, mode, phrase length, tempo, stepwise bias, instrument.</li>
-              <li><b>Representation:</b> MIDI pitch + duration (beats).</li>
-              <li><b>Playback:</b> Tone.js synth presets for quick audition.</li>
-              <li><b>Evaluation:</b> repetition, stepwise motion, melodic range, tonal stability proxy + human ratings.</li>
-            </ul>
-
-            <h3 style="margin:10px 0 6px;">Future Work</h3>
-            <ul class="muted">
-              <li>Train a Transformer on real MIDI phrase segments.</li>
-              <li>Compare model vs baseline with A/B listening tests.</li>
-              <li>Analyze ratings by condition (mode, step bias) with ANOVA / mixed models.</li>
-            </ul>
-          </div>
-        </details>
-
-        <details>
-          <summary>Downloads: Transformer Notebook + HF Backend Template</summary>
-          <div class="details-body">
-            <div class="row" style="align-items:center;">
-              <button class="btn" id="downloadNotebookBtn">Download starter notebook (.ipynb)</button>
-              <button class="btn secondary" id="downloadBackendBtn">Download HF backend files</button>
-            </div>
-            <div class="label" style="margin-top:12px;">Notebook preview</div>
-            <pre id="notebookPreview"></pre>
-          </div>
-        </details>
-
+        <p class="tiny muted" style="margin-top: 10px;">
+          Tip: “Harmonic/Melodic minor” modes are great for showing musical structure in your writeup.
+          If you switch the source to “Hugging Face,” the page will call your backend and keep the same UI.
+        </p>
       </section>
 
       <aside class="card">
-        <h2 style="margin:0 0 10px;">Metrics</h2>
-        <div class="metric"><span>Repetition</span><strong id="repScore">—</strong></div>
+        <h2 style="margin:0 0 10px;">Perception / Structure Metrics</h2>
+        <p class="muted" style="margin-top:0;">
+          Simple heuristics you can report now, then validate with listening tests later.
+        </p>
+
+        <div class="metric"><span>Repetition Score</span><strong id="repScore">—</strong></div>
         <div class="metric"><span>Stepwise Motion</span><strong id="stepScore">—</strong></div>
-        <div class="metric"><span>Range</span><strong id="rangeScore">—</strong></div>
+        <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
         <div class="metric"><span>Tonal Stability</span><strong id="tonalScore">—</strong></div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
+
+        <h3 style="margin:0 0 8px;">What to write about</h3>
+        <p class="muted" style="margin-top:0;">
+          • Dataset (MIDI phrases)<br/>
+          • Model (Transformer/VAE) or rule-based baseline<br/>
+          • Constraints (key/mode, contour, cadence)<br/>
+          • Evaluation (listener ratings + metrics)<br/>
+          • Demo (this page) + backend endpoint
+        </p>
       </aside>
     </div>
   </main>
 
   <script>
-  // Make errors visible on-page so "nothing happens" never happens again.
-  window.addEventListener("error", (e) => {
-    const warn = document.getElementById("warnBox");
-    if (warn) {
-      warn.style.display = "block";
-      warn.textContent = "JavaScript error: " + (e?.message || "Unknown error") + " (open Console for details)";
-    }
-  });
-
-  document.addEventListener("DOMContentLoaded", () => {
     // ----------------------------
-    // Helpers
+    // Music theory helpers
     // ----------------------------
-    const $ = (id) => document.getElementById(id);
-    const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
-    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-    const nowISO = () => new Date().toISOString();
-
-    const setWarning = (msg) => {
-      const warn = $("warnBox");
-      if (!warn) return;
-      if (!msg) { warn.style.display = "none"; warn.textContent = ""; return; }
-      warn.style.display = "block";
-      warn.textContent = msg;
+    const NOTE_TO_SEMITONE = {
+      "C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11
     };
 
-    const setOk = (msg) => {
-      const ok = $("okBox");
-      if (!ok) return;
-      if (!msg) { ok.style.display = "none"; ok.textContent = ""; return; }
-      ok.style.display = "block";
-      ok.textContent = msg;
-      setTimeout(() => { if (ok) ok.style.display = "none"; }, 1800);
-    };
-
-    // ----------------------------
-    // Music theory
-    // ----------------------------
-    const NOTE_TO_SEMITONE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11};
+    // Scale degrees as semitone offsets from tonic within an octave
     const MODES = {
-      major:         [0,2,4,5,7,9,11],
-      natural_minor: [0,2,3,5,7,8,10],
-      harmonic_minor:[0,2,3,5,7,8,11],
-      melodic_minor: [0,2,3,5,7,9,11],
+      major:         [0,2,4,5,7,9,11],      // Ionian
+      natural_minor: [0,2,3,5,7,8,10],      // Aeolian
+      harmonic_minor:[0,2,3,5,7,8,11],      // raised 7
+      melodic_minor: [0,2,3,5,7,9,11],      // raised 6 & 7 (ascending)
       dorian:        [0,2,3,5,7,9,10],
       mixolydian:    [0,2,4,5,7,9,10],
       lydian:        [0,2,4,6,7,9,11],
@@ -509,54 +333,38 @@
       locrian:       [0,1,3,5,6,8,10]
     };
 
-    const midiToNoteName = (m) => {
+    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function midiToNoteName(m){
       const names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
       const name = names[m % 12];
       const oct = Math.floor(m / 12) - 1;
       return `${name}${oct}`;
-    };
-
-    // ----------------------------
-    // UI references (guarded)
-    // ----------------------------
-    const tempo = $("tempo");
-    const tempoVal = $("tempoVal");
-    const smooth = $("smooth");
-    const smoothVal = $("smoothVal");
-    const generateBtn = $("generateBtn");
-    const playBtn = $("playBtn");
-    const stopBtn = $("stopBtn");
-    const exportMidiBtn = $("exportMidiBtn");
-    const out = $("out");
-    const pianoRoll = $("pianoRoll");
-
-    const repScoreEl = $("repScore");
-    const stepScoreEl = $("stepScore");
-    const rangeScoreEl = $("rangeScore");
-    const tonalScoreEl = $("tonalScore");
-
-    // Ratings
-    const saveRatingBtn = $("saveRatingBtn");
-    const downloadRatingsBtn = $("downloadRatingsBtn");
-    const clearRatingsBtn = $("clearRatingsBtn");
-    const ratingCount = $("ratingCount");
-    const ratingAverages = $("ratingAverages");
-    const rateMusicality = $("rateMusicality");
-    const rateCoherence = $("rateCoherence");
-    const ratePleasantness = $("ratePleasantness");
-    const rateFamiliarity = $("rateFamiliarity");
-    const rateComments = $("rateComments");
-
-    // Downloads
-    const downloadNotebookBtn = $("downloadNotebookBtn");
-    const downloadBackendBtn = $("downloadBackendBtn");
-    const notebookPreview = $("notebookPreview");
-
-    // If key buttons are missing, fail loudly.
-    if (!generateBtn || !out) {
-      setWarning("Page load error: missing #generateBtn or #out element. (Likely incomplete paste.)");
-      return;
     }
+
+    function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+    // ----------------------------
+    // UI elements
+    // ----------------------------
+    const tempo = document.getElementById("tempo");
+    const tempoVal = document.getElementById("tempoVal");
+    const smooth = document.getElementById("smooth");
+    const smoothVal = document.getElementById("smoothVal");
+    const generateBtn = document.getElementById("generateBtn");
+    const playBtn = document.getElementById("playBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const out = document.getElementById("out");
+
+    const repScoreEl = document.getElementById("repScore");
+    const stepScoreEl = document.getElementById("stepScore");
+    const rangeScoreEl = document.getElementById("rangeScore");
+    const tonalScoreEl = document.getElementById("tonalScore");
+
+    const warnBox = document.getElementById("warnBox");
+
+    tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
+    smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
 
     // ----------------------------
     // State
@@ -564,60 +372,79 @@
     let phrase = null;      // [{midi, durBeats}, ...]
     let instrument = null;  // Tone instrument instance
     let part = null;        // Tone.Part
-    let currentPhraseId = null;
-    let currentMeta = null;
 
     // ----------------------------
-    // Instrument factory (Tone synth approximations)
+    // Instrument factory (no external samples required)
+    // Labels match common instruments, but these are synth approximations.
     // ----------------------------
     function makeInstrument(kind){
-      if (instrument) { try { instrument.dispose(); } catch(e) {} instrument = null; }
+      // Dispose previous instrument cleanly
+      if (instrument) {
+        try { instrument.dispose(); } catch(e) {}
+        instrument = null;
+      }
 
+      // Small reverb to make it nicer
       const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.15 }).toDestination();
 
       if (kind === "piano"){
+        // PolySynth "piano-ish"
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "triangle" },
           envelope: { attack: 0.005, decay: 0.25, sustain: 0.15, release: 0.9 }
         }).connect(reverb);
+
       } else if (kind === "guitar"){
-        instrument = new Tone.PolySynth(Tone.PluckSynth, { volume: -6 }).connect(reverb);
+        // Plucked string
+        instrument = new Tone.PolySynth(Tone.PluckSynth, {
+          volume: -6
+        }).connect(reverb);
+
       } else if (kind === "bass"){
+        // Mono bass
         instrument = new Tone.MonoSynth({
           oscillator: { type: "sine" },
           filter: { Q: 2, type: "lowpass", rolloff: -24 },
           envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.4 },
           filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2, baseFrequency: 80, octaves: 2.2 }
         }).connect(reverb);
+
       } else if (kind === "violin"){
+        // Bowed-ish (saw + slower attack + vibrato)
         const vib = new Tone.Vibrato(5, 0.18).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
           envelope: { attack: 0.06, decay: 0.15, sustain: 0.65, release: 0.6 }
         }).connect(vib);
+
       } else if (kind === "strings"){
+        // Soft pad
         const chorus = new Tone.Chorus(2.5, 1.6, 0.25).start().connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
           envelope: { attack: 0.2, decay: 0.2, sustain: 0.75, release: 1.4 }
         }).connect(chorus);
+
       } else {
+        // synth (bright)
         const delay = new Tone.FeedbackDelay("8n", 0.25).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "square" },
           envelope: { attack: 0.01, decay: 0.12, sustain: 0.2, release: 0.25 }
         }).connect(delay);
       }
+
       return instrument;
     }
 
     // ----------------------------
-    // Generator (browser baseline)
+    // Browser generator (demo baseline)
     // ----------------------------
     function buildAllowedNotes(rootSemitone, modeKey){
-      const scale = MODES[modeKey].map(x => x + rootSemitone);
+      const scale = MODES[modeKey].map(x => x + rootSemitone); // 0..11-ish
       const baseOctave = 60; // C4
       const allowed = [];
+      // Use a 3-octave window centered around C4-ish
       for (let oct = -1; oct <= 1; oct++){
         for (const s of scale){
           allowed.push(baseOctave + s + 12*oct);
@@ -629,17 +456,25 @@
     function generatePhraseBrowser({ key, mode, smooth, length }){
       const root = NOTE_TO_SEMITONE[key];
       const allowed = buildAllowedNotes(root, mode);
+
+      // Start near tonic in middle octave
       const tonicMidi = 60 + root;
       let current = tonicMidi;
 
       const notes = [];
       const N = length;
+
+      // Phrase shape helper: encourage a gentle arch (rise then fall)
       const mid = Math.floor(N / 2);
 
       for (let i = 0; i < N; i++){
-        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2);
-        let pool = (Math.random() < smooth && neighbors.length) ? neighbors : allowed;
+        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step/whole-step
+        const broader = allowed;
 
+        // Step bias chooses neighbor vs broader pool
+        let pool = (Math.random() < smooth && neighbors.length) ? neighbors : broader;
+
+        // Gentle contour bias: rising first half, falling second half (softly)
         const target = (i <= mid) ? current + 2 : current - 2;
         pool = pool
           .map(n => ({ n, w: 1 / (1 + Math.abs(n - target)) }))
@@ -647,6 +482,7 @@
           .slice(0, Math.max(6, Math.floor(pool.length * 0.35)))
           .map(x => x.n);
 
+        // Cadence bias: last 2 notes pull toward tonic or dominant
         if (i >= N - 2){
           const domMidi = tonicMidi + 7;
           const nearCadence = allowed.filter(n => Math.min(Math.abs(n - tonicMidi), Math.abs(n - domMidi)) <= 3);
@@ -655,9 +491,10 @@
 
         current = pick(pool);
 
+        // rhythm: mostly eighth notes, occasional quarters
         let durBeats = 0.5;
-        if (Math.random() < 0.14) durBeats = 1.0;
-        if (i === N - 1) durBeats = 1.0;
+        if (Math.random() < 0.14) durBeats = 1.0;      // quarter
+        if (i === N - 1) durBeats = 1.0;               // finish slightly longer
 
         notes.push({ midi: current, durBeats });
       }
@@ -666,22 +503,27 @@
     }
 
     // ----------------------------
-    // Metrics + render
+    // Metrics
     // ----------------------------
     function computeMetrics(notes, key, mode){
       const midis = notes.map(n => n.midi);
-      const repetition = 1 - (new Set(midis).size / midis.length);
+      const unique = new Set(midis);
+      const repetition = 1 - (unique.size / midis.length); // higher = more repetition
 
       let stepCount = 0;
       for (let i=1; i<midis.length; i++){
-        if (Math.abs(midis[i] - midis[i-1]) <= 2) stepCount++;
+        const interval = Math.abs(midis[i] - midis[i-1]);
+        if (interval <= 2) stepCount++;
       }
       const stepwise = stepCount / Math.max(1, (midis.length - 1));
+
       const range = Math.max(...midis) - Math.min(...midis);
 
+      // Tonal stability: fraction of notes that are tonic/third/fifth (triad) in chosen mode
       const root = NOTE_TO_SEMITONE[key];
+      // triad degrees for "major-ish" vs "minor-ish"
       const isMinorish = (mode.includes("minor") || mode === "dorian" || mode === "phrygian" || mode === "locrian");
-      const triad = isMinorish ? [0,3,7] : [0,4,7];
+      const triad = isMinorish ? [0, 3, 7] : [0, 4, 7];
       const triadPC = new Set(triad.map(x => (x + root) % 12));
       const tonal = midis.filter(m => triadPC.has(m % 12)).length / midis.length;
 
@@ -689,77 +531,32 @@
     }
 
     function renderPhrase(notes){
-      out.textContent = notes
-        .map((n,i)=>`${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)} (${n.durBeats} beats)`)
-        .join("\n");
+      const lines = notes.map((n, i) => `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${n.durBeats} beats)`);
+      out.textContent = lines.join("\n");
     }
 
-    function renderMetrics(m){
-      if (repScoreEl) repScoreEl.textContent = m.repetition.toFixed(2);
-      if (stepScoreEl) stepScoreEl.textContent = m.stepwise.toFixed(2);
-      if (rangeScoreEl) rangeScoreEl.textContent = String(m.range);
-      if (tonalScoreEl) tonalScoreEl.textContent = m.tonal.toFixed(2);
+    function renderMetrics(metrics){
+      repScoreEl.textContent = metrics.repetition.toFixed(2);
+      stepScoreEl.textContent = metrics.stepwise.toFixed(2);
+      rangeScoreEl.textContent = String(metrics.range);
+      tonalScoreEl.textContent = metrics.tonal.toFixed(2);
+    }
+
+    function setWarning(msg){
+      if (!msg){
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+        return;
+      }
+      warnBox.style.display = "block";
+      warnBox.textContent = msg;
     }
 
     // ----------------------------
-    // Piano roll
-    // ----------------------------
-    function resizeCanvasToDisplaySize(canvas) {
-      if (!canvas) return false;
-      const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      const w = Math.max(10, Math.floor(rect.width * dpr));
-      const h = Math.max(10, Math.floor(rect.height * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w; canvas.height = h;
-        return true;
-      }
-      return false;
-    }
-
-    function drawPianoRoll(notes){
-      if (!pianoRoll || !notes || !notes.length) return;
-      resizeCanvasToDisplaySize(pianoRoll);
-      const ctx = pianoRoll.getContext("2d");
-      const W = pianoRoll.width, H = pianoRoll.height;
-
-      ctx.clearRect(0,0,W,H);
-      ctx.fillStyle = "rgba(0,0,0,0.18)";
-      ctx.fillRect(0,0,W,H);
-
-      const midis = notes.map(n=>n.midi);
-      let minP = clamp(Math.min(...midis) - 2, 24, 108);
-      let maxP = clamp(Math.max(...midis) + 2, 24, 108);
-      const span = Math.max(1, maxP - minP);
-
-      const totalBeats = notes.reduce((a,n)=>a+n.durBeats, 0);
-      const beatW = W / Math.max(1e-6, totalBeats);
-
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
-      ctx.lineWidth = 1;
-      for (let b=0; b<=Math.ceil(totalBeats); b++){
-        const x = b * beatW;
-        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
-      }
-
-      let t=0;
-      for (const n of notes){
-        const x = t * beatW;
-        const w = Math.max(2, n.durBeats * beatW);
-        const y = H - ((n.midi - minP)/span)*H;
-        const h = Math.max(6, H/Math.max(18, span));
-
-        ctx.fillStyle = "rgba(127,140,255,0.92)";
-        ctx.fillRect(x, y - h/2, w, h);
-
-        t += n.durBeats;
-      }
-    }
-
-    window.addEventListener("resize", () => { if (phrase) drawPianoRoll(phrase); });
-
-    // ----------------------------
-    // HF backend call (optional)
+    // Hugging Face backend call
+    // Expected endpoint: POST <backendUrl>
+    // Body: { key, mode, tempo, smooth, length }
+    // Response: { notes: [{midi, durBeats}, ...] } (and optionally metrics)
     // ----------------------------
     async function generateFromHF({ backendUrl, key, mode, tempo, smooth, length }){
       const res = await fetch(backendUrl, {
@@ -767,6 +564,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, mode, tempo, smooth, length })
       });
+
       if (!res.ok){
         const text = await res.text().catch(()=> "");
         throw new Error(`HF backend error (${res.status}). ${text}`.trim());
@@ -781,34 +579,41 @@
     // ----------------------------
     async function ensureAudio(){
       if (Tone.context.state !== "running") await Tone.start();
-      const kind = $("instrument")?.value || "piano";
+      const kind = document.getElementById("instrument").value;
       makeInstrument(kind);
     }
 
     function stopPlayback(){
-      if (part){ try { part.stop(); part.dispose(); } catch(e) {} part = null; }
+      if (part){
+        part.stop();
+        part.dispose();
+        part = null;
+      }
       Tone.Transport.stop();
       Tone.Transport.cancel();
-      if (playBtn) playBtn.disabled = !phrase;
-      if (stopBtn) stopBtn.disabled = true;
+      playBtn.disabled = !phrase;
+      stopBtn.disabled = true;
     }
 
     function schedulePlayback(notes){
-      const instKind = $("instrument")?.value || "piano";
+      // Bass sounds better lower: transpose down a bit for bass preset
+      const instKind = document.getElementById("instrument").value;
       const transpose = (instKind === "bass") ? -12 : 0;
 
-      Tone.Transport.bpm.value = Number($("tempo")?.value || 110);
+      Tone.Transport.bpm.value = Number(document.getElementById("tempo").value);
 
-      let t=0;
+      let t = 0;
       const events = notes.map(n => {
         const midi = clamp(n.midi + transpose, 24, 108);
         const noteName = midiToNoteName(midi);
-        const evt = { time: t, note: noteName, durBeats: n.durBeats };
-        t += n.durBeats;
+        const dur = n.durBeats;
+        const evt = { time: t, note: noteName, durBeats: dur };
+        t += dur;
         return evt;
       });
 
       part = new Tone.Part((time, value) => {
+        // MonoSynth expects triggerAttackRelease too; PolySynth supports it as well
         const durSeconds = Tone.Time(value.durBeats).toSeconds();
         instrument.triggerAttackRelease(value.note, durSeconds, time);
       }, events).start(0);
@@ -817,464 +622,83 @@
     }
 
     // ----------------------------
-    // MIDI export (simple, reliable format 0)
+    // Button handlers
     // ----------------------------
-    function writeVLQ(value){
-      let buffer = value & 0x7F;
-      const bytes = [];
-      while ((value >>= 7)) { buffer <<= 8; buffer |= ((value & 0x7F) | 0x80); }
-      while (true) { bytes.push(buffer & 0xFF); if (buffer & 0x80) buffer >>= 8; else break; }
-      return bytes;
-    }
-    function strBytes(s){ return Array.from(s).map(ch => ch.charCodeAt(0) & 0xFF); }
-    function u16(n){ return [(n>>8)&255, n&255]; }
-    function u32(n){ return [(n>>24)&255, (n>>16)&255, (n>>8)&255, n&255]; }
-
-    function exportMIDI(){
-      if (!phrase || !phrase.length) return;
-
-      const PPQ = 96;
-      const bpm = Number($("tempo")?.value || 110);
-      const usPerQuarter = Math.round(60000000 / Math.max(1, bpm));
-
-      const track = [];
-      track.push(...writeVLQ(0), 0xFF, 0x51, 0x03, (usPerQuarter>>16)&255, (usPerQuarter>>8)&255, usPerQuarter&255);
-
-      for (const n of phrase){
-        const pitch = clamp(n.midi, 0, 127);
-        const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
-        track.push(...writeVLQ(0), 0x90, pitch, 100);
-        track.push(...writeVLQ(durTicks), 0x80, pitch, 0);
-      }
-      track.push(...writeVLQ(0), 0xFF, 0x2F, 0x00);
-
-      const header = [...strBytes("MThd"), ...u32(6), ...u16(0), ...u16(1), ...u16(PPQ)];
-      const chunk  = [...strBytes("MTrk"), ...u32(track.length), ...track];
-      const bytes = new Uint8Array([...header, ...chunk]);
-
-      const blob = new Blob([bytes], { type: "audio/midi" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `ai_music_${currentPhraseId || "phrase"}.mid`;
-      a.click();
-      setOk("MIDI downloaded.");
-    }
-
-    // ----------------------------
-    // Listening study (ratings)
-    // ----------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v1";
-    function getRatings(){
-      try { return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
-      catch { return []; }
-    }
-    function setRatings(arr){
-      localStorage.setItem(RATINGS_KEY, JSON.stringify(arr));
-      refreshRatingsSummary();
-    }
-    function avg(nums){ return nums.length ? nums.reduce((a,b)=>a+b,0)/nums.length : null; }
-
-    function refreshRatingsSummary(){
-      if (!ratingCount || !ratingAverages) return;
-      const rows = getRatings();
-      ratingCount.textContent = String(rows.length);
-      if (!rows.length){ ratingAverages.textContent = "—"; return; }
-      const mus = avg(rows.map(r=>r.musicality));
-      const coh = avg(rows.map(r=>r.coherence));
-      const ple = avg(rows.map(r=>r.pleasantness));
-      const fam = avg(rows.map(r=>r.familiarity));
-      ratingAverages.textContent = `${mus.toFixed(2)} / ${coh.toFixed(2)} / ${ple.toFixed(2)} / ${fam.toFixed(2)}`;
-    }
-
-    function validate1to7(x){
-      const n = Number(x);
-      if (!Number.isFinite(n)) return null;
-      if (n < 1 || n > 7) return null;
-      return Math.round(n);
-    }
-
-    function phraseFingerprint(notes){
-      return notes.map(n => `${n.midi}:${n.durBeats}`).join("|");
-    }
-
-    function downloadText(filename, text, mime="text/plain"){
-      const blob = new Blob([text], { type: mime });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-
-    function saveRating(){
-      if (!phrase || !phrase.length || !currentPhraseId){
-        setWarning("Generate a phrase first.");
-        return;
-      }
-      const mus = validate1to7(rateMusicality?.value);
-      const coh = validate1to7(rateCoherence?.value);
-      const ple = validate1to7(ratePleasantness?.value);
-      const fam = validate1to7(rateFamiliarity?.value);
-      if ([mus,coh,ple,fam].some(v => v === null)){
-        setWarning("Ratings must be 1–7.");
-        return;
-      }
-
-      const rows = getRatings();
-      rows.push({
-        timestamp: nowISO(),
-        phrase_id: currentPhraseId,
-        fingerprint: phraseFingerprint(phrase),
-        key: $("key")?.value || "",
-        mode: $("mode")?.value || "",
-        tempo: Number($("tempo")?.value || 110),
-        instrument: $("instrument")?.value || "",
-        source: $("source")?.value || "",
-        musicality: mus,
-        coherence: coh,
-        pleasantness: ple,
-        familiarity: fam,
-        comments: (rateComments?.value || "").trim()
-      });
-      setRatings(rows);
-      if (rateComments) rateComments.value = "";
-      setWarning(null);
-      setOk("Rating saved.");
-    }
-
-    function downloadRatingsCSV(){
-      const rows = getRatings();
-      const header = ["timestamp","phrase_id","fingerprint","key","mode","tempo","instrument","source","musicality","coherence","pleasantness","familiarity","comments"];
-      const lines = [header.join(",")];
-      for (const r of rows){
-        const vals = header.map(k => `"${String(r[k] ?? "").replaceAll('"','""')}"`);
-        lines.push(vals.join(","));
-      }
-      downloadText("ai_music_ratings.csv", lines.join("\n"), "text/csv");
-    }
-
-    function clearRatings(){
-      if (!confirm("Clear all saved ratings from this browser?")) return;
-      localStorage.removeItem(RATINGS_KEY);
-      refreshRatingsSummary();
-      setOk("Ratings cleared.");
-    }
-
-    // ----------------------------
-    // Downloads: notebook + backend
-    // ----------------------------
-    function makeNotebookJSON(){
-      const nb = {
-        nbformat: 4,
-        nbformat_minor: 5,
-        metadata: {
-          kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
-          language_info: { name: "python", version: "3.x" }
-        },
-        cells: [
-          { cell_type:"markdown", metadata:{}, source:[
-            "# Transformer Starter Notebook (Symbolic Phrase Generation)\n",
-            "\n",
-            "Minimal baseline: tokenize (pitch,duration) events → train decoder-only Transformer → sample phrases.\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "import random, math\n",
-            "import torch\n",
-            "import torch.nn as nn\n",
-            "from torch.utils.data import Dataset, DataLoader\n",
-            "device = 'cuda' if torch.cuda.is_available() else 'cpu'\n",
-            "print('device:', device)\n"
-          ]},
-          { cell_type:"markdown", metadata:{}, source:[
-            "## Data\n",
-            "Represent each phrase as a list of (midi_pitch, dur_beats).\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "def make_synth_phrase(n=16, base=60):\n",
-            "    out=[]\n",
-            "    p=base\n",
-            "    for _ in range(n):\n",
-            "        p += random.choice([-2,-1,1,2,3,-3])\n",
-            "        p = max(48, min(84, p))\n",
-            "        d = random.choice([0.5,0.5,1.0])\n",
-            "        out.append((p,d))\n",
-            "    return out\n",
-            "phrases = [make_synth_phrase() for _ in range(2000)]\n",
-            "phrases[0][:5]\n"
-          ]},
-          { cell_type:"markdown", metadata:{}, source:[
-            "## Tokenization (simple)\n",
-            "Quantize duration into bins and pack (pitch, dur_bin) into a token.\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "DUR_BINS=[0.25,0.5,1.0,1.5,2.0]\n",
-            "PITCH_MIN,PITCH_MAX=24,108\n",
-            "def dur_to_bin(d):\n",
-            "    return int(min(range(len(DUR_BINS)), key=lambda i: abs(DUR_BINS[i]-d)))\n",
-            "def encode(pitch,dur):\n",
-            "    pitch=int(max(PITCH_MIN,min(PITCH_MAX,pitch)))\n",
-            "    db=dur_to_bin(dur)\n",
-            "    return (pitch-PITCH_MIN)*len(DUR_BINS)+db\n",
-            "def decode(tok):\n",
-            "    pitch=(tok//len(DUR_BINS))+PITCH_MIN\n",
-            "    db=tok%len(DUR_BINS)\n",
-            "    return pitch,DUR_BINS[db]\n",
-            "VOCAB=((PITCH_MAX-PITCH_MIN+1)*len(DUR_BINS))\n",
-            "VOCAB\n"
-          ]},
-          { cell_type:"markdown", metadata:{}, source:[
-            "## Model\n",
-            "Compact decoder-only Transformer for next-token prediction.\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "SEQ_LEN=64\n",
-            "class DS(Dataset):\n",
-            "    def __init__(self, phrases):\n",
-            "        self.data=[[encode(p,d) for p,d in ph] for ph in phrases]\n",
-            "    def __len__(self): return len(self.data)\n",
-            "    def __getitem__(self,i):\n",
-            "        x=self.data[i]\n",
-            "        if len(x)<SEQ_LEN+1: x=x+[0]*((SEQ_LEN+1)-len(x))\n",
-            "        x=x[:SEQ_LEN+1]\n",
-            "        inp=torch.tensor(x[:-1],dtype=torch.long)\n",
-            "        tgt=torch.tensor(x[1:],dtype=torch.long)\n",
-            "        return inp,tgt\n",
-            "\n",
-            "dl=DataLoader(DS(phrases),batch_size=64,shuffle=True)\n",
-            "\n",
-            "class Block(nn.Module):\n",
-            "    def __init__(self,n_embd=256,n_head=4,drop=0.1):\n",
-            "        super().__init__()\n",
-            "        self.attn=nn.MultiheadAttention(n_embd,n_head,dropout=drop,batch_first=True)\n",
-            "        self.ln1=nn.LayerNorm(n_embd)\n",
-            "        self.ff=nn.Sequential(nn.LayerNorm(n_embd),nn.Linear(n_embd,4*n_embd),nn.GELU(),nn.Linear(4*n_embd,n_embd))\n",
-            "        self.ln2=nn.LayerNorm(n_embd)\n",
-            "    def forward(self,x):\n",
-            "        B,T,C=x.shape\n",
-            "        mask=torch.triu(torch.ones(T,T,device=x.device),diagonal=1).bool()\n",
-            "        y,_=self.attn(x,x,x,attn_mask=mask)\n",
-            "        x=self.ln1(x+y)\n",
-            "        x=self.ln2(x+self.ff(x))\n",
-            "        return x\n",
-            "\n",
-            "class Model(nn.Module):\n",
-            "    def __init__(self,vocab=VOCAB,n_embd=256,seq_len=SEQ_LEN,n_layer=4):\n",
-            "        super().__init__()\n",
-            "        self.tok=nn.Embedding(vocab,n_embd)\n",
-            "        self.pos=nn.Embedding(seq_len,n_embd)\n",
-            "        self.blocks=nn.Sequential(*[Block(n_embd=n_embd) for _ in range(n_layer)])\n",
-            "        self.ln=nn.LayerNorm(n_embd)\n",
-            "        self.head=nn.Linear(n_embd,vocab)\n",
-            "    def forward(self,idx):\n",
-            "        B,T=idx.shape\n",
-            "        pos=torch.arange(T,device=idx.device)\n",
-            "        x=self.tok(idx)+self.pos(pos)[None,:,:]\n",
-            "        x=self.blocks(x)\n",
-            "        x=self.ln(x)\n",
-            "        return self.head(x)\n",
-            "\n",
-            "m=Model().to(device)\n",
-            "opt=torch.optim.AdamW(m.parameters(),lr=3e-4)\n",
-            "loss_fn=nn.CrossEntropyLoss()\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "def train_epoch():\n",
-            "    m.train(); total=0; n=0\n",
-            "    for x,y in dl:\n",
-            "        x=x.to(device); y=y.to(device)\n",
-            "        logits=m(x)\n",
-            "        loss=loss_fn(logits.reshape(-1,VOCAB),y.reshape(-1))\n",
-            "        opt.zero_grad(); loss.backward(); opt.step()\n",
-            "        total+=loss.item(); n+=1\n",
-            "    return total/max(1,n)\n",
-            "\n",
-            "for e in range(3):\n",
-            "    print('epoch',e,'loss',train_epoch())\n"
-          ]},
-          { cell_type:"code", metadata:{}, execution_count:null, outputs:[], source:[
-            "@torch.no_grad()\n",
-            "def sample(start=[0,0,0,0],steps=32,temp=0.9):\n",
-            "    m.eval()\n",
-            "    x=torch.tensor(start,dtype=torch.long,device=device)[None,:]\n",
-            "    for _ in range(steps):\n",
-            "        x_cond=x[:,-SEQ_LEN:]\n",
-            "        logits=m(x_cond)[:,-1,:]/temp\n",
-            "        probs=torch.softmax(logits,dim=-1)\n",
-            "        nxt=torch.multinomial(probs,1)\n",
-            "        x=torch.cat([x,nxt],dim=1)\n",
-            "    return x[0].tolist()\n",
-            "\n",
-            "toks=sample()\n",
-            "events=[decode(t) for t in toks[-16:]]\n",
-            "events\n"
-          ]}
-        ]
-      };
-      return nb;
-    }
-
-    function downloadNotebook(){
-      downloadText("ai_music_transformer_starter.ipynb", JSON.stringify(makeNotebookJSON(), null, 2), "application/json");
-      setOk("Notebook downloaded.");
-    }
-
-    function downloadBackend(){
-      const appPy =
-`from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-import random
-
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class GenRequest(BaseModel):
-    key: str
-    mode: str
-    tempo: int
-    smooth: float
-    length: int = 16
-
-NOTE_TO_SEMITONE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11}
-MODES = {
-    "major":[0,2,4,5,7,9,11],
-    "natural_minor":[0,2,3,5,7,8,10],
-    "harmonic_minor":[0,2,3,5,7,8,11],
-    "melodic_minor":[0,2,3,5,7,9,11],
-    "dorian":[0,2,3,5,7,9,10],
-    "mixolydian":[0,2,4,5,7,9,10],
-    "lydian":[0,2,4,6,7,9,11],
-    "phrygian":[0,1,3,5,7,8,10],
-    "locrian":[0,1,3,5,6,8,10],
-}
-
-@app.post("/generate")
-def generate(req: GenRequest):
-    root = NOTE_TO_SEMITONE[req.key]
-    base = 60
-    allowed = []
-    for octv in (-1,0,1):
-        for s in MODES[req.mode]:
-            allowed.append(base + (s+root) + 12*octv)
-
-    cur = base + root
-    notes = []
-    for i in range(req.length):
-        neighbors = [n for n in allowed if abs(n-cur) <= 2]
-        pool = neighbors if (random.random() < req.smooth and neighbors) else allowed
-        cur = random.choice(pool)
-        dur = 0.5
-        if random.random() < 0.14: dur = 1.0
-        if i == req.length-1: dur = 1.0
-        notes.append({"midi": int(cur), "durBeats": float(dur)})
-    return {"notes": notes}
-`;
-      const reqTxt = "fastapi\nuvicorn\npydantic\n";
-      downloadText("app.py", appPy, "text/plain");
-      downloadText("requirements.txt", reqTxt, "text/plain");
-      setOk("Downloaded backend files.");
-    }
-
-    if (notebookPreview) {
-      const nb = makeNotebookJSON();
-      notebookPreview.textContent = (nb.cells.slice(0,3).map((c,i)=>`# Cell ${i+1} [${c.cell_type}]\n${(c.source||[]).join("")}`).join("\n\n---\n\n"));
-    }
-
-    // ----------------------------
-    // Event wiring
-    // ----------------------------
-    if (tempo && tempoVal) tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
-    if (smooth && smoothVal) smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
-
-    refreshRatingsSummary();
-
     generateBtn.addEventListener("click", async () => {
       stopPlayback();
       setWarning(null);
 
-      const key = $("key")?.value || "C";
-      const mode = $("mode")?.value || "major";
-      const bpm = Number($("tempo")?.value || 110);
-      const stepBias = Number($("smooth")?.value || 0.75);
-      const length = Number($("length")?.value || 16);
-      const inst = $("instrument")?.value || "piano";
+      const key = document.getElementById("key").value;
+      const mode = document.getElementById("mode").value;
+      const bpm = Number(document.getElementById("tempo").value);
+      const stepBias = Number(document.getElementById("smooth").value);
+      const length = Number(document.getElementById("length").value);
 
-      const source = $("source")?.value || "browser";
-      const backendUrl = ($("backendUrl")?.value || "").trim();
+      const source = document.getElementById("source").value;
+      const backendUrl = document.getElementById("backendUrl").value.trim();
 
       out.textContent = "Generating...";
 
       try {
-        let dataNotes = null;
-
         if (source === "hf") {
-          if (!backendUrl) throw new Error("HF mode selected, but HF Space API URL is blank.");
-          const data = await generateFromHF({ backendUrl, key, mode, tempo: bpm, smooth: stepBias, length });
-          dataNotes = data.notes;
+          if (!backendUrl){
+            throw new Error("HF source selected, but the HF Space API URL is blank. Paste your endpoint (e.g., https://YOUR-SPACE.hf.space/generate).");
+          }
+
+          const data = await generateFromHF({
+            backendUrl, key, mode, tempo: bpm, smooth: stepBias, length
+          });
+
+          phrase = data.notes;
+
+          renderPhrase(phrase);
+
+          // If backend returns metrics, show them; else compute locally
+          const metrics = data.metrics || computeMetrics(phrase, key, mode);
+          renderMetrics(metrics);
+
         } else {
-          dataNotes = generatePhraseBrowser({ key, mode, smooth: stepBias, length });
+          phrase = generatePhraseBrowser({ key, mode, smooth: stepBias, length });
+          renderPhrase(phrase);
+          renderMetrics(computeMetrics(phrase, key, mode));
         }
 
-        phrase = dataNotes;
-        currentPhraseId = `${source}-${key}-${mode}-${bpm}-${inst}-${Date.now()}`;
-        currentMeta = { key, mode, bpm, stepBias, length, inst, source };
+        playBtn.disabled = false;
 
-        renderPhrase(phrase);
-        renderMetrics(computeMetrics(phrase, key, mode));
-        drawPianoRoll(phrase);
-
-        if (playBtn) playBtn.disabled = false;
-        if (exportMidiBtn) exportMidiBtn.disabled = false;
-        if (saveRatingBtn) saveRatingBtn.disabled = false;
-
-        setOk("Generated.");
       } catch (e) {
         phrase = null;
-        if (playBtn) playBtn.disabled = true;
-        if (exportMidiBtn) exportMidiBtn.disabled = true;
-        if (saveRatingBtn) saveRatingBtn.disabled = true;
+        playBtn.disabled = true;
         out.textContent = "(generation failed)";
-        setWarning(e?.message || "Generation failed.");
+        setWarning(e?.message || "Generation failed. Check console for details.");
         console.error(e);
       }
     });
 
-    if (playBtn) playBtn.addEventListener("click", async () => {
+    playBtn.addEventListener("click", async () => {
       if (!phrase) return;
+      setWarning(null);
+
       try {
         await ensureAudio();
         stopPlayback();
         schedulePlayback(phrase);
         playBtn.disabled = true;
-        if (stopBtn) stopBtn.disabled = false;
+        stopBtn.disabled = false;
       } catch (e) {
-        setWarning("Audio failed to start. Try clicking Play again.");
+        setWarning("Audio failed to start. Try clicking Play again (browser audio policy).");
         console.error(e);
       }
     });
 
-    if (stopBtn) stopBtn.addEventListener("click", () => {
-      stopPlayback();
-      setOk("Stopped.");
+    stopBtn.addEventListener("click", stopPlayback);
+
+    window.addEventListener("beforeunload", () => {
+      try { stopPlayback(); } catch(e) {}
     });
-
-    if (exportMidiBtn) exportMidiBtn.addEventListener("click", exportMIDI);
-
-    if (saveRatingBtn) saveRatingBtn.addEventListener("click", saveRating);
-    if (downloadRatingsBtn) downloadRatingsBtn.addEventListener("click", downloadRatingsCSV);
-    if (clearRatingsBtn) clearRatingsBtn.addEventListener("click", clearRatings);
-
-    if (downloadNotebookBtn) downloadNotebookBtn.addEventListener("click", downloadNotebook);
-    if (downloadBackendBtn) downloadBackendBtn.addEventListener("click", downloadBackend);
-  });
   </script>
 </body>
 </html>
+
 
 
 
