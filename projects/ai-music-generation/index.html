@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Music Generation System | Liam Weir</title>
+
+  <!-- Tone.js for audio playback (client-side, works on GitHub Pages) -->
+  <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+      background:#0a0a12;
+      color:#eef0ff;
+    }
+    nav{
+      position:fixed; top:0; width:100%;
+      background: rgba(10,10,25,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex; gap:18px; align-items:center;
+      padding:14px 18px;
+      z-index:10;
+    }
+    nav a{ color:#eef0ff; text-decoration:none; opacity:0.85; }
+    nav a:hover{ opacity:1; text-decoration:underline; }
+
+    main{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 92px 18px 48px;
+    }
+    h1{ font-size: 2rem; margin: 0 0 10px; }
+    p{ opacity:0.9; line-height:1.55; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:16px;
+      margin-top:18px;
+    }
+    @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .label{ font-size:0.9rem; opacity:0.85; }
+    select, input[type="range"]{
+      background: rgba(255,255,255,0.06);
+      color:#eef0ff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline:none;
+    }
+    .btn{
+      background: rgba(120,140,255,0.18);
+      border: 1px solid rgba(120,140,255,0.35);
+      color:#eef0ff;
+      padding: 10px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 600;
+    }
+    .btn:hover{ filter: brightness(1.1); }
+    .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+
+    code, pre{
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 12px;
+      display:block;
+      overflow:auto;
+      white-space: pre;
+    }
+
+    .pill{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      font-size: 0.85rem;
+      opacity:0.9;
+    }
+    .muted{ opacity:0.8; }
+    .metric{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+    .metric:last-child{ border-bottom:none; }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../projects.html">Projects</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+
+  <main>
+    <h1>AI Music Generation System</h1>
+    <p class="muted">
+      A perception-aware symbolic music generator for short phrases.
+      This demo is client-side (runs entirely in your browser) and is designed as a “first version” you can expand into a real ML backend later.
+    </p>
+
+    <div class="row" style="margin-top:10px;">
+      <span class="pill">AI</span>
+      <span class="pill">Music</span>
+      <span class="pill">Perception</span>
+      <span class="pill">Tone.js</span>
+      <span class="pill">GitHub Pages</span>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin:0 0 10px;">Interactive Demo</h2>
+
+        <div class="row" style="margin: 10px 0 12px;">
+          <div>
+            <div class="label">Key</div>
+            <select id="key">
+              <option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option>
+              <option value="G">G</option><option value="A">A</option><option value="B">B</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="label">Mode</div>
+            <select id="mode">
+              <option value="major">Major</option>
+              <option value="dorian">Dorian</option>
+              <option value="minor">Natural Minor</option>
+            </select>
+          </div>
+
+          <div style="min-width: 220px;">
+            <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
+            <input id="tempo" type="range" min="70" max="160" value="110" />
+          </div>
+
+          <div style="min-width: 260px;">
+            <div class="label">Stepwise Bias: <span id="smoothVal">0.75</span></div>
+            <input id="smooth" type="range" min="0" max="1" step="0.01" value="0.75" />
+          </div>
+
+          <div class="row">
+            <button class="btn" id="generateBtn">Generate</button>
+            <button class="btn" id="playBtn" disabled>Play</button>
+            <button class="btn" id="stopBtn" disabled>Stop</button>
+          </div>
+        </div>
+
+        <div class="label">Generated phrase (MIDI notes + durations)</div>
+        <pre id="out">(click Generate)</pre>
+
+        <p class="muted" style="margin-top:10px;">
+          Next step: replace the “toy generator” with a trained Transformer/VAE model and keep the same UI.
+        </p>
+      </section>
+
+      <aside class="card">
+        <h2 style="margin:0 0 10px;">Perception / Structure Metrics</h2>
+        <p class="muted" style="margin-top:0;">
+          These are simple heuristics you can show now, then refine with listening tests later.
+        </p>
+
+        <div class="metric"><span>Repetition Score</span><strong id="repScore">—</strong></div>
+        <div class="metric"><span>Stepwise Motion</span><strong id="stepScore">—</strong></div>
+        <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
+
+        <h3 style="margin:0 0 8px;">Writeup</h3>
+        <p class="muted" style="margin-top:0;">
+          In your portfolio, describe:
+          <br>• dataset (MIDI phrases)
+          <br>• model (Transformer/VAE)
+          <br>• constraints (key/mode, contour, repetition)
+          <br>• evaluation (listener ratings + metrics)
+        </p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const KEY_TO_SEMITONE = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+    const MODES = {
+      major: [0,2,4,5,7,9,11],
+      dorian:[0,2,3,5,7,9,10],
+      minor: [0,2,3,5,7,8,10]
+    };
+
+    const tempo = document.getElementById("tempo");
+    const tempoVal = document.getElementById("tempoVal");
+    const smooth = document.getElementById("smooth");
+    const smoothVal = document.getElementById("smoothVal");
+    tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
+    smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
+
+    const generateBtn = document.getElementById("generateBtn");
+    const playBtn = document.getElementById("playBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const out = document.getElementById("out");
+
+    const repScoreEl = document.getElementById("repScore");
+    const stepScoreEl = document.getElementById("stepScore");
+    const rangeScoreEl = document.getElementById("rangeScore");
+
+    let phrase = null;
+    let synth = null;
+    let part = null;
+
+    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // Create a phrase: list of { midi, durBeats }
+    function generatePhrase(root, mode, stepBias){
+      const scale = MODES[mode].map(x => x + root);
+      const baseOctave = 60; // C4
+      const allowed = [];
+      for (let oct = -1; oct <= 1; oct++){
+        for (const s of scale) allowed.push(baseOctave + s + 12*oct);
+      }
+
+      // 8 "notes" (1 bar of 8th notes) or 16 for 2 bars; keep short and clean
+      const N = 16;
+      const durs = Array(N).fill(0.5); // eighth notes in beats (at 4/4)
+
+      // Start on a stable tone
+      let current = baseOctave + root;
+      const notes = [];
+
+      for (let i=0; i<N; i++){
+        // Candidate notes: either stepwise neighbors (preferred) or any scale tone
+        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step / whole step
+        const pool = (Math.random() < stepBias && neighbors.length) ? neighbors : allowed;
+
+        // Encourage phrase-like behavior: end near tonic at the end
+        if (i > N - 3){
+          const nearTonic = allowed.filter(n => Math.abs(n - (baseOctave + root)) <= 7);
+          current = pick(nearTonic.length ? nearTonic : pool);
+        } else {
+          current = pick(pool);
+        }
+        notes.push({ midi: current, durBeats: durs[i] });
+      }
+      return notes;
+    }
+
+    function midiToNoteName(m){
+      // Tone.js uses scientific pitch notation like "C4"
+      const names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+      const name = names[m % 12];
+      const oct = Math.floor(m / 12) - 1;
+      return `${name}${oct}`;
+    }
+
+    function computeMetrics(notes){
+      const midis = notes.map(n => n.midi);
+      const unique = new Set(midis);
+      const repetition = 1 - (unique.size / midis.length); // higher = more repetition
+
+      let stepCount = 0;
+      for (let i=1; i<midis.length; i++){
+        const interval = Math.abs(midis[i] - midis[i-1]);
+        if (interval <= 2) stepCount++;
+      }
+      const stepwise = stepCount / (midis.length - 1);
+
+      const range = Math.max(...midis) - Math.min(...midis);
+
+      return { repetition, stepwise, range };
+    }
+
+    async function ensureAudio(){
+      if (Tone.context.state !== "running") await Tone.start();
+      if (!synth){
+        synth = new Tone.Synth({
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.3 }
+        }).toDestination();
+      }
+    }
+
+    function stopPlayback(){
+      if (part){
+        part.stop();
+        part.dispose();
+        part = null;
+      }
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+      playBtn.disabled = !phrase;
+      stopBtn.disabled = true;
+    }
+
+    generateBtn.addEventListener("click", async () => {
+      stopPlayback();
+
+      const root = KEY_TO_SEMITONE[document.getElementById("key").value];
+      const mode = document.getElementById("mode").value;
+      const stepBias = Number(smooth.value);
+      phrase = generatePhrase(root, mode, stepBias);
+
+      // Output
+      const lines = phrase.map((n, i) => `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${n.durBeats} beats)`);
+      out.textContent = lines.join("\n");
+
+      // Metrics
+      const { repetition, stepwise, range } = computeMetrics(phrase);
+      repScoreEl.textContent = repetition.toFixed(2);
+      stepScoreEl.textContent = stepwise.toFixed(2);
+      rangeScoreEl.textContent = range.toString();
+
+      playBtn.disabled = false;
+    });
+
+    playBtn.addEventListener("click", async () => {
+      if (!phrase) return;
+      await ensureAudio();
+      stopPlayback();
+
+      Tone.Transport.bpm.value = Number(tempo.value);
+
+      let t = 0;
+      const events = phrase.map(n => {
+        const evt = { time: t, note: midiToNoteName(n.midi), dur: n.durBeats };
+        t += n.durBeats;
+        return evt;
+      });
+
+      part = new Tone.Part((time, value) => {
+        synth.triggerAttackRelease(value.note, Tone.Time(value.dur).toSeconds(), time);
+      }, events).start(0);
+
+      Tone.Transport.start();
+      playBtn.disabled = true;
+      stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener("click", stopPlayback);
+
+    window.addEventListener("beforeunload", () => {
+      try { stopPlayback(); } catch(e) {}
+    });
+  </script>
+</body>
+</html>
