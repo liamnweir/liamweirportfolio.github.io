@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Liam Weir</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+      background: #0a0a12;
+      color: #eef0ff;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(10,10,25,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    nav a {
+      color: #cfd3ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover { color: white; }
+
+    .container {
+      max-width: 1100px;
+      margin: 6rem auto 4rem;
+      padding: 0 2rem;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .intro {
+      max-width: 800px;
+      color: #d8dbff;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background: #15172b;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.45);
+    }
+
+    .project-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.6rem;
+    }
+
+    .project-card p {
+      color: #d0d3ff;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #23265a;
+      color: #b8c0ff;
+      padding: 0.25rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      margin-right: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .coming-soon {
+      opacity: 0.7;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="./index.html">Home</a>
+    <a href="./projects.html">Projects</a>
+    <a href="./about.html">About</a>
+    <a href="./contact.html">Contact</a>
+  </nav>
+
+  <div class="container">
+    <h1>Projects</h1>
+
+    <p class="intro">
+      This page will showcase my work in Artificial Intelligence, Human–Computer Interaction,
+      data analysis, and music technology. Each project will include goals, methods,
+      outcomes, and links to demos or code.
+    </p>
+
+    <div class="projects-grid">
+
+      <!-- PROJECT PLACEHOLDER 1 -->
+      <div class="project-card coming-soon">
+        <h3>AI Music Generation System</h3>
+        <p>
+          Machine learning system for generating short musical phrases with an emphasis
+          on human perception and musical structure.
+        </p>
+        <span class="tag">AI</span>
+        <span class="tag">Audio</span>
+        <span class="tag">Python</span>
+        <p><em>Details coming soon.</em></p>
+      </div>
+
+      <!-- PROJECT PLACEHOLDER 2 -->
+      <div class="project-card coming-soon">
+        <h3>Pitch Perception & Shepard Tone Study</h3>
+        <p>
+          Visualization and analysis of pitch chroma and pitch height using psychoacoustic
+          stimuli and perceptual modeling.
+        </p>
+        <span class="tag">Cognitive Science</span>
+        <span class="tag">Perception</span>
+        <span class="tag">Data Viz</span>
+        <p><em>Details coming soon.</em></p>
+      </div>
+
+      <!-- PROJECT PLACEHOLDER 3 -->
+      <div class="project-card coming-soon">
+        <h3>Human–AI Interface Concept Study</h3>
+        <p>
+          UX and experimental design study exploring how users interpret, trust,
+          and interact with AI-generated outputs.
+        </p>
+        <span class="tag">HCI</span>
+        <span class="tag">UX Research</span>
+        <span class="tag">Prototyping</span>
+        <p><em>Details coming soon.</em></p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
