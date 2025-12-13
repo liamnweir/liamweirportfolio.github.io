@@ -1,154 +1,247 @@
+<!-- ======================================================
+ FULL PORTFOLIO SITE – Liam Weir (GitHub Pages)
+ Files to create in repo:
+ index.html | projects.html | about.html | contact.html | resume.pdf
+ Upload your resume PDF and name it: resume.pdf
+====================================================== -->
+
+<!-- ===================== index.html ===================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liam Weir | AI + HCI Portfolio</title>
+  <title>Liam Weir | AI • HCI • Music</title>
+  <link rel="preconnect" href="https://images.unsplash.com">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      background: #0f0f12;
-      color: #eaeaf0;
-      line-height: 1.6;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+      background: #0a0a12;
+      color: #eef0ff;
     }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(10,10,25,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+      z-index: 100;
+    }
+    nav a { color: #cfd3ff; text-decoration: none; font-weight: 500; }
+    nav a:hover { color: white; }
+
     header {
-      padding: 4rem 2rem 3rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 2.6rem;
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      font-size: 1.4rem;
-      font-weight: 400;
-      color: #b5b5c7;
-      margin-top: 0;
-    }
-    section {
-      max-width: 900px;
-      margin: auto;
+      min-height: 100vh;
+      background:
+        linear-gradient(to bottom, rgba(10,10,25,0.6), rgba(10,10,25,0.95)),
+        url('https://images.unsplash.com/photo-1526378722484-bd91ca387e72');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       padding: 2rem;
+      animation: fadeIn 1.2s ease;
     }
-    .project {
-      background: #18181f;
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    }
-    .project h3 {
-      margin-top: 0;
-    }
-    a {
-      color: #8ab4ff;
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    h1 { font-size: 3.2rem; margin-bottom: 0.5rem; }
+    p.lead { font-size: 1.2rem; max-width: 720px; margin: auto; color: #d6d8ff; }
+
+    .buttons { margin-top: 2rem; }
+    .btn {
+      display: inline-block;
+      margin: 0.5rem;
+      padding: 0.9rem 1.6rem;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #6a7bff, #8b9dff);
+      color: #fff;
       text-decoration: none;
+      font-weight: 500;
+      transition: transform 0.2s ease;
     }
-    a:hover {
-      text-decoration: underline;
+    .btn.secondary { background: #1e2038; }
+    .btn:hover { transform: translateY(-2px); }
+
+    section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 5rem 2rem;
     }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: #15172b;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+      transition: transform 0.25s ease;
+    }
+    .card:hover { transform: translateY(-6px); }
+
     footer {
       text-align: center;
       padding: 3rem 1rem;
-      color: #9a9ab0;
+      color: #9aa0ff;
       font-size: 0.9rem;
-    }
-    .tags span {
-      display: inline-block;
-      background: #242433;
-      padding: 0.3rem 0.6rem;
-      border-radius: 8px;
-      margin-right: 0.4rem;
-      font-size: 0.8rem;
-      color: #cfcfe8;
     }
   </style>
 </head>
 <body>
 
+<nav>
+  <a href="index.html">Home</a>
+  <a href="projects.html">Projects</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+</nav>
+
 <header>
-  <h1>Liam Weir</h1>
-  <h2>AI • Human–Computer Interaction • Music Technology</h2>
-  <p>
-    I’m a Cognitive Science major with an AI & HCI focus and an Electronic Music minor.
-    I build intelligent, human-centered systems that blend perception, interaction, and sound.
-    I’m currently seeking internships and research opportunities.
-  </p>
-  <p>
-    <a href="#projects">Projects</a> ·
-    <a href="#about">About</a> ·
-    <a href="#contact">Contact</a>
-  </p>
+  <div>
+    <h1>Liam Weir</h1>
+    <p class="lead">
+      Cognitive Science (AI & HCI) @ UCSC • Electronic Music Minor<br>
+      Building human-centered AI and creative technology
+    </p>
+    <div class="buttons">
+      <a class="btn" href="projects.html">View Projects</a>
+      <a class="btn secondary" href="resume.pdf" download>Download Resume</a>
+      <a class="btn secondary" href="contact.html">Contact Me</a>
+    </div>
+  </div>
 </header>
 
-<section id="projects">
-  <h2>Selected Projects</h2>
-
-  <div class="project">
-    <h3>AI Music Generation System</h3>
-    <div class="tags">
-      <span>Machine Learning</span><span>Audio</span><span>Python</span>
+<section>
+  <h2>Focus Areas</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Artificial Intelligence</h3>
+      <p>Machine learning, data analysis, and human-centered AI grounded in cognitive science and statistics.</p>
     </div>
-    <p>
-      Designed a system that generates short musical phrases using machine learning models trained on symbolic and audio data.
-      Focused on human-perceived musical structure rather than raw signal similarity.
-    </p>
-    <p>
-      <a href="#">GitHub</a> · <a href="#">Demo</a>
-    </p>
-  </div>
-
-  <div class="project">
-    <h3>Pitch Perception & Shepard Tone Visualization</h3>
-    <div class="tags">
-      <span>Cognitive Science</span><span>Psychoacoustics</span><span>Data Viz</span>
+    <div class="card">
+      <h3>Human–Computer Interaction</h3>
+      <p>Designing interfaces that emphasize usability, trust, perception, and cognitive load.</p>
     </div>
-    <p>
-      Built interactive visualizations exploring pitch chroma and pitch height using Shepard tones,
-      linking auditory perception research with computational modeling.
-    </p>
-    <p>
-      <a href="#">Write-up</a> · <a href="#">Code</a>
-    </p>
-  </div>
-
-  <div class="project">
-    <h3>Human–AI Interface Concept Study</h3>
-    <div class="tags">
-      <span>HCI</span><span>UX Research</span><span>Prototyping</span>
+    <div class="card">
+      <h3>Music & Sound</h3>
+      <p>Electronic music production, audio perception, and creative computation.</p>
     </div>
-    <p>
-      Conducted a small-scale usability and experimental design study on how users interpret and trust AI-generated outputs.
-      Emphasized clarity, affordances, and cognitive load.
-    </p>
-    <p>
-      <a href="#">Case Study</a>
-    </p>
   </div>
-</section>
-
-<section id="about">
-  <h2>About Me</h2>
-  <p>
-    I’m interested in how humans perceive, interpret, and interact with intelligent systems—especially in creative domains like music and sound.
-    My background combines experimental design, statistics, cognitive psychology, and hands-on programming.
-  </p>
-</section>
-
-<section id="contact">
-  <h2>Contact</h2>
-  <p>
-    Email: <a href="mailto:liamweir@email.com">liamweir@email.com</a><br />
-    GitHub: <a href="https://github.com/yourusername">github.com/yourusername</a><br />
-    LinkedIn: <a href="#">LinkedIn</a>
-  </p>
 </section>
 
 <footer>
   © 2025 Liam Weir
 </footer>
+</body>
+</html>
 
+<!-- ===================== projects.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Liam Weir</title>
+  <style>
+    body { background:#0a0a12; color:#eef0ff; font-family:system-ui; margin:0; padding:5rem 2rem; }
+    .container { max-width:1000px; margin:auto; }
+    .placeholder {
+      background:#15172b;
+      padding:3rem;
+      border-radius:20px;
+      box-shadow:0 30px 60px rgba(0,0,0,0.35);
+    }
+    a { color:#8fa2ff; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Projects</h1>
+    <div class="placeholder">
+      <p>
+        This page will feature my AI, HCI, data analysis, and music technology projects.
+        Each project will include goals, methodology, results, and links to demos or GitHub repositories.
+      </p>
+      <p><em>Projects coming soon.</em></p>
+    </div>
+    <p><a href="index.html">← Back to Home</a></p>
+  </div>
+</body>
+</html>
+
+<!-- ===================== about.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | Liam Weir</title>
+  <style>
+    body { background:#0a0a12; color:#eef0ff; font-family:system-ui; margin:0; padding:5rem 2rem; }
+    .container { max-width:1000px; margin:auto; background:#15172b; padding:3rem; border-radius:20px; box-shadow:0 30px 60px rgba(0,0,0,0.35); }
+    a { color:#8fa2ff; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>About Me</h1>
+    <p>
+      I am a 3rd-year student at the University of California, Santa Cruz majoring in Cognitive Science
+      with a focus on Artificial Intelligence and Human–Computer Interaction, and minoring in Electronic Music.
+    </p>
+    <p>
+      My work combines cognitive psychology, experimental design, data analysis, programming, and sound
+      to create intelligent, human-centered systems and creative tools.
+    </p>
+    <p>
+      I am actively seeking internships, research positions, and full-time opportunities in AI, HCI,
+      data analysis, and creative technology.
+    </p>
+    <h3>Links</h3>
+    <p>
+      <a href="resume.pdf" download>Download Resume</a><br><br>
+      <a href="https://www.linkedin.com/in/liam-weir-027740247/">LinkedIn</a> ·
+      <a href="https://github.com/liamnweir">GitHub</a> ·
+      <a href="https://soundcloud.com/liam-sc-weir">SoundCloud</a>
+    </p>
+    <p><a href="index.html">← Back to Home</a></p>
+  </div>
+</body>
+</html>
+
+<!-- ===================== contact.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Liam Weir</title>
+  <style>
+    body { background:#0a0a12; color:#eef0ff; font-family:system-ui; margin:0; padding:5rem 2rem; }
+    .container { max-width:700px; margin:auto; background:#15172b; padding:3rem; border-radius:20px; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.35); }
+    a { color:#8fa2ff; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Contact Me</h1>
+    <p>Email: <strong>Liamnweir@gmail.com</strong></p>
+    <p>
+      <a href="https://www.linkedin.com/in/liam-weir-027740247/">LinkedIn</a> ·
+      <a href="https://github.com/liamnweir">GitHub</a> ·
+      <a href="https://soundcloud.com/liam-sc-weir">SoundCloud</a>
+    </p>
+    <p><a href="index.html">← Back to Home</a></p>
+  </div>
 </body>
 </html>
