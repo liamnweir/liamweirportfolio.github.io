@@ -18,11 +18,10 @@
       color:#eef0ff;
     }
 
-    /* REPLACEMENT TOP BAR (Back button only) */
+    /* Top bar (Back only) */
     .top-bar{
       position:fixed;
-      top:0;
-      left:0;
+      top:0; left:0;
       width:100%;
       background: rgba(10,10,25,0.85);
       backdrop-filter: blur(12px);
@@ -47,7 +46,6 @@
       border: 1px solid rgba(120,140,255,0.35);
       transition: transform 0.15s ease, filter 0.15s ease;
     }
-
     .back-btn:hover{
       filter: brightness(1.15);
       transform: translateY(-1px);
@@ -56,7 +54,7 @@
     main{
       max-width: 1100px;
       margin: 0 auto;
-      padding: 96px 18px 48px; /* keeps spacing correct with fixed top bar */
+      padding: 96px 18px 56px;
     }
 
     h1{
@@ -69,7 +67,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1.25fr 0.75fr;
       gap: 18px;
       margin-top: 18px;
     }
@@ -89,7 +87,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="range"], input[type="text"]{
+    select, input[type="range"], input[type="text"], input[type="number"], textarea{
       background: rgba(255,255,255,0.06);
       color: #eef0ff;
       border: 1px solid rgba(255,255,255,0.12);
@@ -97,6 +95,13 @@
       padding: 10px 12px;
       outline: none;
       min-width: 170px;
+    }
+
+    textarea{
+      min-width: 100%;
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.45;
     }
 
     input[type="range"]{
@@ -114,9 +119,21 @@
       font-weight: 700;
       letter-spacing: 0.2px;
       transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
     }
     .btn:hover{ filter: brightness(1.15); transform: translateY(-1px); }
     .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
+
+    .btn.secondary{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-weight: 700;
+    }
+
+    .btn.danger{
+      background: rgba(255,120,120,0.14);
+      border: 1px solid rgba(255,120,120,0.28);
+    }
 
     pre{
       background: rgba(0,0,0,0.35);
@@ -126,7 +143,11 @@
       overflow:auto;
       white-space: pre;
       margin: 10px 0 0;
-      min-height: 180px;
+      min-height: 160px;
+    }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     .pill{
@@ -166,11 +187,73 @@
       color: #ffe9da;
       display:none;
     }
+
+    .ok{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(120,255,180,0.22);
+      background: rgba(120,255,180,0.08);
+      color: #ddffe9;
+      display:none;
+    }
+
+    /* Piano roll canvas */
+    .roll-wrap{ margin-top: 12px; }
+    #pianoRoll{
+      width: 100%;
+      height: 200px;
+      display:block;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+    }
+
+    details{
+      margin-top: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 12px 12px;
+    }
+    summary{
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      user-select: none;
+    }
+    details > .details-body{
+      margin-top: 12px;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 920px){ .two-col{ grid-template-columns: 1fr; } }
+
+    .table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.92rem;
+    }
+    .table th, .table td{
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 8px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table th{
+      opacity: 0.85;
+      font-weight: 800;
+    }
   </style>
 </head>
 
 <body>
-  <!-- Back button only (replaces broken nav) -->
+  <!-- Back button only -->
   <div class="top-bar">
     <a class="back-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/">
       ← Back to Home
@@ -180,8 +263,9 @@
   <main>
     <h1>AI Music Generation System</h1>
     <p class="muted">
-      Generate short symbolic phrases with musical structure + simple perception metrics.
-      This page runs on GitHub Pages (static). If you want a real ML model, this UI can call a Hugging Face Spaces backend (optional).
+      Generate short symbolic phrases with musical structure + perception metrics.
+      This page runs on GitHub Pages. You can generate in-browser or call a Hugging Face Spaces backend.
+      Includes: piano-roll visualization, MIDI export, and a lightweight listening study (ratings saved locally).
     </p>
 
     <div>
@@ -189,10 +273,13 @@
       <span class="pill">Music</span>
       <span class="pill">Perception</span>
       <span class="pill">Tone.js</span>
-      <span class="pill">GitHub Pages</span>
+      <span class="pill">MIDI Export</span>
+      <span class="pill">Listening Study</span>
+      <span class="pill">Transformer Notebook</span>
     </div>
 
     <div class="grid">
+      <!-- MAIN DEMO -->
       <section class="card">
         <h2 style="margin:0 0 10px;">Interactive Demo</h2>
 
@@ -265,7 +352,7 @@
             <div class="label">HF Space API URL (optional)</div>
             <input id="backendUrl" type="text" placeholder="https://YOUR-SPACE.hf.space/generate" />
             <div class="tiny">
-              Leave blank if using the browser generator. If using HF, paste your Space endpoint here.
+              If using HF mode, paste your endpoint (example: <code>https://your-space.hf.space/generate</code>).
             </div>
           </div>
 
@@ -273,24 +360,161 @@
             <button class="btn" id="generateBtn">Generate</button>
             <button class="btn" id="playBtn" disabled>Play</button>
             <button class="btn" id="stopBtn" disabled>Stop</button>
+            <button class="btn secondary" id="exportMidiBtn" disabled>Export MIDI</button>
           </div>
         </div>
 
         <div id="warnBox" class="warn"></div>
+        <div id="okBox" class="ok"></div>
 
         <div class="label" style="margin-top: 12px;">Generated phrase (notes + durations)</div>
         <pre id="out">(click Generate)</pre>
 
-        <p class="tiny muted" style="margin-top: 10px;">
-          Tip: “Harmonic/Melodic minor” modes are great for showing musical structure in your writeup.
-          If you switch the source to “Hugging Face,” the page will call your backend and keep the same UI.
-        </p>
+        <div class="roll-wrap">
+          <div class="label">Piano Roll</div>
+          <canvas id="pianoRoll"></canvas>
+          <div class="tiny muted" style="margin-top:8px;">
+            Tip: If the roll looks stretched, resize the window — it re-renders automatically.
+          </div>
+        </div>
+
+        <!-- Listening study / ratings -->
+        <details>
+          <summary>Listening Study (User Ratings)</summary>
+          <div class="details-body">
+            <p class="muted" style="margin-top:0;">
+              Rate the currently generated phrase. Ratings are stored locally in your browser (localStorage).
+              This is great to mention as a “pilot study” section in your portfolio writeup.
+            </p>
+
+            <div class="two-col">
+              <div>
+                <div class="label">Musicality (1–7)</div>
+                <input id="rateMusicality" type="number" min="1" max="7" value="5" />
+              </div>
+              <div>
+                <div class="label">Coherence / Structure (1–7)</div>
+                <input id="rateCoherence" type="number" min="1" max="7" value="5" />
+              </div>
+              <div>
+                <div class="label">Pleasantness (1–7)</div>
+                <input id="ratePleasantness" type="number" min="1" max="7" value="5" />
+              </div>
+              <div>
+                <div class="label">Familiarity (1–7)</div>
+                <input id="rateFamiliarity" type="number" min="1" max="7" value="4" />
+              </div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <div class="label">Comments (optional)</div>
+              <textarea id="rateComments" placeholder="What stood out? Too jumpy? Too repetitive? Nice cadence?"></textarea>
+            </div>
+
+            <div class="row" style="margin-top:12px; align-items:center;">
+              <button class="btn" id="saveRatingBtn" disabled>Save Rating for Current Phrase</button>
+              <button class="btn secondary" id="downloadRatingsBtn">Download Ratings CSV</button>
+              <button class="btn danger" id="clearRatingsBtn">Clear Saved Ratings</button>
+            </div>
+
+            <div class="two-col" style="margin-top:12px;">
+              <div class="card" style="padding:12px; border-radius:16px;">
+                <div class="label">Saved ratings (count)</div>
+                <div style="font-size:1.3rem; font-weight:900;" id="ratingCount">0</div>
+              </div>
+              <div class="card" style="padding:12px; border-radius:16px;">
+                <div class="label">Averages (Mus / Coh / Pleas / Fam)</div>
+                <div style="font-size:1.1rem; font-weight:900;" id="ratingAverages">—</div>
+              </div>
+            </div>
+
+            <div class="tiny muted" style="margin-top:10px;">
+              Pro tip for your writeup: mention your DV (ratings) and IVs (mode, stepwise bias, instrument, tempo) and how you’d expand the study.
+            </div>
+          </div>
+        </details>
+
+        <!-- Paper-style writeup -->
+        <details>
+          <summary>Paper-Style Writeup (for Portfolio)</summary>
+          <div class="details-body">
+            <p class="muted" style="margin-top:0;">
+              Copy this section into a README / portfolio writeup. It’s written like a short paper.
+            </p>
+
+            <h3 style="margin:10px 0 6px;">Abstract</h3>
+            <p class="muted">
+              This project explores short-phrase symbolic music generation with an emphasis on perceptual structure. A controllable generator produces phrases constrained by key and mode, while a lightweight evaluation layer computes perceptual heuristics (e.g., stepwise motion, repetition, tonal stability) and collects listener ratings. The system is deployed as a static, interactive demo on GitHub Pages, and can optionally call a Hugging Face Spaces backend for model-based generation.
+            </p>
+
+            <h3 style="margin:10px 0 6px;">Introduction</h3>
+            <p class="muted">
+              Generating musical phrases that feel coherent requires balancing local interval choices with global structure (tonality, repetition, phrase contour). This project focuses on a small “phrase-level” generation problem to keep evaluation tractable and to align with perception-based metrics and human listening studies.
+            </p>
+
+            <h3 style="margin:10px 0 6px;">Methods</h3>
+            <ul class="muted">
+              <li><b>Representation:</b> Symbolic note events (MIDI pitch + duration in beats).</li>
+              <li><b>Controls:</b> Key, mode (major/minor variants + modes), phrase length, tempo, and a “stepwise bias” control.</li>
+              <li><b>Baselines:</b> In-browser structured stochastic generator; optional backend (Hugging Face) for ML-based generation.</li>
+              <li><b>Playback:</b> Tone.js synth instrument presets (piano/guitar/bass/violin/strings/synth) for quick auditioning.</li>
+            </ul>
+
+            <h3 style="margin:10px 0 6px;">Evaluation</h3>
+            <ul class="muted">
+              <li><b>Heuristics:</b> repetition score, stepwise motion ratio, melodic range, tonal stability proxy.</li>
+              <li><b>Listening study (pilot):</b> ratings on musicality, coherence, pleasantness, familiarity (1–7) + optional comments (stored locally for demo).</li>
+            </ul>
+
+            <h3 style="margin:10px 0 6px;">Results (placeholder)</h3>
+            <p class="muted">
+              In early pilot testing, phrases with higher stepwise bias tend to receive higher coherence ratings, while increased repetition can improve familiarity but occasionally reduces perceived musicality. Future work will validate these trends with a larger sample and compare a learned Transformer baseline to the stochastic generator.
+            </p>
+
+            <h3 style="margin:10px 0 6px;">Future Work</h3>
+            <ul class="muted">
+              <li>Train a Transformer on phrase datasets (e.g., MIDI segments) with constrained decoding for key/mode.</li>
+              <li>Use better perceptual metrics (contour similarity, tonal tension curves, entropy measures).</li>
+              <li>Run a real study (online) and analyze rating differences across conditions using ANOVA / mixed models.</li>
+              <li>Add MIDI export + dataset browser + “compare two phrases” A/B testing interface.</li>
+            </ul>
+
+            <h3 style="margin:10px 0 6px;">References (placeholder)</h3>
+            <p class="muted">
+              Add 3–6 citations relevant to symbolic music modeling, Transformers, and music perception. Example: Music Transformer, MusicVAE, work on melodic expectation and tonal tension.
+            </p>
+          </div>
+        </details>
+
+        <!-- Transformer training notebook -->
+        <details>
+          <summary>Transformer Training Notebook (Download .ipynb)</summary>
+          <div class="details-body">
+            <p class="muted" style="margin-top:0;">
+              This generates a starter <code>.ipynb</code> you can run locally or on Colab. It’s a compact symbolic “event token” pipeline:
+              tokenize note events → train a small Transformer decoder → sample sequences → convert back to note events.
+            </p>
+
+            <div class="row" style="align-items:center;">
+              <button class="btn" id="downloadNotebookBtn">Download starter notebook (.ipynb)</button>
+              <button class="btn secondary" id="downloadBackendBtn">Download HF backend template (zip-less)</button>
+            </div>
+
+            <p class="tiny muted" style="margin-top:10px;">
+              The notebook is intentionally small and readable. You can later swap in a better tokenizer (e.g., REMI-like) and a larger model.
+            </p>
+
+            <div class="label" style="margin-top:12px;">Notebook preview (first cells)</div>
+            <pre id="notebookPreview"></pre>
+          </div>
+        </details>
       </section>
 
+      <!-- METRICS / SIDE -->
       <aside class="card">
         <h2 style="margin:0 0 10px;">Perception / Structure Metrics</h2>
         <p class="muted" style="margin-top:0;">
-          Simple heuristics you can report now, then validate with listening tests later.
+          Heuristics now; validate with listener ratings (see Listening Study section).
         </p>
 
         <div class="metric"><span>Repetition Score</span><strong id="repScore">—</strong></div>
@@ -300,14 +524,23 @@
 
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
 
-        <h3 style="margin:0 0 8px;">What to write about</h3>
-        <p class="muted" style="margin-top:0;">
-          • Dataset (MIDI phrases)<br/>
-          • Model (Transformer/VAE) or rule-based baseline<br/>
-          • Constraints (key/mode, contour, cadence)<br/>
-          • Evaluation (listener ratings + metrics)<br/>
-          • Demo (this page) + backend endpoint
-        </p>
+        <h3 style="margin:0 0 8px;">Current Phrase Metadata</h3>
+        <div class="metric"><span>Key</span><strong id="metaKey">—</strong></div>
+        <div class="metric"><span>Mode</span><strong id="metaMode">—</strong></div>
+        <div class="metric"><span>Tempo</span><strong id="metaTempo">—</strong></div>
+        <div class="metric"><span>Instrument</span><strong id="metaInst">—</strong></div>
+        <div class="metric"><span>Source</span><strong id="metaSource">—</strong></div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
+
+        <h3 style="margin:0 0 8px;">Quick How-To</h3>
+        <ul class="muted" style="margin:0; padding-left: 18px;">
+          <li>Click <b>Generate</b> to create a phrase.</li>
+          <li>Click <b>Play</b> to audition it.</li>
+          <li>Click <b>Export MIDI</b> to download the phrase.</li>
+          <li>Use <b>Listening Study</b> to collect ratings.</li>
+          <li>Use <b>Notebook</b> to train a Transformer baseline.</li>
+        </ul>
       </aside>
     </div>
   </main>
@@ -333,6 +566,18 @@
       locrian:       [0,1,3,5,6,8,10]
     };
 
+    const MODE_LABEL = {
+      major: "Major (Ionian)",
+      natural_minor: "Natural Minor (Aeolian)",
+      harmonic_minor: "Harmonic Minor",
+      melodic_minor: "Melodic Minor (Ascending)",
+      dorian: "Dorian",
+      mixolydian: "Mixolydian",
+      lydian: "Lydian",
+      phrygian: "Phrygian",
+      locrian: "Locrian"
+    };
+
     function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
     function midiToNoteName(m){
@@ -344,6 +589,10 @@
 
     function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
 
+    function nowISO(){
+      return new Date().toISOString();
+    }
+
     // ----------------------------
     // UI elements
     // ----------------------------
@@ -354,6 +603,7 @@
     const generateBtn = document.getElementById("generateBtn");
     const playBtn = document.getElementById("playBtn");
     const stopBtn = document.getElementById("stopBtn");
+    const exportMidiBtn = document.getElementById("exportMidiBtn");
     const out = document.getElementById("out");
 
     const repScoreEl = document.getElementById("repScore");
@@ -361,7 +611,34 @@
     const rangeScoreEl = document.getElementById("rangeScore");
     const tonalScoreEl = document.getElementById("tonalScore");
 
+    const metaKey = document.getElementById("metaKey");
+    const metaMode = document.getElementById("metaMode");
+    const metaTempo = document.getElementById("metaTempo");
+    const metaInst = document.getElementById("metaInst");
+    const metaSource = document.getElementById("metaSource");
+
     const warnBox = document.getElementById("warnBox");
+    const okBox = document.getElementById("okBox");
+
+    const pianoRoll = document.getElementById("pianoRoll");
+
+    // Ratings UI
+    const saveRatingBtn = document.getElementById("saveRatingBtn");
+    const downloadRatingsBtn = document.getElementById("downloadRatingsBtn");
+    const clearRatingsBtn = document.getElementById("clearRatingsBtn");
+    const ratingCount = document.getElementById("ratingCount");
+    const ratingAverages = document.getElementById("ratingAverages");
+
+    const rateMusicality = document.getElementById("rateMusicality");
+    const rateCoherence = document.getElementById("rateCoherence");
+    const ratePleasantness = document.getElementById("ratePleasantness");
+    const rateFamiliarity = document.getElementById("rateFamiliarity");
+    const rateComments = document.getElementById("rateComments");
+
+    // Notebook UI
+    const downloadNotebookBtn = document.getElementById("downloadNotebookBtn");
+    const downloadBackendBtn = document.getElementById("downloadBackendBtn");
+    const notebookPreview = document.getElementById("notebookPreview");
 
     tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
     smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
@@ -372,6 +649,32 @@
     let phrase = null;      // [{midi, durBeats}, ...]
     let instrument = null;  // Tone instrument instance
     let part = null;        // Tone.Part
+    let currentMeta = null; // metadata for current phrase
+    let currentPhraseId = null;
+
+    // ----------------------------
+    // Helpers: UI messaging
+    // ----------------------------
+    function setWarning(msg){
+      if (!msg){
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+        return;
+      }
+      warnBox.style.display = "block";
+      warnBox.textContent = msg;
+    }
+
+    function setOk(msg){
+      if (!msg){
+        okBox.style.display = "none";
+        okBox.textContent = "";
+        return;
+      }
+      okBox.style.display = "block";
+      okBox.textContent = msg;
+      setTimeout(() => setOk(null), 2200);
+    }
 
     // ----------------------------
     // Instrument factory (no external samples required)
@@ -388,20 +691,15 @@
       const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.15 }).toDestination();
 
       if (kind === "piano"){
-        // PolySynth "piano-ish"
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "triangle" },
           envelope: { attack: 0.005, decay: 0.25, sustain: 0.15, release: 0.9 }
         }).connect(reverb);
 
       } else if (kind === "guitar"){
-        // Plucked string
-        instrument = new Tone.PolySynth(Tone.PluckSynth, {
-          volume: -6
-        }).connect(reverb);
+        instrument = new Tone.PolySynth(Tone.PluckSynth, { volume: -6 }).connect(reverb);
 
       } else if (kind === "bass"){
-        // Mono bass
         instrument = new Tone.MonoSynth({
           oscillator: { type: "sine" },
           filter: { Q: 2, type: "lowpass", rolloff: -24 },
@@ -410,7 +708,6 @@
         }).connect(reverb);
 
       } else if (kind === "violin"){
-        // Bowed-ish (saw + slower attack + vibrato)
         const vib = new Tone.Vibrato(5, 0.18).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
@@ -418,7 +715,6 @@
         }).connect(vib);
 
       } else if (kind === "strings"){
-        // Soft pad
         const chorus = new Tone.Chorus(2.5, 1.6, 0.25).start().connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
@@ -426,7 +722,6 @@
         }).connect(chorus);
 
       } else {
-        // synth (bright)
         const delay = new Tone.FeedbackDelay("8n", 0.25).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "square" },
@@ -438,13 +733,12 @@
     }
 
     // ----------------------------
-    // Browser generator (demo baseline)
+    // Browser generator (structured baseline)
     // ----------------------------
     function buildAllowedNotes(rootSemitone, modeKey){
       const scale = MODES[modeKey].map(x => x + rootSemitone); // 0..11-ish
       const baseOctave = 60; // C4
       const allowed = [];
-      // Use a 3-octave window centered around C4-ish
       for (let oct = -1; oct <= 1; oct++){
         for (const s of scale){
           allowed.push(baseOctave + s + 12*oct);
@@ -457,24 +751,17 @@
       const root = NOTE_TO_SEMITONE[key];
       const allowed = buildAllowedNotes(root, mode);
 
-      // Start near tonic in middle octave
       const tonicMidi = 60 + root;
       let current = tonicMidi;
-
       const notes = [];
       const N = length;
-
-      // Phrase shape helper: encourage a gentle arch (rise then fall)
       const mid = Math.floor(N / 2);
 
       for (let i = 0; i < N; i++){
-        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step/whole-step
-        const broader = allowed;
+        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2);
+        let pool = (Math.random() < smooth && neighbors.length) ? neighbors : allowed;
 
-        // Step bias chooses neighbor vs broader pool
-        let pool = (Math.random() < smooth && neighbors.length) ? neighbors : broader;
-
-        // Gentle contour bias: rising first half, falling second half (softly)
+        // contour bias: rise then fall
         const target = (i <= mid) ? current + 2 : current - 2;
         pool = pool
           .map(n => ({ n, w: 1 / (1 + Math.abs(n - target)) }))
@@ -482,7 +769,7 @@
           .slice(0, Math.max(6, Math.floor(pool.length * 0.35)))
           .map(x => x.n);
 
-        // Cadence bias: last 2 notes pull toward tonic or dominant
+        // cadence bias
         if (i >= N - 2){
           const domMidi = tonicMidi + 7;
           const nearCadence = allowed.filter(n => Math.min(Math.abs(n - tonicMidi), Math.abs(n - domMidi)) <= 3);
@@ -491,10 +778,9 @@
 
         current = pick(pool);
 
-        // rhythm: mostly eighth notes, occasional quarters
         let durBeats = 0.5;
-        if (Math.random() < 0.14) durBeats = 1.0;      // quarter
-        if (i === N - 1) durBeats = 1.0;               // finish slightly longer
+        if (Math.random() < 0.14) durBeats = 1.0;
+        if (i === N - 1) durBeats = 1.0;
 
         notes.push({ midi: current, durBeats });
       }
@@ -508,7 +794,7 @@
     function computeMetrics(notes, key, mode){
       const midis = notes.map(n => n.midi);
       const unique = new Set(midis);
-      const repetition = 1 - (unique.size / midis.length); // higher = more repetition
+      const repetition = 1 - (unique.size / midis.length);
 
       let stepCount = 0;
       for (let i=1; i<midis.length; i++){
@@ -516,12 +802,9 @@
         if (interval <= 2) stepCount++;
       }
       const stepwise = stepCount / Math.max(1, (midis.length - 1));
-
       const range = Math.max(...midis) - Math.min(...midis);
 
-      // Tonal stability: fraction of notes that are tonic/third/fifth (triad) in chosen mode
       const root = NOTE_TO_SEMITONE[key];
-      // triad degrees for "major-ish" vs "minor-ish"
       const isMinorish = (mode.includes("minor") || mode === "dorian" || mode === "phrygian" || mode === "locrian");
       const triad = isMinorish ? [0, 3, 7] : [0, 4, 7];
       const triadPC = new Set(triad.map(x => (x + root) % 12));
@@ -542,14 +825,12 @@
       tonalScoreEl.textContent = metrics.tonal.toFixed(2);
     }
 
-    function setWarning(msg){
-      if (!msg){
-        warnBox.style.display = "none";
-        warnBox.textContent = "";
-        return;
-      }
-      warnBox.style.display = "block";
-      warnBox.textContent = msg;
+    function renderMeta(meta){
+      metaKey.textContent = meta.key;
+      metaMode.textContent = MODE_LABEL[meta.mode] || meta.mode;
+      metaTempo.textContent = String(meta.tempo);
+      metaInst.textContent = meta.instrument;
+      metaSource.textContent = meta.source === "hf" ? "Hugging Face" : "Browser";
     }
 
     // ----------------------------
@@ -596,7 +877,6 @@
     }
 
     function schedulePlayback(notes){
-      // Bass sounds better lower: transpose down a bit for bass preset
       const instKind = document.getElementById("instrument").value;
       const transpose = (instKind === "bass") ? -12 : 0;
 
@@ -613,7 +893,6 @@
       });
 
       part = new Tone.Part((time, value) => {
-        // MonoSynth expects triggerAttackRelease too; PolySynth supports it as well
         const durSeconds = Tone.Time(value.durBeats).toSeconds();
         instrument.triggerAttackRelease(value.note, durSeconds, time);
       }, events).start(0);
@@ -622,17 +901,662 @@
     }
 
     // ----------------------------
+    // Piano roll rendering
+    // ----------------------------
+    function resizeCanvasToDisplaySize(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(10, Math.floor(rect.width * dpr));
+      const height = Math.max(10, Math.floor(rect.height * dpr));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+        return true;
+      }
+      return false;
+    }
+
+    function drawPianoRoll(notes){
+      if (!notes || !notes.length) return;
+
+      resizeCanvasToDisplaySize(pianoRoll);
+      const ctx = pianoRoll.getContext("2d");
+      const W = pianoRoll.width;
+      const H = pianoRoll.height;
+
+      // background
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = "rgba(0,0,0,0.15)";
+      ctx.fillRect(0,0,W,H);
+
+      // compute pitch bounds
+      const midis = notes.map(n => n.midi);
+      let minP = Math.min(...midis) - 2;
+      let maxP = Math.max(...midis) + 2;
+      minP = clamp(minP, 24, 108);
+      maxP = clamp(maxP, 24, 108);
+      const span = Math.max(1, maxP - minP);
+
+      // total time in beats
+      const totalBeats = notes.reduce((a,n)=>a+n.durBeats, 0);
+      const beatW = W / Math.max(1e-6, totalBeats);
+
+      // grid lines (beats)
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 1;
+      const beatLines = Math.floor(totalBeats) + 1;
+      for (let b=0; b<=beatLines; b++){
+        const x = b * beatW;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+
+      // pitch lanes (octaves)
+      for (let p = (Math.floor(minP/12)*12); p <= maxP; p += 12){
+        const y = H - ((p - minP) / span) * H;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+
+      // draw notes
+      let t = 0;
+      for (const n of notes){
+        const x = t * beatW;
+        const w = n.durBeats * beatW;
+        const y = H - ((n.midi - minP) / span) * H;
+        const h = Math.max(6, H / Math.max(18, span)); // adaptive height
+
+        ctx.fillStyle = "rgba(127,140,255,0.9)";
+        ctx.fillRect(x, y - h/2, Math.max(2,w), h);
+
+        t += n.durBeats;
+      }
+    }
+
+    window.addEventListener("resize", () => {
+      if (phrase) drawPianoRoll(phrase);
+    });
+
+    // ----------------------------
+    // MIDI Export (Format 0, single track)
+    // - PPQ = 96
+    // - Writes tempo meta
+    // - Writes note on/off with delta-times (variable-length quantity)
+    // ----------------------------
+    function writeVLQ(value){
+      let buffer = value & 0x7F;
+      const bytes = [];
+      while ((value >>= 7)) {
+        buffer <<= 8;
+        buffer |= ((value & 0x7F) | 0x80);
+      }
+      while (true) {
+        bytes.push(buffer & 0xFF);
+        if (buffer & 0x80) buffer >>= 8;
+        else break;
+      }
+      return bytes;
+    }
+
+    function strBytes(s){
+      return Array.from(s).map(ch => ch.charCodeAt(0) & 0xFF);
+    }
+
+    function u16(n){ return [(n>>8)&255, n&255]; }
+    function u32(n){ return [(n>>24)&255, (n>>16)&255, (n>>8)&255, n&255]; }
+
+    function exportMIDI(){
+      if (!phrase || !phrase.length) return;
+
+      const PPQ = 96; // ticks per quarter note
+      const bpm = Number(document.getElementById("tempo").value);
+      const usPerQuarter = Math.round(60000000 / Math.max(1, bpm));
+
+      // Track events
+      const track = [];
+
+      // Tempo meta event at time 0: FF 51 03 tttttt
+      track.push(...writeVLQ(0), 0xFF, 0x51, 0x03,
+        (usPerQuarter>>16)&255, (usPerQuarter>>8)&255, usPerQuarter&255
+      );
+
+      // Program change is not used here (Tone.js handles instruments), but for MIDI we can set a neutral program (0)
+      // track.push(...writeVLQ(0), 0xC0, 0x00);
+
+      // Note events (channel 0)
+      // Convert durations from beats to ticks: 1 beat = quarter note here (assuming 4/4 quarter = 1 beat)
+      // Your phrase uses durBeats in "beats" consistent with Tone.Transport
+      // We'll treat 1 beat as quarter note.
+      for (const n of phrase){
+        const pitch = clamp(n.midi, 0, 127);
+        const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
+        // Note on (delta 0)
+        track.push(...writeVLQ(0), 0x90, pitch, 100);
+        // Note off (delta durTicks)
+        track.push(...writeVLQ(durTicks), 0x80, pitch, 0);
+      }
+
+      // End of track
+      track.push(...writeVLQ(0), 0xFF, 0x2F, 0x00);
+
+      // Build file
+      const header = [
+        ...strBytes("MThd"),
+        ...u32(6),
+        ...u16(0),      // format 0
+        ...u16(1),      // 1 track
+        ...u16(PPQ)     // division
+      ];
+
+      const trackChunk = [
+        ...strBytes("MTrk"),
+        ...u32(track.length),
+        ...track
+      ];
+
+      const bytes = new Uint8Array([...header, ...trackChunk]);
+      const blob = new Blob([bytes], { type: "audio/midi" });
+
+      const a = document.createElement("a");
+      const safeName = `ai_music_${(currentPhraseId || "phrase").replace(/[^a-zA-Z0-9_-]/g,"")}.mid`;
+      a.href = URL.createObjectURL(blob);
+      a.download = safeName;
+      a.click();
+      setOk("MIDI downloaded.");
+    }
+
+    // ----------------------------
+    // Listening Study (localStorage)
+    // ----------------------------
+    const RATINGS_KEY = "liam_ai_music_ratings_v1";
+
+    function getRatings(){
+      try {
+        const raw = localStorage.getItem(RATINGS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setRatings(arr){
+      localStorage.setItem(RATINGS_KEY, JSON.stringify(arr));
+      refreshRatingsSummary();
+    }
+
+    function average(nums){
+      if (!nums.length) return null;
+      return nums.reduce((a,b)=>a+b,0) / nums.length;
+    }
+
+    function refreshRatingsSummary(){
+      const rows = getRatings();
+      ratingCount.textContent = String(rows.length);
+      if (!rows.length){
+        ratingAverages.textContent = "—";
+        return;
+      }
+      const mus = average(rows.map(r=>r.musicality));
+      const coh = average(rows.map(r=>r.coherence));
+      const ple = average(rows.map(r=>r.pleasantness));
+      const fam = average(rows.map(r=>r.familiarity));
+      ratingAverages.textContent = `${mus.toFixed(2)} / ${coh.toFixed(2)} / ${ple.toFixed(2)} / ${fam.toFixed(2)}`;
+    }
+
+    function phraseFingerprint(notes){
+      // simple stable ID: join midi+dur
+      return notes.map(n => `${n.midi}:${n.durBeats}`).join("|");
+    }
+
+    function downloadText(filename, text, mime="text/plain"){
+      const blob = new Blob([text], { type: mime });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    function downloadRatingsCSV(){
+      const rows = getRatings();
+      const header = [
+        "timestamp","phrase_id","fingerprint",
+        "key","mode","tempo","instrument","source",
+        "musicality","coherence","pleasantness","familiarity",
+        "comments"
+      ];
+      const lines = [header.join(",")];
+
+      for (const r of rows){
+        const vals = header.map(k => {
+          const v = (r[k] ?? "");
+          const s = String(v).replaceAll('"','""');
+          return `"${s}"`;
+        });
+        lines.push(vals.join(","));
+      }
+
+      downloadText("ai_music_ratings.csv", lines.join("\n"), "text/csv");
+    }
+
+    function clearRatings(){
+      if (!confirm("Clear all saved ratings from this browser?")) return;
+      localStorage.removeItem(RATINGS_KEY);
+      refreshRatingsSummary();
+      setOk("Ratings cleared.");
+    }
+
+    function validateRating(n){
+      const x = Number(n);
+      if (!Number.isFinite(x)) return null;
+      if (x < 1 || x > 7) return null;
+      return Math.round(x);
+    }
+
+    function saveRatingForCurrentPhrase(){
+      if (!phrase || !phrase.length || !currentMeta || !currentPhraseId){
+        setWarning("Generate a phrase first, then save a rating.");
+        return;
+      }
+
+      const mus = validateRating(rateMusicality.value);
+      const coh = validateRating(rateCoherence.value);
+      const ple = validateRating(ratePleasantness.value);
+      const fam = validateRating(rateFamiliarity.value);
+
+      if ([mus,coh,ple,fam].some(v => v === null)){
+        setWarning("Ratings must be integers from 1 to 7.");
+        return;
+      }
+
+      const rec = {
+        timestamp: nowISO(),
+        phrase_id: currentPhraseId,
+        fingerprint: phraseFingerprint(phrase),
+        key: currentMeta.key,
+        mode: currentMeta.mode,
+        tempo: currentMeta.tempo,
+        instrument: currentMeta.instrument,
+        source: currentMeta.source,
+        musicality: mus,
+        coherence: coh,
+        pleasantness: ple,
+        familiarity: fam,
+        comments: (rateComments.value || "").trim()
+      };
+
+      const rows = getRatings();
+      rows.push(rec);
+      setRatings(rows);
+      rateComments.value = "";
+      setWarning(null);
+      setOk("Rating saved.");
+    }
+
+    // ----------------------------
+    // Notebook + HF backend template downloads (single-file)
+    // ----------------------------
+    function makeNotebookJSON(){
+      // A compact symbolic-event Transformer starter notebook
+      const cells = [
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "# AI Music Generation — Transformer Starter Notebook\n",
+            "\n",
+            "This notebook is a minimal, readable baseline for symbolic phrase generation.\n",
+            "\n",
+            "**Pipeline:**\n",
+            "1) Load/prepare phrase data (MIDI segments or your own note-event JSON)\n",
+            "2) Tokenize events (pitch + duration bins)\n",
+            "3) Train a small Transformer decoder (next-token prediction)\n",
+            "4) Sample a phrase and convert tokens back to note events\n",
+            "\n",
+            "> Tip: Start small (tiny model, small dataset), then scale up."
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "import math, random\n",
+            "from dataclasses import dataclass\n",
+            "from typing import List, Tuple\n",
+            "import torch\n",
+            "import torch.nn as nn\n",
+            "from torch.utils.data import Dataset, DataLoader\n",
+            "\n",
+            "device = 'cuda' if torch.cuda.is_available() else 'cpu'\n",
+            "print('device:', device)\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 1) Data format\n",
+            "Use a simple list of phrases. Each phrase is a list of (midi_pitch, dur_beats).\n",
+            "You can export phrases from your website or build them from MIDI.\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "# Example synthetic dataset (replace with real phrases!)\n",
+            "def make_synth_phrase(n=16, base=60):\n",
+            "    out=[]\n",
+            "    p=base\n",
+            "    for _ in range(n):\n",
+            "        p += random.choice([-2,-1,1,2,3,-3])\n",
+            "        p = max(48, min(84, p))\n",
+            "        d = random.choice([0.5, 0.5, 1.0])\n",
+            "        out.append((p, d))\n",
+            "    return out\n",
+            "\n",
+            "phrases = [make_synth_phrase() for _ in range(2000)]\n",
+            "phrases[0][:5]\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 2) Tokenization\n",
+            "We quantize duration into bins and pack (pitch, dur_bin) into a single token.\n",
+            "This is intentionally simple—upgrade later with richer event vocabularies.\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "DUR_BINS = [0.25, 0.5, 1.0, 1.5, 2.0]\n",
+            "PITCH_MIN, PITCH_MAX = 24, 108\n",
+            "\n",
+            "def dur_to_bin(d):\n",
+            "    # choose nearest bin\n",
+            "    return int(min(range(len(DUR_BINS)), key=lambda i: abs(DUR_BINS[i]-d)))\n",
+            "\n",
+            "def encode_event(pitch, dur):\n",
+            "    pitch = int(max(PITCH_MIN, min(PITCH_MAX, pitch)))\n",
+            "    db = dur_to_bin(dur)\n",
+            "    pitch_idx = pitch - PITCH_MIN\n",
+            "    return pitch_idx * len(DUR_BINS) + db\n",
+            "\n",
+            "def decode_event(token):\n",
+            "    pitch_idx = token // len(DUR_BINS)\n",
+            "    db = token % len(DUR_BINS)\n",
+            "    pitch = pitch_idx + PITCH_MIN\n",
+            "    dur = DUR_BINS[db]\n",
+            "    return pitch, dur\n",
+            "\n",
+            "VOCAB_SIZE = (PITCH_MAX - PITCH_MIN + 1) * len(DUR_BINS)\n",
+            "VOCAB_SIZE\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 3) Dataset + batching\n",
+            "We train next-token prediction on fixed-length sequences.\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "SEQ_LEN = 64\n",
+            "\n",
+            "def phrase_to_tokens(phrase):\n",
+            "    return [encode_event(p,d) for p,d in phrase]\n",
+            "\n",
+            "all_tokens = [phrase_to_tokens(p) for p in phrases]\n",
+            "\n",
+            "class PhraseDataset(Dataset):\n",
+            "    def __init__(self, token_lists, seq_len=SEQ_LEN):\n",
+            "        self.data = token_lists\n",
+            "        self.seq_len = seq_len\n",
+            "\n",
+            "    def __len__(self):\n",
+            "        return len(self.data)\n",
+            "\n",
+            "    def __getitem__(self, idx):\n",
+            "        x = self.data[idx]\n",
+            "        # pad / truncate\n",
+            "        if len(x) < self.seq_len+1:\n",
+            "            x = x + [0]*((self.seq_len+1)-len(x))\n",
+            "        x = x[:self.seq_len+1]\n",
+            "        inp = torch.tensor(x[:-1], dtype=torch.long)\n",
+            "        tgt = torch.tensor(x[1:], dtype=torch.long)\n",
+            "        return inp, tgt\n",
+            "\n",
+            "ds = PhraseDataset(all_tokens)\n",
+            "dl = DataLoader(ds, batch_size=64, shuffle=True)\n",
+            "next(iter(dl))[0].shape\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 4) Transformer decoder model\n",
+            "A compact decoder-only Transformer for next-token prediction.\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "class CausalSelfAttention(nn.Module):\n",
+            "    def __init__(self, n_embd, n_head, dropout=0.1):\n",
+            "        super().__init__()\n",
+            "        self.attn = nn.MultiheadAttention(n_embd, n_head, dropout=dropout, batch_first=True)\n",
+            "        self.ln = nn.LayerNorm(n_embd)\n",
+            "        self.drop = nn.Dropout(dropout)\n",
+            "\n",
+            "    def forward(self, x):\n",
+            "        B, T, C = x.shape\n",
+            "        # causal mask\n",
+            "        mask = torch.triu(torch.ones(T, T, device=x.device), diagonal=1).bool()\n",
+            "        y, _ = self.attn(x, x, x, attn_mask=mask)\n",
+            "        x = self.ln(x + self.drop(y))\n",
+            "        return x\n",
+            "\n",
+            "class Block(nn.Module):\n",
+            "    def __init__(self, n_embd, n_head, dropout=0.1):\n",
+            "        super().__init__()\n",
+            "        self.attn = CausalSelfAttention(n_embd, n_head, dropout)\n",
+            "        self.ff = nn.Sequential(\n",
+            "            nn.LayerNorm(n_embd),\n",
+            "            nn.Linear(n_embd, 4*n_embd),\n",
+            "            nn.GELU(),\n",
+            "            nn.Dropout(dropout),\n",
+            "            nn.Linear(4*n_embd, n_embd),\n",
+            "            nn.Dropout(dropout)\n",
+            "        )\n",
+            "\n",
+            "    def forward(self, x):\n",
+            "        x = self.attn(x)\n",
+            "        x = x + self.ff(x)\n",
+            "        return x\n",
+            "\n",
+            "class MusicTransformer(nn.Module):\n",
+            "    def __init__(self, vocab_size, n_embd=256, n_head=4, n_layer=4, seq_len=SEQ_LEN, dropout=0.1):\n",
+            "        super().__init__()\n",
+            "        self.tok = nn.Embedding(vocab_size, n_embd)\n",
+            "        self.pos = nn.Embedding(seq_len, n_embd)\n",
+            "        self.blocks = nn.Sequential(*[Block(n_embd, n_head, dropout) for _ in range(n_layer)])\n",
+            "        self.ln_f = nn.LayerNorm(n_embd)\n",
+            "        self.head = nn.Linear(n_embd, vocab_size)\n",
+            "        self.seq_len = seq_len\n",
+            "\n",
+            "    def forward(self, idx):\n",
+            "        B, T = idx.shape\n",
+            "        pos = torch.arange(T, device=idx.device)\n",
+            "        x = self.tok(idx) + self.pos(pos)[None, :, :]\n",
+            "        x = self.blocks(x)\n",
+            "        x = self.ln_f(x)\n",
+            "        logits = self.head(x)\n",
+            "        return logits\n",
+            "\n",
+            "model = MusicTransformer(VOCAB_SIZE).to(device)\n",
+            "sum(p.numel() for p in model.parameters())\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 5) Train\n",
+            "Train for a few epochs and watch loss decrease.\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "opt = torch.optim.AdamW(model.parameters(), lr=3e-4)\n",
+            "loss_fn = nn.CrossEntropyLoss()\n",
+            "\n",
+            "def train_one_epoch():\n",
+            "    model.train()\n",
+            "    total = 0\n",
+            "    count = 0\n",
+            "    for x, y in dl:\n",
+            "        x = x.to(device)\n",
+            "        y = y.to(device)\n",
+            "        logits = model(x)\n",
+            "        loss = loss_fn(logits.reshape(-1, VOCAB_SIZE), y.reshape(-1))\n",
+            "        opt.zero_grad()\n",
+            "        loss.backward()\n",
+            "        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)\n",
+            "        opt.step()\n",
+            "        total += loss.item()\n",
+            "        count += 1\n",
+            "    return total / max(1, count)\n",
+            "\n",
+            "for epoch in range(5):\n",
+            "    avg = train_one_epoch()\n",
+            "    print('epoch', epoch, 'loss', avg)\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## 6) Sample\n",
+            "Generate a sequence from a seed and decode back into (pitch, dur).\n"
+          ]
+        },
+        {
+          cell_type: "code",
+          metadata: {},
+          source: [
+            "@torch.no_grad()\n",
+            "def sample(model, start_tokens, steps=64, temperature=1.0):\n",
+            "    model.eval()\n",
+            "    x = torch.tensor(start_tokens, dtype=torch.long, device=device)[None, :]\n",
+            "    for _ in range(steps):\n",
+            "        x_cond = x[:, -SEQ_LEN:]\n",
+            "        logits = model(x_cond)[:, -1, :] / max(1e-6, temperature)\n",
+            "        probs = torch.softmax(logits, dim=-1)\n",
+            "        next_tok = torch.multinomial(probs, num_samples=1)\n",
+            "        x = torch.cat([x, next_tok], dim=1)\n",
+            "    return x[0].tolist()\n",
+            "\n",
+            "seed = [0, 0, 0, 0]\n",
+            "tokens = sample(model, seed, steps=32, temperature=0.9)\n",
+            "events = [decode_event(t) for t in tokens[-16:]]\n",
+            "events\n"
+          ],
+          execution_count: None,
+          outputs: []
+        },
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: [
+            "## Next steps\n",
+            "- Replace synthetic dataset with real phrases segmented from MIDI\n",
+            "- Improve tokenization (bar/position, velocity, note-on/off)\n",
+            "- Add constraints in decoding (key/mode filtering)\n",
+            "- Export to MIDI and test with listeners\n"
+          ]
+        }
+      ];
+
+      return {
+        cells,
+        metadata: {
+          kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
+          language_info: { name: "python", version: "3.x" }
+        },
+        nbformat: 4,
+        nbformat_minor: 5
+      };
+    }
+
+    function downloadNotebook(){
+      const nb = makeNotebookJSON();
+      const text = JSON.stringify(nb, null, 2);
+      downloadText("ai_music_transformer_starter.ipynb", text, "application/json");
+      setOk("Notebook downloaded.");
+    }
+
+    function downloadHFBackendTemplate(){
+      // Provide the backend files as plain-text downloads (no zipping, since single-file constraint).
+      const appPy = `from fastapi import FastAPI\nfrom pydantic import BaseModel\nfrom fastapi.middleware.cors import CORSMiddleware\nimport random\n\napp = FastAPI()\n\n# CORS: allow your GitHub Pages domain\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"*\"],\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\n\nclass GenRequest(BaseModel):\n    key: str\n    mode: str\n    tempo: int\n    smooth: float\n    length: int = 16\n\nNOTE_TO_SEMITONE = {\n    \"C\":0,\"C#\":1,\"D\":2,\"D#\":3,\"E\":4,\"F\":5,\"F#\":6,\"G\":7,\"G#\":8,\"A\":9,\"A#\":10,\"B\":11\n}\n\nMODES = {\n    \"major\": [0,2,4,5,7,9,11],\n    \"natural_minor\": [0,2,3,5,7,8,10],\n    \"harmonic_minor\": [0,2,3,5,7,8,11],\n    \"melodic_minor\": [0,2,3,5,7,9,11],\n    \"dorian\": [0,2,3,5,7,9,10],\n    \"mixolydian\": [0,2,4,5,7,9,10],\n    \"lydian\": [0,2,4,6,7,9,11],\n    \"phrygian\": [0,1,3,5,7,8,10],\n    \"locrian\": [0,1,3,5,6,8,10]\n}\n\ndef generate_phrase(req: GenRequest):\n    root = NOTE_TO_SEMITONE[req.key]\n    scale = [x + root for x in MODES[req.mode]]\n    base = 60\n\n    allowed = []\n    for octv in (-1, 0, 1):\n        for s in scale:\n            allowed.append(base + s + 12*octv)\n\n    cur = base + root\n    notes = []\n    for i in range(req.length):\n        neighbors = [n for n in allowed if abs(n-cur) <= 2]\n        pool = neighbors if (random.random() < req.smooth and neighbors) else allowed\n\n        # simple cadence pull at end\n        if i >= req.length - 2:\n            tonic = base + root\n            dom = tonic + 7\n            pool2 = [n for n in allowed if min(abs(n-tonic), abs(n-dom)) <= 3]\n            if pool2:\n                pool = pool2\n\n        cur = random.choice(pool)\n        dur = 0.5\n        if random.random() < 0.14:\n            dur = 1.0\n        if i == req.length - 1:\n            dur = 1.0\n        notes.append({\"midi\": int(cur), \"durBeats\": float(dur)})\n\n    return notes\n\n@app.post(\"/generate\")\ndef generate(req: GenRequest):\n    notes = generate_phrase(req)\n    return {\"notes\": notes}\n`;
+      const reqTxt = `fastapi\nuvicorn\npydantic\n`;
+      downloadText("app.py", appPy, "text/plain");
+      downloadText("requirements.txt", reqTxt, "text/plain");
+      setOk("Downloaded app.py + requirements.txt");
+    }
+
+    // Preview snippet
+    function setNotebookPreview(){
+      const nb = makeNotebookJSON();
+      const previewCells = nb.cells.slice(0, 4).map((c, i) => {
+        const t = c.cell_type.toUpperCase();
+        const src = Array.isArray(c.source) ? c.source.join("") : String(c.source || "");
+        return `# Cell ${i+1} [${t}]\n${src}`.trim();
+      }).join("\n\n" + "-".repeat(44) + "\n\n");
+      notebookPreview.textContent = previewCells;
+    }
+
+    setNotebookPreview();
+
+    // ----------------------------
     // Button handlers
     // ----------------------------
     generateBtn.addEventListener("click", async () => {
       stopPlayback();
       setWarning(null);
+      setOk(null);
 
       const key = document.getElementById("key").value;
       const mode = document.getElementById("mode").value;
       const bpm = Number(document.getElementById("tempo").value);
       const stepBias = Number(document.getElementById("smooth").value);
       const length = Number(document.getElementById("length").value);
+      const inst = document.getElementById("instrument").value;
 
       const source = document.getElementById("source").value;
       const backendUrl = document.getElementById("backendUrl").value.trim();
@@ -640,6 +1564,8 @@
       out.textContent = "Generating...";
 
       try {
+        let metrics = null;
+
         if (source === "hf") {
           if (!backendUrl){
             throw new Error("HF source selected, but the HF Space API URL is blank. Paste your endpoint (e.g., https://YOUR-SPACE.hf.space/generate).");
@@ -650,24 +1576,39 @@
           });
 
           phrase = data.notes;
-
-          renderPhrase(phrase);
-
-          // If backend returns metrics, show them; else compute locally
-          const metrics = data.metrics || computeMetrics(phrase, key, mode);
-          renderMetrics(metrics);
+          metrics = data.metrics || computeMetrics(phrase, key, mode);
 
         } else {
           phrase = generatePhraseBrowser({ key, mode, smooth: stepBias, length });
-          renderPhrase(phrase);
-          renderMetrics(computeMetrics(phrase, key, mode));
+          metrics = computeMetrics(phrase, key, mode);
         }
 
+        // Meta + phrase id for rating
+        currentMeta = { key, mode, tempo: bpm, instrument: inst, source };
+        currentPhraseId = `${source}-${key}-${mode}-${bpm}-${inst}-${Date.now()}`;
+
+        renderPhrase(phrase);
+        renderMetrics(metrics);
+        renderMeta(currentMeta);
+        drawPianoRoll(phrase);
+
         playBtn.disabled = false;
+        stopBtn.disabled = true;
+        exportMidiBtn.disabled = false;
+        saveRatingBtn.disabled = false;
+
+        setOk("Generated.");
 
       } catch (e) {
         phrase = null;
+        currentMeta = null;
+        currentPhraseId = null;
+
         playBtn.disabled = true;
+        stopBtn.disabled = true;
+        exportMidiBtn.disabled = true;
+        saveRatingBtn.disabled = true;
+
         out.textContent = "(generation failed)";
         setWarning(e?.message || "Generation failed. Check console for details.");
         console.error(e);
@@ -690,13 +1631,31 @@
       }
     });
 
-    stopBtn.addEventListener("click", stopPlayback);
+    stopBtn.addEventListener("click", () => {
+      stopPlayback();
+      setOk("Stopped.");
+    });
+
+    exportMidiBtn.addEventListener("click", exportMIDI);
+
+    // Ratings
+    saveRatingBtn.addEventListener("click", saveRatingForCurrentPhrase);
+    downloadRatingsBtn.addEventListener("click", downloadRatingsCSV);
+    clearRatingsBtn.addEventListener("click", clearRatings);
+
+    // Notebook / backend downloads
+    downloadNotebookBtn.addEventListener("click", downloadNotebook);
+    downloadBackendBtn.addEventListener("click", downloadHFBackendTemplate);
 
     window.addEventListener("beforeunload", () => {
       try { stopPlayback(); } catch(e) {}
     });
+
+    // Initialize rating summary on load
+    refreshRatingsSummary();
   </script>
 </body>
 </html>
+
 
 
