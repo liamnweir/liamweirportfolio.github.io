@@ -5,62 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Music Generation System | Liam Weir</title>
 
-  <!-- Tone.js for audio playback (client-side, works on GitHub Pages) -->
+  <!-- Tone.js (audio playback) -->
   <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
 
   <style>
     * { box-sizing: border-box; }
+
     body{
       margin:0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
       background:#0a0a12;
       color:#eef0ff;
     }
+
     nav{
-      position:fixed; top:0; width:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
       background: rgba(10,10,25,0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      display:flex; gap:18px; align-items:center;
-      padding:14px 18px;
-      z-index:10;
+      display:flex;
+      justify-content:flex-start;
+      gap: 1.1rem;
+      padding: 1rem 1.2rem;
+      z-index: 100;
     }
-    nav a{ color:#eef0ff; text-decoration:none; opacity:0.85; }
-    nav a:hover{ opacity:1; text-decoration:underline; }
+
+    nav a{
+      color:#cfd3ff;
+      text-decoration:none;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    nav a:hover{ color:#ffffff; }
 
     main{
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 92px 18px 48px;
+      padding: 96px 18px 48px;
     }
-    h1{ font-size: 2rem; margin: 0 0 10px; }
-    p{ opacity:0.9; line-height:1.55; }
+
+    h1{
+      font-size: 2.4rem;
+      margin: 0 0 10px;
+    }
+    p{ opacity:0.9; line-height:1.6; }
+
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap:16px;
-      margin-top:18px;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 18px;
     }
-    @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
+    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
 
     .card{
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.35);
     }
-    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-    .label{ font-size:0.9rem; opacity:0.85; }
-    select, input[type="range"]{
+
+    .label{
+      font-size: 0.9rem;
+      opacity: 0.85;
+      margin-bottom: 6px;
+    }
+
+    select, input[type="range"], input[type="text"]{
       background: rgba(255,255,255,0.06);
-      color:#eef0ff;
+      color: #eef0ff;
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 10px 12px;
-      outline:none;
+      outline: none;
+      min-width: 170px;
     }
+
+    input[type="range"]{
+      padding: 10px 0;
+      min-width: 240px;
+    }
+
     .btn{
       background: rgba(120,140,255,0.18);
       border: 1px solid rgba(120,140,255,0.35);
@@ -68,19 +99,22 @@
       padding: 10px 14px;
       border-radius: 14px;
       cursor:pointer;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
-    .btn:hover{ filter: brightness(1.1); }
-    .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+    .btn:hover{ filter: brightness(1.15); transform: translateY(-1px); }
+    .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
 
-    code, pre{
+    pre{
       background: rgba(0,0,0,0.35);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 12px;
-      display:block;
       overflow:auto;
       white-space: pre;
+      margin: 10px 0 0;
+      min-height: 180px;
     }
 
     .pill{
@@ -90,30 +124,56 @@
       border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.04);
       font-size: 0.85rem;
-      opacity:0.9;
+      opacity: 0.9;
+      margin-right: 6px;
+      margin-top: 10px;
     }
-    .muted{ opacity:0.8; }
-    .metric{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+
+    .muted{ opacity: 0.8; }
+
+    .metric{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
     .metric:last-child{ border-bottom:none; }
+
+    .tiny{
+      font-size: 0.85rem;
+      opacity: 0.75;
+    }
+
+    .warn{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,180,120,0.25);
+      background: rgba(255,180,120,0.08);
+      color: #ffe9da;
+      display:none;
+    }
   </style>
 </head>
 
 <body>
+  <!-- IMPORTANT: absolute paths so nav works from nested folders on GitHub Pages -->
   <nav>
-    <a href="../index.html">Home</a>
-    <a href="../projects.html">Projects</a>
-    <a href="../about.html">About</a>
-    <a href="../contact.html">Contact</a>
+    <a href="/index.html">Home</a>
+    <a href="/projects.html">Projects</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
   </nav>
 
   <main>
     <h1>AI Music Generation System</h1>
     <p class="muted">
-      A perception-aware symbolic music generator for short phrases.
-      This demo is client-side (runs entirely in your browser) and is designed as a “first version” you can expand into a real ML backend later.
+      Generate short symbolic phrases with musical structure + simple perception metrics.
+      This page runs on GitHub Pages (static). If you want a real ML model, this UI can call a Hugging Face Spaces backend (optional).
     </p>
 
-    <div class="row" style="margin-top:10px;">
+    <div>
       <span class="pill">AI</span>
       <span class="pill">Music</span>
       <span class="pill">Perception</span>
@@ -125,88 +185,161 @@
       <section class="card">
         <h2 style="margin:0 0 10px;">Interactive Demo</h2>
 
-        <div class="row" style="margin: 10px 0 12px;">
+        <div class="row">
           <div>
             <div class="label">Key</div>
             <select id="key">
-              <option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option>
-              <option value="G">G</option><option value="A">A</option><option value="B">B</option>
+              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
+              <option value="E">E</option><option value="F">F</option><option value="F#">F#</option><option value="G">G</option>
+              <option value="G#">G#</option><option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
             </select>
           </div>
 
           <div>
-            <div class="label">Mode</div>
+            <div class="label">Scale / Mode</div>
             <select id="mode">
-              <option value="major">Major</option>
+              <option value="major">Major (Ionian)</option>
+              <option value="natural_minor">Natural Minor (Aeolian)</option>
+              <option value="harmonic_minor">Harmonic Minor</option>
+              <option value="melodic_minor">Melodic Minor (Ascending)</option>
               <option value="dorian">Dorian</option>
-              <option value="minor">Natural Minor</option>
+              <option value="mixolydian">Mixolydian</option>
+              <option value="lydian">Lydian</option>
+              <option value="phrygian">Phrygian</option>
+              <option value="locrian">Locrian</option>
             </select>
           </div>
 
-          <div style="min-width: 220px;">
+          <div style="min-width: 260px;">
             <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
-            <input id="tempo" type="range" min="70" max="160" value="110" />
+            <input id="tempo" type="range" min="70" max="170" value="110" />
           </div>
 
-          <div style="min-width: 260px;">
+          <div style="min-width: 280px;">
             <div class="label">Stepwise Bias: <span id="smoothVal">0.75</span></div>
             <input id="smooth" type="range" min="0" max="1" step="0.01" value="0.75" />
           </div>
 
-          <div class="row">
+          <div>
+            <div class="label">Length</div>
+            <select id="length">
+              <option value="8">8 notes</option>
+              <option value="16" selected>16 notes</option>
+              <option value="24">24 notes</option>
+              <option value="32">32 notes</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="label">Instrument</div>
+            <select id="instrument">
+              <option value="piano" selected>Piano</option>
+              <option value="guitar">Guitar (plucked)</option>
+              <option value="bass">Bass</option>
+              <option value="violin">Violin</option>
+              <option value="strings">Strings (pad)</option>
+              <option value="synth">Synth (bright)</option>
+            </select>
+          </div>
+
+          <div style="min-width: 260px;">
+            <div class="label">Generation Source</div>
+            <select id="source">
+              <option value="browser" selected>Browser (demo generator)</option>
+              <option value="hf">Hugging Face (ML backend)</option>
+            </select>
+          </div>
+
+          <div style="min-width: 360px; flex: 1;">
+            <div class="label">HF Space API URL (optional)</div>
+            <input id="backendUrl" type="text" placeholder="https://YOUR-SPACE.hf.space/generate" />
+            <div class="tiny">
+              Leave blank if using the browser generator. If using HF, paste your Space endpoint here.
+            </div>
+          </div>
+
+          <div class="row" style="align-items:center;">
             <button class="btn" id="generateBtn">Generate</button>
             <button class="btn" id="playBtn" disabled>Play</button>
             <button class="btn" id="stopBtn" disabled>Stop</button>
           </div>
         </div>
 
-        <div class="label">Generated phrase (MIDI notes + durations)</div>
+        <div id="warnBox" class="warn"></div>
+
+        <div class="label" style="margin-top: 12px;">Generated phrase (notes + durations)</div>
         <pre id="out">(click Generate)</pre>
 
-        <p class="muted" style="margin-top:10px;">
-          Next step: replace the “toy generator” with a trained Transformer/VAE model and keep the same UI.
+        <p class="tiny muted" style="margin-top: 10px;">
+          Tip: “Harmonic/Melodic minor” modes are great for showing musical structure in your writeup.
+          If you switch the source to “Hugging Face,” the page will call your backend and keep the same UI.
         </p>
       </section>
 
       <aside class="card">
         <h2 style="margin:0 0 10px;">Perception / Structure Metrics</h2>
         <p class="muted" style="margin-top:0;">
-          These are simple heuristics you can show now, then refine with listening tests later.
+          Simple heuristics you can report now, then validate with listening tests later.
         </p>
 
         <div class="metric"><span>Repetition Score</span><strong id="repScore">—</strong></div>
         <div class="metric"><span>Stepwise Motion</span><strong id="stepScore">—</strong></div>
         <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
+        <div class="metric"><span>Tonal Stability</span><strong id="tonalScore">—</strong></div>
 
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
 
-        <h3 style="margin:0 0 8px;">Writeup</h3>
+        <h3 style="margin:0 0 8px;">What to write about</h3>
         <p class="muted" style="margin-top:0;">
-          In your portfolio, describe:
-          <br>• dataset (MIDI phrases)
-          <br>• model (Transformer/VAE)
-          <br>• constraints (key/mode, contour, repetition)
-          <br>• evaluation (listener ratings + metrics)
+          • Dataset (MIDI phrases)<br/>
+          • Model (Transformer/VAE) or rule-based baseline<br/>
+          • Constraints (key/mode, contour, cadence)<br/>
+          • Evaluation (listener ratings + metrics)<br/>
+          • Demo (this page) + backend endpoint
         </p>
       </aside>
     </div>
   </main>
 
   <script>
-    const KEY_TO_SEMITONE = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
-    const MODES = {
-      major: [0,2,4,5,7,9,11],
-      dorian:[0,2,3,5,7,9,10],
-      minor: [0,2,3,5,7,8,10]
+    // ----------------------------
+    // Music theory helpers
+    // ----------------------------
+    const NOTE_TO_SEMITONE = {
+      "C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11
     };
 
+    // Scale degrees as semitone offsets from tonic within an octave
+    const MODES = {
+      major:         [0,2,4,5,7,9,11],      // Ionian
+      natural_minor: [0,2,3,5,7,8,10],      // Aeolian
+      harmonic_minor:[0,2,3,5,7,8,11],      // raised 7
+      melodic_minor: [0,2,3,5,7,9,11],      // raised 6 & 7 (ascending)
+      dorian:        [0,2,3,5,7,9,10],
+      mixolydian:    [0,2,4,5,7,9,10],
+      lydian:        [0,2,4,6,7,9,11],
+      phrygian:      [0,1,3,5,7,8,10],
+      locrian:       [0,1,3,5,6,8,10]
+    };
+
+    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function midiToNoteName(m){
+      const names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+      const name = names[m % 12];
+      const oct = Math.floor(m / 12) - 1;
+      return `${name}${oct}`;
+    }
+
+    function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+    // ----------------------------
+    // UI elements
+    // ----------------------------
     const tempo = document.getElementById("tempo");
     const tempoVal = document.getElementById("tempoVal");
     const smooth = document.getElementById("smooth");
     const smoothVal = document.getElementById("smoothVal");
-    tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
-    smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
-
     const generateBtn = document.getElementById("generateBtn");
     const playBtn = document.getElementById("playBtn");
     const stopBtn = document.getElementById("stopBtn");
@@ -215,56 +348,153 @@
     const repScoreEl = document.getElementById("repScore");
     const stepScoreEl = document.getElementById("stepScore");
     const rangeScoreEl = document.getElementById("rangeScore");
+    const tonalScoreEl = document.getElementById("tonalScore");
 
-    let phrase = null;
-    let synth = null;
-    let part = null;
+    const warnBox = document.getElementById("warnBox");
 
-    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+    tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
+    smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
 
-    // Create a phrase: list of { midi, durBeats }
-    function generatePhrase(root, mode, stepBias){
-      const scale = MODES[mode].map(x => x + root);
+    // ----------------------------
+    // State
+    // ----------------------------
+    let phrase = null;      // [{midi, durBeats}, ...]
+    let instrument = null;  // Tone instrument instance
+    let part = null;        // Tone.Part
+
+    // ----------------------------
+    // Instrument factory (no external samples required)
+    // Labels match common instruments, but these are synth approximations.
+    // ----------------------------
+    function makeInstrument(kind){
+      // Dispose previous instrument cleanly
+      if (instrument) {
+        try { instrument.dispose(); } catch(e) {}
+        instrument = null;
+      }
+
+      // Small reverb to make it nicer
+      const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.15 }).toDestination();
+
+      if (kind === "piano"){
+        // PolySynth "piano-ish"
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.25, sustain: 0.15, release: 0.9 }
+        }).connect(reverb);
+
+      } else if (kind === "guitar"){
+        // Plucked string
+        instrument = new Tone.PolySynth(Tone.PluckSynth, {
+          volume: -6
+        }).connect(reverb);
+
+      } else if (kind === "bass"){
+        // Mono bass
+        instrument = new Tone.MonoSynth({
+          oscillator: { type: "sine" },
+          filter: { Q: 2, type: "lowpass", rolloff: -24 },
+          envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.4 },
+          filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2, baseFrequency: 80, octaves: 2.2 }
+        }).connect(reverb);
+
+      } else if (kind === "violin"){
+        // Bowed-ish (saw + slower attack + vibrato)
+        const vib = new Tone.Vibrato(5, 0.18).connect(reverb);
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.06, decay: 0.15, sustain: 0.65, release: 0.6 }
+        }).connect(vib);
+
+      } else if (kind === "strings"){
+        // Soft pad
+        const chorus = new Tone.Chorus(2.5, 1.6, 0.25).start().connect(reverb);
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.2, decay: 0.2, sustain: 0.75, release: 1.4 }
+        }).connect(chorus);
+
+      } else {
+        // synth (bright)
+        const delay = new Tone.FeedbackDelay("8n", 0.25).connect(reverb);
+        instrument = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "square" },
+          envelope: { attack: 0.01, decay: 0.12, sustain: 0.2, release: 0.25 }
+        }).connect(delay);
+      }
+
+      return instrument;
+    }
+
+    // ----------------------------
+    // Browser generator (demo baseline)
+    // ----------------------------
+    function buildAllowedNotes(rootSemitone, modeKey){
+      const scale = MODES[modeKey].map(x => x + rootSemitone); // 0..11-ish
       const baseOctave = 60; // C4
       const allowed = [];
+      // Use a 3-octave window centered around C4-ish
       for (let oct = -1; oct <= 1; oct++){
-        for (const s of scale) allowed.push(baseOctave + s + 12*oct);
-      }
-
-      // 8 "notes" (1 bar of 8th notes) or 16 for 2 bars; keep short and clean
-      const N = 16;
-      const durs = Array(N).fill(0.5); // eighth notes in beats (at 4/4)
-
-      // Start on a stable tone
-      let current = baseOctave + root;
-      const notes = [];
-
-      for (let i=0; i<N; i++){
-        // Candidate notes: either stepwise neighbors (preferred) or any scale tone
-        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step / whole step
-        const pool = (Math.random() < stepBias && neighbors.length) ? neighbors : allowed;
-
-        // Encourage phrase-like behavior: end near tonic at the end
-        if (i > N - 3){
-          const nearTonic = allowed.filter(n => Math.abs(n - (baseOctave + root)) <= 7);
-          current = pick(nearTonic.length ? nearTonic : pool);
-        } else {
-          current = pick(pool);
+        for (const s of scale){
+          allowed.push(baseOctave + s + 12*oct);
         }
-        notes.push({ midi: current, durBeats: durs[i] });
       }
+      return allowed.sort((a,b)=>a-b);
+    }
+
+    function generatePhraseBrowser({ key, mode, smooth, length }){
+      const root = NOTE_TO_SEMITONE[key];
+      const allowed = buildAllowedNotes(root, mode);
+
+      // Start near tonic in middle octave
+      const tonicMidi = 60 + root;
+      let current = tonicMidi;
+
+      const notes = [];
+      const N = length;
+
+      // Phrase shape helper: encourage a gentle arch (rise then fall)
+      const mid = Math.floor(N / 2);
+
+      for (let i = 0; i < N; i++){
+        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step/whole-step
+        const broader = allowed;
+
+        // Step bias chooses neighbor vs broader pool
+        let pool = (Math.random() < smooth && neighbors.length) ? neighbors : broader;
+
+        // Gentle contour bias: rising first half, falling second half (softly)
+        const target = (i <= mid) ? current + 2 : current - 2;
+        pool = pool
+          .map(n => ({ n, w: 1 / (1 + Math.abs(n - target)) }))
+          .sort((a,b)=>b.w - a.w)
+          .slice(0, Math.max(6, Math.floor(pool.length * 0.35)))
+          .map(x => x.n);
+
+        // Cadence bias: last 2 notes pull toward tonic or dominant
+        if (i >= N - 2){
+          const domMidi = tonicMidi + 7;
+          const nearCadence = allowed.filter(n => Math.min(Math.abs(n - tonicMidi), Math.abs(n - domMidi)) <= 3);
+          if (nearCadence.length) pool = nearCadence;
+        }
+
+        current = pick(pool);
+
+        // rhythm: mostly eighth notes, occasional quarters
+        let durBeats = 0.5;
+        if (Math.random() < 0.14) durBeats = 1.0;      // quarter
+        if (i === N - 1) durBeats = 1.0;               // finish slightly longer
+
+        notes.push({ midi: current, durBeats });
+      }
+
       return notes;
     }
 
-    function midiToNoteName(m){
-      // Tone.js uses scientific pitch notation like "C4"
-      const names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-      const name = names[m % 12];
-      const oct = Math.floor(m / 12) - 1;
-      return `${name}${oct}`;
-    }
-
-    function computeMetrics(notes){
+    // ----------------------------
+    // Metrics
+    // ----------------------------
+    function computeMetrics(notes, key, mode){
       const midis = notes.map(n => n.midi);
       const unique = new Set(midis);
       const repetition = 1 - (unique.size / midis.length); // higher = more repetition
@@ -274,21 +504,72 @@
         const interval = Math.abs(midis[i] - midis[i-1]);
         if (interval <= 2) stepCount++;
       }
-      const stepwise = stepCount / (midis.length - 1);
+      const stepwise = stepCount / Math.max(1, (midis.length - 1));
 
       const range = Math.max(...midis) - Math.min(...midis);
 
-      return { repetition, stepwise, range };
+      // Tonal stability: fraction of notes that are tonic/third/fifth (triad) in chosen mode
+      const root = NOTE_TO_SEMITONE[key];
+      // triad degrees for "major-ish" vs "minor-ish"
+      const isMinorish = (mode.includes("minor") || mode === "dorian" || mode === "phrygian" || mode === "locrian");
+      const triad = isMinorish ? [0, 3, 7] : [0, 4, 7];
+      const triadPC = new Set(triad.map(x => (x + root) % 12));
+      const tonal = midis.filter(m => triadPC.has(m % 12)).length / midis.length;
+
+      return { repetition, stepwise, range, tonal };
     }
 
+    function renderPhrase(notes){
+      const lines = notes.map((n, i) => `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${n.durBeats} beats)`);
+      out.textContent = lines.join("\n");
+    }
+
+    function renderMetrics(metrics){
+      repScoreEl.textContent = metrics.repetition.toFixed(2);
+      stepScoreEl.textContent = metrics.stepwise.toFixed(2);
+      rangeScoreEl.textContent = String(metrics.range);
+      tonalScoreEl.textContent = metrics.tonal.toFixed(2);
+    }
+
+    function setWarning(msg){
+      if (!msg){
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+        return;
+      }
+      warnBox.style.display = "block";
+      warnBox.textContent = msg;
+    }
+
+    // ----------------------------
+    // Hugging Face backend call
+    // Expected endpoint: POST <backendUrl>
+    // Body: { key, mode, tempo, smooth, length }
+    // Response: { notes: [{midi, durBeats}, ...] } (and optionally metrics)
+    // ----------------------------
+    async function generateFromHF({ backendUrl, key, mode, tempo, smooth, length }){
+      const res = await fetch(backendUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, mode, tempo, smooth, length })
+      });
+
+      if (!res.ok){
+        const text = await res.text().catch(()=> "");
+        throw new Error(`HF backend error (${res.status}). ${text}`.trim());
+      }
+      const data = await res.json();
+      if (!data || !Array.isArray(data.notes)) throw new Error("HF backend response missing `notes` array.");
+      return data;
+    }
+
+    // ----------------------------
+    // Playback
+    // ----------------------------
     async function ensureAudio(){
       if (Tone.context.state !== "running") await Tone.start();
-      if (!synth){
-        synth = new Tone.Synth({
-          oscillator: { type: "triangle" },
-          envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.3 }
-        }).toDestination();
-      }
+      const kind = document.getElementById("instrument").value;
+      makeInstrument(kind);
     }
 
     function stopPlayback(){
@@ -303,48 +584,99 @@
       stopBtn.disabled = true;
     }
 
-    generateBtn.addEventListener("click", async () => {
-      stopPlayback();
+    function schedulePlayback(notes){
+      // Bass sounds better lower: transpose down a bit for bass preset
+      const instKind = document.getElementById("instrument").value;
+      const transpose = (instKind === "bass") ? -12 : 0;
 
-      const root = KEY_TO_SEMITONE[document.getElementById("key").value];
-      const mode = document.getElementById("mode").value;
-      const stepBias = Number(smooth.value);
-      phrase = generatePhrase(root, mode, stepBias);
-
-      // Output
-      const lines = phrase.map((n, i) => `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${n.durBeats} beats)`);
-      out.textContent = lines.join("\n");
-
-      // Metrics
-      const { repetition, stepwise, range } = computeMetrics(phrase);
-      repScoreEl.textContent = repetition.toFixed(2);
-      stepScoreEl.textContent = stepwise.toFixed(2);
-      rangeScoreEl.textContent = range.toString();
-
-      playBtn.disabled = false;
-    });
-
-    playBtn.addEventListener("click", async () => {
-      if (!phrase) return;
-      await ensureAudio();
-      stopPlayback();
-
-      Tone.Transport.bpm.value = Number(tempo.value);
+      Tone.Transport.bpm.value = Number(document.getElementById("tempo").value);
 
       let t = 0;
-      const events = phrase.map(n => {
-        const evt = { time: t, note: midiToNoteName(n.midi), dur: n.durBeats };
-        t += n.durBeats;
+      const events = notes.map(n => {
+        const midi = clamp(n.midi + transpose, 24, 108);
+        const noteName = midiToNoteName(midi);
+        const dur = n.durBeats;
+        const evt = { time: t, note: noteName, durBeats: dur };
+        t += dur;
         return evt;
       });
 
       part = new Tone.Part((time, value) => {
-        synth.triggerAttackRelease(value.note, Tone.Time(value.dur).toSeconds(), time);
+        // MonoSynth expects triggerAttackRelease too; PolySynth supports it as well
+        const durSeconds = Tone.Time(value.durBeats).toSeconds();
+        instrument.triggerAttackRelease(value.note, durSeconds, time);
       }, events).start(0);
 
       Tone.Transport.start();
-      playBtn.disabled = true;
-      stopBtn.disabled = false;
+    }
+
+    // ----------------------------
+    // Button handlers
+    // ----------------------------
+    generateBtn.addEventListener("click", async () => {
+      stopPlayback();
+      setWarning(null);
+
+      const key = document.getElementById("key").value;
+      const mode = document.getElementById("mode").value;
+      const bpm = Number(document.getElementById("tempo").value);
+      const stepBias = Number(document.getElementById("smooth").value);
+      const length = Number(document.getElementById("length").value);
+
+      const source = document.getElementById("source").value;
+      const backendUrl = document.getElementById("backendUrl").value.trim();
+
+      out.textContent = "Generating...";
+
+      try {
+        if (source === "hf") {
+          if (!backendUrl){
+            throw new Error("HF source selected, but the HF Space API URL is blank. Paste your endpoint (e.g., https://YOUR-SPACE.hf.space/generate).");
+          }
+
+          const data = await generateFromHF({
+            backendUrl, key, mode, tempo: bpm, smooth: stepBias, length
+          });
+
+          phrase = data.notes;
+
+          renderPhrase(phrase);
+
+          // If backend returns metrics, show them; else compute locally
+          const metrics = data.metrics || computeMetrics(phrase, key, mode);
+          renderMetrics(metrics);
+
+        } else {
+          phrase = generatePhraseBrowser({ key, mode, smooth: stepBias, length });
+          renderPhrase(phrase);
+          renderMetrics(computeMetrics(phrase, key, mode));
+        }
+
+        playBtn.disabled = false;
+
+      } catch (e) {
+        phrase = null;
+        playBtn.disabled = true;
+        out.textContent = "(generation failed)";
+        setWarning(e?.message || "Generation failed. Check console for details.");
+        console.error(e);
+      }
+    });
+
+    playBtn.addEventListener("click", async () => {
+      if (!phrase) return;
+      setWarning(null);
+
+      try {
+        await ensureAudio();
+        stopPlayback();
+        schedulePlayback(phrase);
+        playBtn.disabled = true;
+        stopBtn.disabled = false;
+      } catch (e) {
+        setWarning("Audio failed to start. Try clicking Play again (browser audio policy).");
+        console.error(e);
+      }
     });
 
     stopBtn.addEventListener("click", stopPlayback);
@@ -355,3 +687,4 @@
   </script>
 </body>
 </html>
+
