@@ -89,7 +89,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="range"], input[type="text"]{
+    select, input[type="range"], input[type="text"], input[type="number"]{
       background: rgba(255,255,255,0.06);
       color: #eef0ff;
       border: 1px solid rgba(255,255,255,0.12);
@@ -97,6 +97,10 @@
       padding: 10px 12px;
       outline: none;
       min-width: 170px;
+    }
+
+    input[type="number"]{
+      min-width: 140px;
     }
 
     input[type="range"]{
@@ -167,9 +171,6 @@
       display:none;
     }
 
-    /* =========================================================
-       NEW: Piano roll (make it fully visible + scroll-free view)
-       ========================================================= */
     .pianoroll-wrap{
       margin-top: 14px;
       background: rgba(0,0,0,0.25);
@@ -220,11 +221,11 @@
 
     .toggle input{ transform: translateY(1px); }
 
-    /* The canvas is what we will dynamically size to fully show melody */
+    /* Important: canvas uses DPR-scaled internal size; CSS keeps it readable and fully visible */
     canvas#pianoRoll{
       display:block;
       width: 100%;
-      height: auto;       /* keep aspect ratio / show full content */
+      height: auto;
       background: rgba(5,5,12,0.65);
     }
 
@@ -248,9 +249,6 @@
       opacity: 0.9;
     }
 
-    /* =========================================================
-       NEW: Extra sections to "transcend" the program (nice layout)
-       ========================================================= */
     .stack{
       display:grid;
       gap: 18px;
@@ -348,7 +346,6 @@
 </head>
 
 <body>
-  <!-- Back button only (replaces broken nav) -->
   <div class="top-bar">
     <a class="back-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/">
       ← Back to Home
@@ -419,6 +416,30 @@
             </select>
           </div>
 
+          <!-- NEW: rhythmic complexity controls (browser generator uses these) -->
+          <div>
+            <div class="label">Min Note Length (beats)</div>
+            <input id="minDur" type="number" step="0.01" value="0.25" min="0.01" />
+          </div>
+          <div>
+            <div class="label">Max Note Length (beats)</div>
+            <input id="maxDur" type="number" step="0.01" value="1.50" min="0.01" />
+          </div>
+          <div style="min-width: 280px;">
+            <div class="label">Rhythm Variety: <span id="rhythmVal">0.60</span></div>
+            <input id="rhythmVar" type="range" min="0" max="1" step="0.01" value="0.60" />
+          </div>
+          <div>
+            <div class="label">Quantize Durations</div>
+            <select id="quantize">
+              <option value="none" selected>None (any length)</option>
+              <option value="0.25">1/4 beat</option>
+              <option value="0.125">1/8 beat</option>
+              <option value="0.0625">1/16 beat</option>
+              <option value="0.3333333">Triplet (1/3 beat)</option>
+            </select>
+          </div>
+
           <div>
             <div class="label">Instrument</div>
             <select id="instrument">
@@ -451,7 +472,6 @@
             <button class="btn" id="generateBtn">Generate</button>
             <button class="btn" id="playBtn" disabled>Play</button>
             <button class="btn" id="stopBtn" disabled>Stop</button>
-            <!-- NEW: export + copy -->
             <button class="btn" id="copyBtn" disabled>Copy Notes</button>
             <button class="btn" id="exportMidiBtn" disabled>Export MIDI</button>
           </div>
@@ -462,16 +482,15 @@
         <div class="label" style="margin-top: 12px;">Generated phrase (notes + durations)</div>
         <pre id="out">(click Generate)</pre>
 
-        <!-- NEW: Piano Roll (auto-sized to fully show melody) -->
         <div class="pianoroll-wrap" aria-label="Piano roll">
           <div class="pianoroll-head">
-            <p class="pianoroll-title">Piano Roll (full melody view)</p>
+            <p class="pianoroll-title">Piano Roll (fully fits the melody)</p>
             <div class="pianoroll-actions">
-              <label class="toggle" title="If enabled, the piano roll height expands to include all notes with padding.">
+              <label class="toggle" title="Auto-fit height to show every pitch used (plus padding).">
                 <input id="fitRoll" type="checkbox" checked />
                 Fit to melody
               </label>
-              <label class="toggle" title="Shows a faint beat grid behind notes.">
+              <label class="toggle" title="Shows a beat grid behind notes.">
                 <input id="gridRoll" type="checkbox" checked />
                 Grid
               </label>
@@ -481,7 +500,7 @@
               </label>
             </div>
           </div>
-          <canvas id="pianoRoll" width="980" height="260"></canvas>
+          <canvas id="pianoRoll"></canvas>
           <div class="pianoroll-foot">
             <div class="tiny muted">
               Shortcuts: <span class="kbd">Space</span> play/stop • <span class="kbd">G</span> generate • <span class="kbd">C</span> copy • <span class="kbd">M</span> export MIDI
@@ -507,11 +526,11 @@
         <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
         <div class="metric"><span>Tonal Stability</span><strong id="tonalScore">—</strong></div>
 
-        <!-- NEW: musical explanation (auto-updated per phrase) -->
+        <!-- CRUCIAL: explanation section (auto-updated every generation) -->
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
-        <h3 style="margin:0 0 8px;">Melody idea (why it works)</h3>
+        <h3 style="margin:0 0 8px;">Why this melody works (in words)</h3>
         <p class="muted" style="margin-top:0;" id="melodyExplain">
-          Generate a phrase to see a short explanation of its contour + cadence.
+          Generate a phrase to see a concrete explanation of why the produced melody tends to sound coherent.
         </p>
 
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
@@ -520,16 +539,13 @@
         <p class="muted" style="margin-top:0;">
           • Dataset (MIDI phrases)<br/>
           • Model (Transformer/VAE) or rule-based baseline<br/>
-          • Constraints (key/mode, contour, cadence)<br/>
+          • Constraints (key/mode, contour, cadence, rhythm range)<br/>
           • Evaluation (listener ratings + metrics)<br/>
           • Demo (this page) + backend endpoint
         </p>
       </aside>
     </div>
 
-    <!-- =========================================================
-         NEW: “Transcend the program” sections (ratings + research)
-         ========================================================= -->
     <div class="stack">
       <section class="card">
         <h2 style="margin:0 0 6px;">Listening Study (User Ratings)</h2>
@@ -585,22 +601,23 @@
       <section class="card">
         <h2 style="margin:0 0 6px;">Paper-Style Writeup (drop-in)</h2>
         <p class="muted" style="margin-top:0;">
-          This is a ready-to-paste “mini paper” outline that matches what your demo actually does (baseline generator + metrics + listening study). You can expand it when you add a Transformer backend.
+          This is a ready-to-paste “mini paper” outline that matches what your demo does (baseline generator + metrics + rhythm controls + listening study).
         </p>
 
         <hr class="divider"/>
 
         <h3 style="margin:0;">Abstract</h3>
         <p class="muted">
-          We present a browser-based system for generating short symbolic melodies under musical constraints (key/mode, contour bias, cadence bias). We evaluate phrases using simple structure metrics (repetition, stepwise motion, range, tonal stability) and collect listener ratings through an embedded survey interface. The system supports a local rule-based baseline and optional integration with a machine-learning backend via a Hugging Face Space endpoint.
+          We present a browser-based system for generating short symbolic melodies under musical constraints (key/mode, contour bias, cadence bias, and user-controlled rhythmic variability).
+          We evaluate phrases with simple structure metrics and collect listener ratings through an embedded survey interface. The system supports a local rule-based baseline and optional integration with a machine-learning backend via a Hugging Face Space endpoint.
         </p>
 
         <div class="two-col">
           <div>
             <h3 style="margin:0;">Method</h3>
             <ul class="list">
-              <li><strong>Generator:</strong> stepwise-biased random walk constrained to a mode; soft arch-shaped contour; cadence pull at phrase end.</li>
-              <li><strong>Interface:</strong> interactive controls for key, mode, tempo, phrase length, timbre.</li>
+              <li><strong>Pitch generator:</strong> stepwise-biased walk constrained to a mode; soft arch-shaped contour; cadence pull at phrase end.</li>
+              <li><strong>Rhythm generator:</strong> durations sampled within user-set min/max bounds, with a variety knob and optional quantization grid.</li>
               <li><strong>Playback:</strong> Tone.js synth approximations (no samples required).</li>
             </ul>
           </div>
@@ -616,16 +633,17 @@
 
         <hr class="divider"/>
 
-        <h3 style="margin:0;">Results & Discussion (how to talk about it)</h3>
+        <h3 style="margin:0;">Results & Discussion</h3>
         <p class="muted" style="margin-top:8px;">
-          The contour + cadence biases increase perceived “phrase-ness” (a sense of beginning, middle, end). Stepwise bias increases singability and reduces large leaps; tonal stability reflects how often tones land on chord tones, which often correlates with “resolved” sounding melodies. In future work, listener ratings can be analyzed against these metrics (e.g., do high-rated phrases have higher tonal stability but moderate repetition?).
+          The contour + cadence biases increase perceived “phrase-ness” (beginning–middle–end). Stepwise bias increases singability and reduces large leaps;
+          rhythmic variability allows more complex phrasing (long notes act as anchors, shorter notes provide motion). In future work, listener ratings can be analyzed against these metrics and rhythm statistics.
         </p>
 
         <div style="margin-top:10px;">
           <span class="chip">Baseline vs ML comparison</span>
           <span class="chip">AB listening tests</span>
           <span class="chip">Metric–rating correlation</span>
-          <span class="chip">Exportable dataset of ratings</span>
+          <span class="chip">Exportable ratings dataset</span>
         </div>
       </section>
     </div>
@@ -639,12 +657,11 @@
       "C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11
     };
 
-    // Scale degrees as semitone offsets from tonic within an octave
     const MODES = {
-      major:         [0,2,4,5,7,9,11],      // Ionian
-      natural_minor: [0,2,3,5,7,8,10],      // Aeolian
-      harmonic_minor:[0,2,3,5,7,8,11],      // raised 7
-      melodic_minor: [0,2,3,5,7,9,11],      // raised 6 & 7 (ascending)
+      major:         [0,2,4,5,7,9,11],
+      natural_minor: [0,2,3,5,7,8,10],
+      harmonic_minor:[0,2,3,5,7,8,11],
+      melodic_minor: [0,2,3,5,7,9,11],
       dorian:        [0,2,3,5,7,9,10],
       mixolydian:    [0,2,4,5,7,9,10],
       lydian:        [0,2,4,6,7,9,11],
@@ -682,7 +699,6 @@
 
     const warnBox = document.getElementById("warnBox");
 
-    // NEW UI
     const copyBtn = document.getElementById("copyBtn");
     const exportMidiBtn = document.getElementById("exportMidiBtn");
 
@@ -694,6 +710,12 @@
 
     const melodyExplain = document.getElementById("melodyExplain");
 
+    const minDurEl = document.getElementById("minDur");
+    const maxDurEl = document.getElementById("maxDur");
+    const rhythmVarEl = document.getElementById("rhythmVar");
+    const rhythmVal = document.getElementById("rhythmVal");
+    const quantizeEl = document.getElementById("quantize");
+
     const starBar = document.getElementById("starBar");
     const ratingHint = document.getElementById("ratingHint");
     const ratingComment = document.getElementById("ratingComment");
@@ -704,46 +726,38 @@
 
     tempo.addEventListener("input", () => tempoVal.textContent = tempo.value);
     smooth.addEventListener("input", () => smoothVal.textContent = Number(smooth.value).toFixed(2));
+    rhythmVarEl.addEventListener("input", () => rhythmVal.textContent = Number(rhythmVarEl.value).toFixed(2));
 
     // ----------------------------
     // State
     // ----------------------------
     let phrase = null;      // [{midi, durBeats}, ...]
-    let instrument = null;  // Tone instrument instance
-    let part = null;        // Tone.Part
+    let instrument = null;
+    let part = null;
 
-    // NEW rating state
     let currentStars = 0;
 
     // ----------------------------
-    // Instrument factory (no external samples required)
-    // Labels match common instruments, but these are synth approximations.
+    // Instrument factory
     // ----------------------------
     function makeInstrument(kind){
-      // Dispose previous instrument cleanly
       if (instrument) {
         try { instrument.dispose(); } catch(e) {}
         instrument = null;
       }
 
-      // Small reverb to make it nicer
       const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.15 }).toDestination();
 
       if (kind === "piano"){
-        // PolySynth "piano-ish"
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "triangle" },
           envelope: { attack: 0.005, decay: 0.25, sustain: 0.15, release: 0.9 }
         }).connect(reverb);
 
       } else if (kind === "guitar"){
-        // Plucked string
-        instrument = new Tone.PolySynth(Tone.PluckSynth, {
-          volume: -6
-        }).connect(reverb);
+        instrument = new Tone.PolySynth(Tone.PluckSynth, { volume: -6 }).connect(reverb);
 
       } else if (kind === "bass"){
-        // Mono bass
         instrument = new Tone.MonoSynth({
           oscillator: { type: "sine" },
           filter: { Q: 2, type: "lowpass", rolloff: -24 },
@@ -752,7 +766,6 @@
         }).connect(reverb);
 
       } else if (kind === "violin"){
-        // Bowed-ish (saw + slower attack + vibrato)
         const vib = new Tone.Vibrato(5, 0.18).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
@@ -760,7 +773,6 @@
         }).connect(vib);
 
       } else if (kind === "strings"){
-        // Soft pad
         const chorus = new Tone.Chorus(2.5, 1.6, 0.25).start().connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "sawtooth" },
@@ -768,7 +780,6 @@
         }).connect(chorus);
 
       } else {
-        // synth (bright)
         const delay = new Tone.FeedbackDelay("8n", 0.25).connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "square" },
@@ -780,13 +791,12 @@
     }
 
     // ----------------------------
-    // Browser generator (demo baseline)
+    // Browser generator (baseline) + NEW rhythm complexity
     // ----------------------------
     function buildAllowedNotes(rootSemitone, modeKey){
-      const scale = MODES[modeKey].map(x => x + rootSemitone); // 0..11-ish
+      const scale = MODES[modeKey].map(x => x + rootSemitone);
       const baseOctave = 60; // C4
       const allowed = [];
-      // Use a 3-octave window centered around C4-ish
       for (let oct = -1; oct <= 1; oct++){
         for (const s of scale){
           allowed.push(baseOctave + s + 12*oct);
@@ -795,28 +805,57 @@
       return allowed.sort((a,b)=>a-b);
     }
 
-    function generatePhraseBrowser({ key, mode, smooth, length }){
+    function quantizeBeats(x, q){
+      if (!q || !isFinite(q) || q <= 0) return x;
+      return Math.max(q, Math.round(x / q) * q);
+    }
+
+    // NEW: produces ANY duration in [minDur,maxDur], with a "variety" control and optional quantization
+    function sampleDuration(minDur, maxDur, variety, quantizeStep){
+      let lo = Math.max(0.01, Number(minDur) || 0.25);
+      let hi = Math.max(lo, Number(maxDur) || 1.50);
+      const v = clamp(Number(variety) || 0, 0, 1);
+
+      // v=0 => near-constant (centered)
+      // v=1 => full spread across the interval
+      const center = (lo + hi) / 2;
+      const spread = (hi - lo) / 2;
+
+      // Mix of centered and uniform
+      const r1 = (Math.random() * 2 - 1) * spread;             // uniform around center
+      const r2 = (Math.random() + Math.random() - 1) * spread; // triangular around center
+      const mix = (1 - v) * r2 + v * r1;
+
+      let dur = clamp(center + mix, lo, hi);
+
+      // Optional quantization (or none)
+      if (quantizeStep !== "none"){
+        const q = Number(quantizeStep);
+        if (isFinite(q) && q > 0) dur = quantizeBeats(dur, q);
+      }
+
+      // Avoid exact 0
+      dur = Math.max(0.01, dur);
+      return dur;
+    }
+
+    function generatePhraseBrowser({ key, mode, smooth, length, minDur, maxDur, rhythmVar, quantizeStep }){
       const root = NOTE_TO_SEMITONE[key];
       const allowed = buildAllowedNotes(root, mode);
 
-      // Start near tonic in middle octave
       const tonicMidi = 60 + root;
       let current = tonicMidi;
 
       const notes = [];
       const N = length;
-
-      // Phrase shape helper: encourage a gentle arch (rise then fall)
       const mid = Math.floor(N / 2);
 
       for (let i = 0; i < N; i++){
-        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2); // step/whole-step
+        const neighbors = allowed.filter(n => Math.abs(n - current) <= 2);
         const broader = allowed;
 
-        // Step bias chooses neighbor vs broader pool
         let pool = (Math.random() < smooth && neighbors.length) ? neighbors : broader;
 
-        // Gentle contour bias: rising first half, falling second half (softly)
         const target = (i <= mid) ? current + 2 : current - 2;
         pool = pool
           .map(n => ({ n, w: 1 / (1 + Math.abs(n - target)) }))
@@ -824,7 +863,6 @@
           .slice(0, Math.max(6, Math.floor(pool.length * 0.35)))
           .map(x => x.n);
 
-        // Cadence bias: last 2 notes pull toward tonic or dominant
         if (i >= N - 2){
           const domMidi = tonicMidi + 7;
           const nearCadence = allowed.filter(n => Math.min(Math.abs(n - tonicMidi), Math.abs(n - domMidi)) <= 3);
@@ -833,10 +871,18 @@
 
         current = pick(pool);
 
-        // rhythm: mostly eighth notes, occasional quarters
-        let durBeats = 0.5;
-        if (Math.random() < 0.14) durBeats = 1.0;      // quarter
-        if (i === N - 1) durBeats = 1.0;               // finish slightly longer
+        // NEW: variable duration
+        let durBeats = sampleDuration(minDur, maxDur, rhythmVar, quantizeStep);
+
+        // Keep the very last note slightly longer (still within maxDur)
+        if (i === N - 1){
+          const hi = Math.max(Number(minDur)||0.01, Number(maxDur)||1.5);
+          durBeats = clamp(Math.max(durBeats, Math.min(hi, (Number(minDur)||0.25) * 1.5)), 0.01, hi);
+          if (quantizeStep !== "none"){
+            const q = Number(quantizeStep);
+            if (isFinite(q) && q > 0) durBeats = quantizeBeats(durBeats, q);
+          }
+        }
 
         notes.push({ midi: current, durBeats });
       }
@@ -850,7 +896,7 @@
     function computeMetrics(notes, key, mode){
       const midis = notes.map(n => n.midi);
       const unique = new Set(midis);
-      const repetition = 1 - (unique.size / midis.length); // higher = more repetition
+      const repetition = 1 - (unique.size / midis.length);
 
       let stepCount = 0;
       for (let i=1; i<midis.length; i++){
@@ -861,9 +907,7 @@
 
       const range = Math.max(...midis) - Math.min(...midis);
 
-      // Tonal stability: fraction of notes that are tonic/third/fifth (triad) in chosen mode
       const root = NOTE_TO_SEMITONE[key];
-      // triad degrees for "major-ish" vs "minor-ish"
       const isMinorish = (mode.includes("minor") || mode === "dorian" || mode === "phrygian" || mode === "locrian");
       const triad = isMinorish ? [0, 3, 7] : [0, 4, 7];
       const triadPC = new Set(triad.map(x => (x + root) % 12));
@@ -873,7 +917,9 @@
     }
 
     function renderPhrase(notes){
-      const lines = notes.map((n, i) => `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${n.durBeats} beats)`);
+      const lines = notes.map((n, i) =>
+        `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${Number(n.durBeats).toFixed(3)} beats)`
+      );
       out.textContent = lines.join("\n");
     }
 
@@ -896,9 +942,6 @@
 
     // ----------------------------
     // Hugging Face backend call
-    // Expected endpoint: POST <backendUrl>
-    // Body: { key, mode, tempo, smooth, length }
-    // Response: { notes: [{midi, durBeats}, ...] } (and optionally metrics)
     // ----------------------------
     async function generateFromHF({ backendUrl, key, mode, tempo, smooth, length }){
       const res = await fetch(backendUrl, {
@@ -938,7 +981,6 @@
     }
 
     function schedulePlayback(notes){
-      // Bass sounds better lower: transpose down a bit for bass preset
       const instKind = document.getElementById("instrument").value;
       const transpose = (instKind === "bass") ? -12 : 0;
 
@@ -955,7 +997,6 @@
       });
 
       part = new Tone.Part((time, value) => {
-        // MonoSynth expects triggerAttackRelease too; PolySynth supports it as well
         const durSeconds = Tone.Time(value.durBeats).toSeconds();
         instrument.triggerAttackRelease(value.note, durSeconds, time);
       }, events).start(0);
@@ -964,7 +1005,10 @@
     }
 
     // ============================================================
-    // NEW: Piano roll rendering (auto-fit so whole melody is visible)
+    // Piano roll: FIXED to always fit melody (accurate pitch + duration)
+    // - DPR-scaled canvas so it matches visual size (no stretching blur)
+    // - Always fits the entire melody horizontally (compressed to width)
+    // - Fit-to-melody ensures every pitch row is visible
     // ============================================================
     function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
 
@@ -976,10 +1020,16 @@
       return { lo, hi, totalBeats };
     }
 
+    function setupCanvasToContainer(canvas){
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const rect = canvas.getBoundingClientRect();
+      const cssW = Math.max(320, Math.floor(rect.width));
+      return { dpr, cssW };
+    }
+
     function drawPianoRoll(notes){
       const ctx = pianoRoll.getContext("2d");
       if (!notes || !notes.length){
-        // clear
         ctx.clearRect(0,0,pianoRoll.width,pianoRoll.height);
         rollInfo.textContent = "—";
         return;
@@ -987,60 +1037,68 @@
 
       const { lo, hi, totalBeats } = computePhraseStats(notes);
 
-      // Padding in semitones so the full melody has breathing room
       const pad = 2;
       const minMidi = Math.max(24, lo - pad);
       const maxMidi = Math.min(108, hi + pad);
       const rows = Math.max(1, (maxMidi - minMidi + 1));
 
-      // Layout
       const showLabels = labelsRoll.checked;
       const showGrid = gridRoll.checked;
       const fit = fitRoll.checked;
 
-      // Choose cell sizes. If fit mode: compute height so ALL rows are visible (no vertical crop).
-      const leftPad = showLabels ? 56 : 12;
+      const leftPad = showLabels ? 64 : 12;
       const rightPad = 12;
       const topPad = 12;
       const bottomPad = 12;
 
-      // Width uses canvas width; height is dynamic if "Fit to melody" is checked.
-      const w = pianoRoll.width;
-      let rowH = 12; // default row height
+      // Canvas width must match container width (DPR-scaled) for accuracy
+      const { dpr, cssW } = setupCanvasToContainer(pianoRoll);
+
+      // Choose row height so all pitches are visible (fit mode)
+      let rowH;
       if (fit){
-        // Cap row height so it doesn't get comically tall for small ranges; keep it readable.
-        // Total height = top + bottom + rows*rowH
-        rowH = clamp(Math.floor((520 - topPad - bottomPad) / rows), 8, 18);
-        const targetH = topPad + bottomPad + rows * rowH;
-        // Set canvas height directly; CSS keeps it responsive.
-        pianoRoll.height = targetH;
+        // Aim for readable rows but guarantee full visibility
+        rowH = clamp(Math.floor(520 / rows), 9, 18);
       } else {
-        // Fixed size; user can still see most content
-        pianoRoll.height = 260;
-        rowH = Math.max(8, Math.floor((pianoRoll.height - topPad - bottomPad) / rows));
+        rowH = clamp(Math.floor(260 / rows), 8, 14);
       }
-      const h = pianoRoll.height;
+
+      const cssH = topPad + bottomPad + rows * rowH;
+
+      // Set internal resolution (DPR) + CSS size
+      pianoRoll.style.width = "100%";
+      pianoRoll.style.height = "auto";
+      pianoRoll.width = Math.floor(cssW * dpr);
+      pianoRoll.height = Math.floor(cssH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+
+      const w = cssW;
+      const h = cssH;
 
       // Background
       ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "rgba(5,5,12,0.65)";
+      ctx.fillStyle = "rgba(5,5,12,0.85)";
       ctx.fillRect(0,0,w,h);
 
-      // Compute x scale
-      const usableW = w - leftPad - rightPad;
-      const beatW = usableW / Math.max(0.0001, totalBeats);
+      const usableW = Math.max(1, w - leftPad - rightPad);
+      const beatW = usableW / Math.max(0.0001, totalBeats); // compress to fit: whole melody always visible
 
-      // Optional grid lines (beats)
+      // Grid step adapts to total length (makes it easier to follow)
+      // shorter phrases: finer grid; longer phrases: coarser
+      let gridStep = 0.25; // quarter beat
+      if (totalBeats > 16) gridStep = 1;
+      if (totalBeats > 32) gridStep = 2;
+      if (totalBeats > 64) gridStep = 4;
+
       if (showGrid){
         ctx.save();
-        ctx.globalAlpha = 0.35;
-        // draw beat lines at every 0.5 beat (eighths) and stronger at integers
-        for (let b = 0; b <= Math.ceil(totalBeats * 2); b++){
-          const beat = b * 0.5;
+        for (let b = 0; b <= Math.ceil(totalBeats / gridStep); b++){
+          const beat = b * gridStep;
           const x = leftPad + beat * beatW;
           ctx.beginPath();
-          ctx.strokeStyle = (b % 2 === 0) ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.10)";
-          ctx.lineWidth = (b % 2 === 0) ? 1.2 : 1.0;
+          const strong = (b % 4 === 0);
+          ctx.strokeStyle = strong ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.10)";
+          ctx.lineWidth = strong ? 1.25 : 1.0;
           ctx.moveTo(x, topPad);
           ctx.lineTo(x, h - bottomPad);
           ctx.stroke();
@@ -1048,32 +1106,33 @@
         ctx.restore();
       }
 
-      // Horizontal key stripes
+      // Key stripes
       ctx.save();
       for (let m = minMidi; m <= maxMidi; m++){
         const pc = m % 12;
         const isBlack = [1,3,6,8,10].includes(pc);
         const y = topPad + (maxMidi - m) * rowH;
-        ctx.fillStyle = isBlack ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)";
+        ctx.fillStyle = isBlack ? "rgba(255,255,255,0.045)" : "rgba(255,255,255,0.025)";
         ctx.fillRect(leftPad, y, usableW, rowH);
       }
       ctx.restore();
 
-      // Labels (note names on the left)
+      // Labels
       if (showLabels){
         ctx.save();
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
-        // label every C line to avoid clutter
         for (let m = minMidi; m <= maxMidi; m++){
-          if (m % 12 !== 0) continue; // C only
+          // label C and G to help tracking without clutter
+          const pc = m % 12;
+          if (pc !== 0 && pc !== 7) continue;
           const y = topPad + (maxMidi - m) * rowH + Math.floor(rowH * 0.78);
           ctx.fillText(midiToNoteName(m), 10, y);
         }
         ctx.restore();
       }
 
-      // Draw notes (rectangles)
+      // Notes (exact durations + order)
       let t = 0;
       for (let i=0; i<notes.length; i++){
         const n = notes[i];
@@ -1082,21 +1141,20 @@
         const y = topPad + (maxMidi - n.midi) * rowH + 1;
         const nh = Math.max(2, rowH - 2);
 
-        // note body
         ctx.save();
-        ctx.fillStyle = "rgba(120,140,255,0.35)";
-        ctx.strokeStyle = "rgba(120,140,255,0.65)";
+        ctx.fillStyle = "rgba(120,140,255,0.40)";
+        ctx.strokeStyle = "rgba(120,140,255,0.75)";
         ctx.lineWidth = 1;
 
-        roundRect(ctx, x + 1, y, nw - 2, nh, 6);
+        roundRect(ctx, x + 1, y, Math.max(2, nw - 2), nh, 6);
         ctx.fill();
-        ctx.globalAlpha = 0.9;
+        ctx.globalAlpha = 0.95;
         ctx.stroke();
 
-        // tiny note label on long notes
-        if (nw > 44 && nh >= 10){
-          ctx.globalAlpha = 0.85;
-          ctx.fillStyle = "rgba(235,240,255,0.9)";
+        // show note label if it helps (long notes)
+        if (nw > 52 && nh >= 11){
+          ctx.globalAlpha = 0.9;
+          ctx.fillStyle = "rgba(235,240,255,0.92)";
           ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
           ctx.fillText(midiToNoteName(n.midi), x + 8, y + Math.floor(nh * 0.72));
         }
@@ -1112,8 +1170,8 @@
       ctx.strokeRect(0.5, 0.5, w-1, h-1);
       ctx.restore();
 
-      // Info line
-      rollInfo.textContent = `Range: ${hi - lo} semitones • Notes: ${notes.length} • Total: ${totalBeats.toFixed(2)} beats • Display: ${minMidi}-${maxMidi}`;
+      rollInfo.textContent =
+        `Range: ${hi - lo} semitones • Notes: ${notes.length} • Total: ${totalBeats.toFixed(2)} beats • Fit: ${minMidi}-${maxMidi}`;
     }
 
     function roundRect(ctx, x, y, w, h, r){
@@ -1127,19 +1185,21 @@
       ctx.closePath();
     }
 
-    // Re-render piano roll when toggles change
     fitRoll.addEventListener("change", () => drawPianoRoll(phrase));
     gridRoll.addEventListener("change", () => drawPianoRoll(phrase));
     labelsRoll.addEventListener("change", () => drawPianoRoll(phrase));
+    window.addEventListener("resize", () => drawPianoRoll(phrase));
 
     // ============================================================
-    // NEW: Melody explanation (why the phrase works)
+    // CRUCIAL: Explanation section (specific, per generated melody)
     // ============================================================
     function describeMelody(notes, key, mode){
-      if (!notes || !notes.length) return "Generate a phrase to see a short explanation of its contour + cadence.";
+      if (!notes || !notes.length) return "Generate a phrase to see a concrete explanation of why the produced melody tends to sound coherent.";
 
       const midis = notes.map(n => n.midi);
+      const durs = notes.map(n => n.durBeats);
       const N = midis.length;
+
       const start = midis[0];
       const end = midis[N-1];
       const peak = Math.max(...midis);
@@ -1147,7 +1207,6 @@
       const peakIdx = midis.indexOf(peak);
       const troughIdx = midis.indexOf(trough);
 
-      // Step/leap breakdown
       let steps = 0, leaps = 0;
       for (let i=1;i<N;i++){
         const iv = Math.abs(midis[i]-midis[i-1]);
@@ -1155,37 +1214,44 @@
       }
       const stepPct = Math.round(100 * steps / Math.max(1,(N-1)));
 
-      // Cadence check: last note near tonic or dominant
       const root = NOTE_TO_SEMITONE[key];
       const tonicPc = root % 12;
       const domPc = (root + 7) % 12;
       const endPc = end % 12;
-      const cadenceType = (endPc === tonicPc) ? "tonic (resolved)" : (endPc === domPc) ? "dominant (open)" : "non-triad tone (color)";
+      const cadenceType =
+        (endPc === tonicPc) ? "tonic resolution (strong closure)" :
+        (endPc === domPc) ? "dominant landing (open / wants continuation)" :
+        "a non-triad tone (color tone closure)";
 
-      // Contour summary
       const contour =
-        (peakIdx > 0 && peakIdx < N-1) ? "arch-shaped" :
+        (peakIdx > 0 && peakIdx < N-1) ? "arch-shaped (rise then fall)" :
         (end > start) ? "overall rising" :
         (end < start) ? "overall falling" : "balanced";
 
-      // Register mention
       const range = peak - trough;
 
+      const total = durs.reduce((a,b)=>a+b,0);
+      const minD = Math.min(...durs);
+      const maxD = Math.max(...durs);
+      const longNotes = durs.filter(x => x >= (minD + (maxD-minD)*0.66)).length;
+
       return (
-        `This phrase in ${key} ${mode.replaceAll("_"," ")} tends to feel coherent because it combines ` +
-        `a ${contour} contour (high point around note ${peakIdx+1}, low around note ${troughIdx+1}) ` +
-        `with mostly stepwise motion (${stepPct}% steps), which makes it singable and “connected.” ` +
-        `It closes by leaning toward the ${cadenceType}, giving a clear sense of ending. ` +
-        `The pitch range is ${range} semitones—wide enough to feel expressive, but not so wide that it becomes jumpy.`
+        `This phrase in ${key} ${mode.replaceAll("_"," ")} tends to work musically because it has ` +
+        `${contour} contour (high point near note ${peakIdx+1}, low near note ${troughIdx+1}), ` +
+        `and it keeps motion mostly stepwise (${stepPct}% steps), which makes the line feel connected and singable. ` +
+        `The ending leans toward ${cadenceType}, which helps your ear interpret it as a “phrase” with an endpoint. ` +
+        `Its pitch range is ${range} semitones (expressive without feeling random). ` +
+        `Rhythm-wise, the phrase spans ${total.toFixed(2)} beats with durations from ${minD.toFixed(3)} to ${maxD.toFixed(3)} beats; ` +
+        `${longNotes ? "a few longer notes act as anchors while shorter notes provide motion." : "durations stay relatively even, which keeps the groove steady."}`
       );
     }
 
     // ============================================================
-    // NEW: Copy + MIDI export (no external libs)
+    // Copy + MIDI export
     // ============================================================
     function notesToText(notes){
       if (!notes) return "";
-      return notes.map(n => `${midiToNoteName(n.midi)}:${n.durBeats}`).join(", ");
+      return notes.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(", ");
     }
 
     copyBtn.addEventListener("click", async () => {
@@ -1195,7 +1261,6 @@
         await navigator.clipboard.writeText(text);
         setWarning(null);
       }catch(e){
-        // fallback
         const ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -1205,12 +1270,9 @@
       }
     });
 
-    // Minimal Standard MIDI File writer (Format 0, single track)
-    // Uses PPQ = 480. Converts beats -> ticks (assuming 1 beat = quarter note).
     function exportMIDI(notes, bpm){
       const PPQ = 480;
 
-      // Variable-length quantity
       function vlq(n){
         let bytes = [n & 0x7F];
         while ((n >>= 7)){
@@ -1219,51 +1281,33 @@
         return bytes;
       }
 
-      function strBytes(s){
-        return Array.from(s).map(ch => ch.charCodeAt(0));
-      }
-
+      function strBytes(s){ return Array.from(s).map(ch => ch.charCodeAt(0)); }
       function u16(n){ return [(n>>8)&255, n&255]; }
       function u32(n){ return [(n>>24)&255, (n>>16)&255, (n>>8)&255, n&255]; }
 
-      // Header chunk
       const header = [
         ...strBytes("MThd"),
         ...u32(6),
-        ...u16(0),       // format 0
-        ...u16(1),       // 1 track
-        ...u16(PPQ)      // division
+        ...u16(0),
+        ...u16(1),
+        ...u16(PPQ)
       ];
 
-      // Track events
       const ev = [];
-
-      // Tempo meta event (microseconds per quarter)
       const mpqn = Math.round(60000000 / Math.max(1, bpm));
-      ev.push(
-        ...vlq(0),
-        0xFF, 0x51, 0x03,
-        (mpqn>>16)&255, (mpqn>>8)&255, mpqn&255
-      );
-
-      // Program change (Acoustic Grand Piano)
+      ev.push(...vlq(0), 0xFF, 0x51, 0x03, (mpqn>>16)&255, (mpqn>>8)&255, mpqn&255);
       ev.push(...vlq(0), 0xC0, 0x00);
 
-      // Notes (channel 0)
       let deltaTicks = 0;
       for (const n of notes){
         const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
-        // Note on
         ev.push(...vlq(deltaTicks), 0x90, clamp(n.midi,0,127), 100);
-        // Note off after duration
         ev.push(...vlq(durTicks), 0x80, clamp(n.midi,0,127), 0);
         deltaTicks = 0;
       }
 
-      // End of track
       ev.push(...vlq(0), 0xFF, 0x2F, 0x00);
 
-      // Track chunk
       const track = [
         ...strBytes("MTrk"),
         ...u32(ev.length),
@@ -1290,7 +1334,7 @@
     });
 
     // ============================================================
-    // NEW: Listening study storage + CSV export
+    // Listening study storage + CSV export
     // ============================================================
     const RATINGS_KEY = "liam_ai_music_ratings_v1";
 
@@ -1313,7 +1357,6 @@
         ratingsTable.innerHTML = `<tr><td colspan="3" class="tiny muted">No ratings yet.</td></tr>`;
         return;
       }
-      // last 8
       const view = list.slice(-8).reverse();
       ratingsTable.innerHTML = view.map(r => `
         <tr>
@@ -1362,6 +1405,10 @@
         stars: currentStars,
         comment: (ratingComment.value || "").trim(),
         key, mode, length, bpm, stepBias,
+        minDur: Number(minDurEl.value),
+        maxDur: Number(maxDurEl.value),
+        rhythmVar: Number(rhythmVarEl.value),
+        quantize: quantizeEl.value,
         metrics,
         phrase: phrase.map(n => ({ midi: n.midi, durBeats: n.durBeats }))
       };
@@ -1385,13 +1432,14 @@
 
       const header = [
         "ts","stars","comment","key","mode","length","bpm","stepBias",
+        "minDur","maxDur","rhythmVar","quantize",
         "repetition","stepwise","range","tonal",
         "phrase"
       ];
 
       const rows = list.map(r => {
         const safe = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
-        const phraseText = r.phrase.map(n => `${midiToNoteName(n.midi)}:${n.durBeats}`).join(" ");
+        const phraseText = r.phrase.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(" ");
         return [
           safe(r.ts),
           r.stars,
@@ -1401,6 +1449,10 @@
           r.length,
           r.bpm,
           r.stepBias,
+          r.minDur,
+          r.maxDur,
+          r.rhythmVar,
+          safe(r.quantize),
           r.metrics?.repetition?.toFixed?.(4) ?? "",
           r.metrics?.stepwise?.toFixed?.(4) ?? "",
           r.metrics?.range ?? "",
@@ -1442,6 +1494,11 @@
       const stepBias = Number(document.getElementById("smooth").value);
       const length = Number(document.getElementById("length").value);
 
+      const minDur = Number(minDurEl.value);
+      const maxDur = Number(maxDurEl.value);
+      const rhythmVar = Number(rhythmVarEl.value);
+      const quantizeStep = quantizeEl.value;
+
       const source = document.getElementById("source").value;
       const backendUrl = document.getElementById("backendUrl").value.trim();
 
@@ -1461,17 +1518,31 @@
 
           renderPhrase(phrase);
 
-          // If backend returns metrics, show them; else compute locally
           const metrics = data.metrics || computeMetrics(phrase, key, mode);
           renderMetrics(metrics);
 
         } else {
-          phrase = generatePhraseBrowser({ key, mode, smooth: stepBias, length });
+          // Browser generator uses rhythm controls (any duration imaginable)
+          if (!isFinite(minDur) || !isFinite(maxDur) || minDur <= 0 || maxDur <= 0){
+            throw new Error("Min/Max Note Length must be positive numbers.");
+          }
+          if (maxDur < minDur){
+            throw new Error("Max Note Length must be ≥ Min Note Length.");
+          }
+
+          phrase = generatePhraseBrowser({
+            key, mode,
+            smooth: stepBias,
+            length,
+            minDur, maxDur,
+            rhythmVar,
+            quantizeStep
+          });
+
           renderPhrase(phrase);
           renderMetrics(computeMetrics(phrase, key, mode));
         }
 
-        // NEW: enable extra actions + draw piano roll + explanation
         playBtn.disabled = false;
         copyBtn.disabled = false;
         exportMidiBtn.disabled = false;
@@ -1479,7 +1550,6 @@
         drawPianoRoll(phrase);
         melodyExplain.textContent = describeMelody(phrase, key, mode);
 
-        // Ratings UI now usable
         ratingHint.textContent = "Click a star to rate this phrase.";
         saveRatingBtn.disabled = !(currentStars > 0);
         renderRatingsTable();
@@ -1492,7 +1562,7 @@
         exportMidiBtn.disabled = true;
         out.textContent = "(generation failed)";
         drawPianoRoll(null);
-        melodyExplain.textContent = "Generate a phrase to see a short explanation of its contour + cadence.";
+        melodyExplain.textContent = "Generate a phrase to see a concrete explanation of why the produced melody tends to sound coherent.";
         ratingHint.textContent = "Generate a phrase, then rate it.";
         saveRatingBtn.disabled = true;
 
@@ -1519,11 +1589,7 @@
 
     stopBtn.addEventListener("click", stopPlayback);
 
-    // ============================================================
-    // NEW: Keyboard shortcuts (fast demo mode)
-    // ============================================================
     window.addEventListener("keydown", (e) => {
-      // avoid interfering when typing in an input
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea") return;
 
@@ -1547,13 +1613,12 @@
       try { stopPlayback(); } catch(e) {}
     });
 
-    // initial render of ratings table
     renderRatingsTable();
-    // initial draw
     drawPianoRoll(null);
   </script>
 </body>
 </html>
+
 
 
 
