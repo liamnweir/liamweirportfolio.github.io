@@ -13,11 +13,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Liam Weir | AI in Music • HCI • Cognitive Science</title>
 
-  <!-- Performance hints -->
-  <link rel="preload" as="image" href="images/download (2).jpeg">
-  <link rel="preload" as="image" href="images/download (1).jpeg">
-  <link rel="preload" as="image" href="images/images.jpeg">
-  <link rel="preload" as="image" href="images/download.jpeg">
+  <!-- Performance hints (FIXED: no images/ folder + encode spaces + correct Ableton filename) -->
+  <link rel="preload" as="image" href="download%20(2).jpeg">
+  <link rel="preload" as="image" href="download%20(1).jpeg">
+  <link rel="preload" as="image" href="images.jpeg">
+  <link rel="preload" as="image" href="Ableton-Live-12-30.png">
 
   <style>
     :root{
@@ -159,11 +159,21 @@
       .hero-wrap{ grid-template-columns: 1fr; }
     }
 
+    /* ✅ Readability fix: dark “glass” behind hero text */
     .hero-copy{
       position:relative;
       z-index:2;
-      padding: 1.2rem 0;
+      padding: 1.25rem 1.25rem 1.35rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.38);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.28);
     }
+    body.light .hero-copy{
+      background: rgba(255,255,255,0.72);
+    }
+
     .kicker{
       display:inline-flex;
       align-items:center;
@@ -191,6 +201,7 @@
       font-size: clamp(2.4rem, 4.4vw, 3.6rem);
       line-height: 1.05;
       letter-spacing:-0.6px;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.45);
     }
 
     .lead{
@@ -199,6 +210,7 @@
       font-size: 1.12rem;
       line-height: 1.55;
       max-width: 58ch;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.28);
     }
 
     .hero-tags{
@@ -296,6 +308,7 @@
       border:1px solid var(--line);
       box-shadow: 0 18px 45px rgba(0,0,0,0.38);
       transform: translateZ(0);
+      background: rgba(255,255,255,0.03);
     }
     .tile img{
       width:100%;
@@ -605,7 +618,6 @@
       <div class="hero-visual reveal" aria-label="AI in music collage">
         <div class="stack" aria-hidden="true"></div>
 
-        <!-- Floating music symbols -->
         <div class="float-notes" aria-hidden="true">
           <div class="note" style="left:8%; top:12%; font-size:54px; animation-delay:0s;">♪</div>
           <div class="note" style="left:78%; top:8%; font-size:44px; animation-delay:1.4s;">♬</div>
@@ -614,26 +626,25 @@
           <div class="note" style="left:48%; top:40%; font-size:36px; animation-delay:1.2s;">𝄞</div>
         </div>
 
-        <!-- Your uploaded images (local paths in repo) -->
+        <!-- FIXED: root paths (no images/) + encode spaces -->
         <div class="tile t1">
-          <img src="images/download (2).jpeg" alt="AI chip illustration" />
+          <img src="download%20(2).jpeg" alt="AI chip illustration" />
           <div class="glass"></div>
         </div>
 
         <div class="tile t2">
-          <img src="images/images.jpeg" alt="Music notes and staff" />
+          <img src="images.jpeg" alt="Music notes and staff" />
           <div class="glass"></div>
         </div>
 
         <div class="tile t3">
-          <img src="images/download (1).jpeg" alt="Hands playing piano keys" />
+          <img src="download%20(1).jpeg" alt="Hands playing piano keys" />
           <div class="glass"></div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Featured projects section (AI in music focused) -->
   <section>
     <div class="section-head reveal">
       <div>
@@ -656,7 +667,7 @@
     <div class="grid" id="projectGrid">
       <article class="card reveal" data-tags="gen hci audio">
         <div class="card-top">
-          <img src="images/download.jpeg" alt="Ableton Live interface screenshot">
+          <img src="Ableton-Live-12-30.png" alt="Ableton Live interface screenshot">
         </div>
         <div class="card-body">
           <h3>AI-Assisted Sound Design Workflow</h3>
@@ -674,7 +685,7 @@
 
       <article class="card reveal" data-tags="mir audio analysis">
         <div class="card-top">
-          <img src="images/images.jpeg" alt="Music notes visual">
+          <img src="images.jpeg" alt="Music notes visual">
         </div>
         <div class="card-body">
           <h3>Music Similarity & Structure (MIR)</h3>
@@ -692,7 +703,7 @@
 
       <article class="card reveal" data-tags="hci perception audio">
         <div class="card-top">
-          <img src="images/download (1).jpeg" alt="Hands playing piano">
+          <img src="download%20(1).jpeg" alt="Hands playing piano">
         </div>
         <div class="card-body">
           <h3>Perception-Informed Audio UI</h3>
@@ -710,7 +721,7 @@
 
       <article class="card reveal" data-tags="gen mir audio">
         <div class="card-top">
-          <img src="images/download (2).jpeg" alt="AI chip visual">
+          <img src="download%20(2).jpeg" alt="AI chip visual">
         </div>
         <div class="card-body">
           <h3>Generative Audio Experiments</h3>
@@ -728,9 +739,9 @@
     </div>
 
     <div class="strip reveal" aria-label="Visual gallery">
-      <div class="shot"><img src="images/download (2).jpeg" alt="AI hardware themed image"></div>
-      <div class="shot"><img src="images/download (1).jpeg" alt="Piano performance image"></div>
-      <div class="shot"><img src="images/download.jpeg" alt="Ableton workflow image"></div>
+      <div class="shot"><img src="download%20(2).jpeg" alt="AI hardware themed image"></div>
+      <div class="shot"><img src="download%20(1).jpeg" alt="Piano performance image"></div>
+      <div class="shot"><img src="Ableton-Live-12-30.png" alt="Ableton workflow image"></div>
     </div>
   </section>
 
@@ -776,11 +787,9 @@
     © 2025 Liam Weir • AI in Music • UCSC
   </footer>
 
-  <!-- Sticky CTA goes to resume.html (NO PDFs anywhere on this page) -->
   <a class="sticky-cta" href="resume.html" aria-label="View my resume">View Resume</a>
 
   <script>
-    /* ========= Theme toggle (saved) ========= */
     const themeBtn = document.getElementById('themeBtn');
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') document.body.classList.add('light');
@@ -790,14 +799,12 @@
       localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
     });
 
-    /* ========= Simple scroll reveal ========= */
     const revealEls = Array.from(document.querySelectorAll('.reveal'));
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
     }, { threshold: 0.12 });
     revealEls.forEach(el => io.observe(el));
 
-    /* ========= Project search + filter ========= */
     const search = document.getElementById('search');
     const chips = Array.from(document.querySelectorAll('.chip'));
     const cards = Array.from(document.querySelectorAll('#projectGrid .card'));
@@ -827,13 +834,16 @@
 
     search.addEventListener('input', applyFilters);
 
-    /* ========= Basic click tracking (local only) ========= */
     document.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => {
         console.log('[click]', a.getAttribute('href'));
       });
     });
   </script>
+
+</body>
+</html>
+
 
 </body>
 </html>
