@@ -26,6 +26,7 @@
       gap: 2rem;
       padding: 1rem;
       z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
     nav a {
@@ -48,10 +49,11 @@
     }
 
     .intro {
-      max-width: 800px;
+      max-width: 860px;
       color: #d8dbff;
       margin-bottom: 3rem;
       line-height: 1.7;
+      opacity: 0.95;
     }
 
     .projects-grid {
@@ -62,26 +64,44 @@
 
     .project-card {
       background: #15172b;
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 20px;
       padding: 2rem;
       box-shadow: 0 30px 60px rgba(0,0,0,0.35);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+      position: relative;
+      overflow: hidden;
     }
+
+    .project-card:before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 20% 10%, rgba(120,140,255,0.18), transparent 60%),
+                  radial-gradient(circle at 80% 30%, rgba(120,255,180,0.12), transparent 55%);
+      transform: rotate(10deg);
+      pointer-events:none;
+    }
+
+    .project-card > * { position: relative; }
 
     .project-card:hover {
       transform: translateY(-6px);
       box-shadow: 0 40px 80px rgba(0,0,0,0.45);
+      filter: brightness(1.05);
     }
 
     .project-card h3 {
       margin-top: 0;
       margin-bottom: 0.6rem;
+      letter-spacing: 0.2px;
     }
 
     .project-card p {
       color: #d0d3ff;
       line-height: 1.6;
       font-size: 0.95rem;
+      margin: 0.35rem 0;
     }
 
     .tag {
@@ -93,6 +113,7 @@
       font-size: 0.75rem;
       margin-right: 0.4rem;
       margin-top: 0.6rem;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .coming-soon {
@@ -100,7 +121,7 @@
       font-style: italic;
     }
 
-    /* NEW: project button styling */
+    /* project button */
     .project-btn {
       display: inline-block;
       margin-top: 1rem;
@@ -118,6 +139,39 @@
       filter: brightness(1.15);
       transform: translateY(-2px);
     }
+
+    /* subtle badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(120,255,180,0.22);
+      background: rgba(120,255,180,0.10);
+      color: rgba(220,255,235,0.92);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 0.35rem 0 0.55rem;
+    }
+
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(120,255,180,0.85);
+      box-shadow: 0 0 0 4px rgba(120,255,180,0.12);
+    }
+
+    .bullets {
+      margin: 0.55rem 0 0;
+      padding-left: 1.1rem;
+      color: #d0d3ff;
+      line-height: 1.6;
+      font-size: 0.93rem;
+    }
+
+    .bullets li { margin: 0.25rem 0; }
   </style>
 </head>
 
@@ -134,9 +188,9 @@
     <h1>Projects</h1>
 
     <p class="intro">
-      This page will showcase my work in Artificial Intelligence, Human–Computer Interaction,
-      data analysis, and music technology. Each project will include goals, methods,
-      outcomes, and links to demos or code.
+      This page showcases my work in Artificial Intelligence, Human–Computer Interaction,
+      data analysis, and music technology. Each project includes a clear problem statement,
+      what I built, and evidence (demos, results, and reproducible artifacts).
     </p>
 
     <div class="projects-grid">
@@ -145,28 +199,41 @@
       <div class="project-card">
         <h3>AI Music Generation System</h3>
         <p>
-          Machine learning system for generating short musical phrases with an emphasis
-          on human perception and musical structure.
+          Generates short symbolic phrases with controllable musical structure (key/mode, stepwise bias, rhythm variety),
+          plus built-in playback, metrics, and a lightweight listener-rating loop.
         </p>
         <span class="tag">AI</span>
-        <span class="tag">Audio</span>
-        <span class="tag">Python</span>
+        <span class="tag">Music</span>
+        <span class="tag">Tone.js</span>
+        <span class="tag">Evaluation</span>
 
-        <!-- NEW: link to your project page -->
         <a class="project-btn" href="./projects/ai-music-generation/">Open project page</a>
       </div>
 
-      <!-- PROJECT PLACEHOLDER 2 -->
-      <div class="project-card coming-soon">
-        <h3>Pitch Perception & Shepard Tone Study</h3>
+      <!-- PROJECT 2 (NEW: Remix Assistant) -->
+      <div class="project-card">
+        <div class="badge"><span class="dot"></span>New • Practical tool project</div>
+        <h3>Remix Assistant (MIDI)</h3>
         <p>
-          Visualization and analysis of pitch chroma and pitch height using psychoacoustic
-          stimuli and perceptual modeling.
+          Upload any MIDI and instantly generate usable remix variations:
+          reharmonizations, basslines, counter-melodies, and rhythmic transformations—plus “style presets”
+          (lofi / EDM / baroque-ish).
         </p>
-        <span class="tag">Cognitive Science</span>
-        <span class="tag">Perception</span>
-        <span class="tag">Data Viz</span>
-        <p><em>Details coming soon.</em></p>
+
+        <ul class="bullets">
+          <li><strong>Why it matters:</strong> Turns a raw melody into arrangement-ready options fast—this is a creator tool, not just a demo.</li>
+          <li><strong>Evidence built-in:</strong> Randomized A/B listening tests + exportable CSV + plots (so you can show results, not vibes).</li>
+          <li><strong>Deliverables:</strong> Before/after examples, in-browser playback, and downloadable MIDI outputs.</li>
+        </ul>
+
+        <span class="tag">MIDI</span>
+        <span class="tag">Generative</span>
+        <span class="tag">HCI</span>
+        <span class="tag">A/B Testing</span>
+        <span class="tag">Reproducible</span>
+
+        <!-- NOTE: update this path to wherever you place remix.html -->
+        <a class="project-btn" href="./projects/remix-assistant/">Open project page</a>
       </div>
 
       <!-- PROJECT PLACEHOLDER 3 -->
@@ -184,6 +251,10 @@
 
     </div>
   </div>
+
+</body>
+</html>
+
 
 </body>
 </html>
