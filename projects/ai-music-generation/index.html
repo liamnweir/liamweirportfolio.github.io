@@ -179,6 +179,12 @@
       background: linear-gradient(135deg, rgba(255,184,107,0.18), rgba(255,92,168,0.10));
     }
 
+    /* Drum toggle look */
+    .btn.toggleOn{
+      border-color: rgba(255,184,107,0.42);
+      background: linear-gradient(135deg, rgba(255,184,107,0.22), rgba(47,227,180,0.10));
+    }
+
     .hr{ border:0; border-top: 1px solid rgba(255,255,255,0.10); margin: 14px 0 }
 
     .alert{
@@ -317,7 +323,7 @@
       <section class="card">
         <div class="hd">
           <h2>Controls</h2>
-          <div class="tiny" style="margin-top:6px">Generate → Play (melody + chord pad) → Rate</div>
+          <div class="tiny" style="margin-top:6px">Generate → Play (melody + chord pad + optional drums) → Rate</div>
         </div>
 
         <div class="bd">
@@ -335,10 +341,15 @@
               <div class="label">Mode</div>
               <select id="mode">
                 <option value="major">Major (Ionian)</option>
-                <option value="natural_minor">Natural Minor (Aeolian)</option>
-                <option value="harmonic_minor">Harmonic Minor</option>
                 <option value="dorian">Dorian</option>
+                <option value="phrygian">Phrygian</option>
+                <option value="lydian">Lydian</option>
                 <option value="mixolydian">Mixolydian</option>
+                <option value="natural_minor">Natural Minor (Aeolian)</option>
+                <option value="locrian">Locrian</option>
+                <option value="harmonic_minor">Harmonic Minor</option>
+                <option value="melodic_minor">Melodic Minor (Asc.)</option>
+                <option value="harmonic_major">Harmonic Major</option>
               </select>
             </div>
 
@@ -376,7 +387,17 @@
                 <option value="piano" selected>Piano-ish</option>
                 <option value="strings">Strings lead</option>
                 <option value="soft">Soft synth</option>
+                <option value="fm">FM lead</option>
+                <option value="am">AM lead</option>
+                <option value="pluck">Pluck</option>
+                <option value="bell">Bell</option>
               </select>
+            </div>
+
+            <div class="field" style="min-width:220px">
+              <div class="label">Drum track</div>
+              <button class="btn" id="drumBtn" type="button" aria-pressed="false">Drums: Off</button>
+              <div class="tiny" style="margin-top:6px">Simple kick/snare/hat pattern (toggles on playback)</div>
             </div>
           </div>
 
@@ -510,11 +531,17 @@
     // -------------------------
     const NOTE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11};
     const MODES = {
-      major:         [0,2,4,5,7,9,11],
-      natural_minor: [0,2,3,5,7,8,10],
-      harmonic_minor:[0,2,3,5,7,8,11],
-      dorian:        [0,2,3,5,7,9,10],
-      mixolydian:    [0,2,4,5,7,9,10],
+      // 7-tone modes so diatonic triads still work
+      major:          [0,2,4,5,7,9,11],      // Ionian
+      dorian:         [0,2,3,5,7,9,10],
+      phrygian:       [0,1,3,5,7,8,10],
+      lydian:         [0,2,4,6,7,9,11],
+      mixolydian:     [0,2,4,5,7,9,10],
+      natural_minor:  [0,2,3,5,7,8,10],      // Aeolian
+      locrian:        [0,1,3,5,6,8,10],
+      harmonic_minor: [0,2,3,5,7,8,11],
+      melodic_minor:  [0,2,3,5,7,9,11],      // Ascending melodic minor
+      harmonic_major: [0,2,4,5,7,8,11],
     };
     const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
     const ROMAN = ["I","II","III","IV","V","VI","VII"];
@@ -539,18 +566,18 @@
     }
 
     function chordProgression(modeKey){
-      const majorLike = (modeKey === "major" || modeKey === "mixolydian");
-      const majors = [
-        [1,5,6,4],
-        [1,4,5,1],
-        [6,4,1,5],
-        [1,6,4,5],
-      ];
+      const majorLike = (modeKey === "major" || modeKey === "mixolydian" || modeKey === "lydian" || modeKey === "harmonic_major");
       const minors = [
         [1,6,3,7],
         [1,4,7,3],
         [1,5,6,7],
         [1,7,6,7],
+      ];
+      const majors = [
+        [1,5,6,4],
+        [1,4,5,1],
+        [6,4,1,5],
+        [1,6,4,5],
       ];
       return pick(majorLike ? majors : minors);
     }
@@ -563,6 +590,7 @@
     const keyEl = $("key"), modeEl = $("mode"), sectionEl = $("section");
     const tempoEl = $("tempo"), tempoVal = $("tempoVal");
     const biasEl = $("bias"), biasVal = $("biasVal"), lenEl = $("length"), instEl = $("inst");
+    const drumBtn = $("drumBtn");
 
     const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), midiBtn = $("midiBtn");
     const warnEl = $("warn");
@@ -589,6 +617,20 @@
     let currentChordEvents = null;     // [{timeBeats, triadPCs}]
     let currentCadence = "—";
     let currentStars = 0;
+    let currentTotalBeats = 0;
+
+    let drumsOn = false;
+
+    function renderDrumBtn(){
+      drumBtn.textContent = drumsOn ? "Drums: On" : "Drums: Off";
+      drumBtn.setAttribute("aria-pressed", String(drumsOn));
+      drumBtn.classList.toggle("toggleOn", drumsOn);
+    }
+
+    drumBtn.addEventListener("click", () => {
+      drumsOn = !drumsOn;
+      renderDrumBtn();
+    });
 
     // -------------------------
     // Alerts
@@ -604,11 +646,17 @@
     // -------------------------
     let masterReady = false;
     let bus, limiter, comp, verb;
-    let melodyGain, chordGain;
+    let melodyGain, chordGain, drumGain;
+
     let melodySynth = null;
     let chordSynth = null;
+
     let melodyPart = null;
     let chordPart = null;
+
+    // Drum synths/part
+    let kick = null, snare = null, hat = null;
+    let drumPart = null;
 
     function ensureMaster(){
       if(masterReady) return;
@@ -627,7 +675,8 @@
       verb.connect(bus);
 
       melodyGain = new Tone.Gain(0.95).connect(bus);
-      chordGain  = new Tone.Gain(0.55).connect(bus); // chords quieter so melody leads
+      chordGain  = new Tone.Gain(0.55).connect(bus);
+      drumGain   = new Tone.Gain(0.55).connect(bus);
 
       masterReady = true;
     }
@@ -636,23 +685,59 @@
       ensureMaster();
       if(melodySynth){ try{melodySynth.dispose();}catch(e){} melodySynth=null; }
 
-      const base = {
-        volume: -10,
-        oscillator: { type: "triangle" },
-        envelope: { attack: 0.008, decay: 0.22, sustain: 0.28, release: 0.9 }
-      };
+      // Default: PolySynth over a voice type
+      // (No bass options included.)
+      if(kind === "fm"){
+        melodySynth = new Tone.PolySynth(Tone.FMSynth, {
+          volume: -14,
+          harmonicity: 1.5,
+          modulationIndex: 10,
+          envelope: { attack: 0.01, decay: 0.18, sustain: 0.20, release: 0.7 },
+          modulationEnvelope: { attack: 0.01, decay: 0.20, sustain: 0.0, release: 0.2 }
+        });
+      } else if(kind === "am"){
+        melodySynth = new Tone.PolySynth(Tone.AMSynth, {
+          volume: -14,
+          harmonicity: 1.0,
+          envelope: { attack: 0.01, decay: 0.20, sustain: 0.22, release: 0.8 },
+          modulationEnvelope: { attack: 0.01, decay: 0.18, sustain: 0.0, release: 0.25 }
+        });
+      } else if(kind === "pluck"){
+        melodySynth = new Tone.PolySynth(Tone.PluckSynth, {
+          volume: -14,
+          attackNoise: 1.0,
+          dampening: 4200,
+          resonance: 0.82
+        });
+      } else if(kind === "bell"){
+        melodySynth = new Tone.PolySynth(Tone.FMSynth, {
+          volume: -16,
+          harmonicity: 2.0,
+          modulationIndex: 18,
+          envelope: { attack: 0.005, decay: 0.8, sustain: 0.0, release: 1.2 },
+          modulationEnvelope: { attack: 0.005, decay: 0.6, sustain: 0.0, release: 0.8 }
+        });
+      } else {
+        // original 3
+        const base = {
+          volume: -10,
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.008, decay: 0.22, sustain: 0.28, release: 0.9 }
+        };
 
-      if(kind === "strings"){
-        base.oscillator.type = "sawtooth";
-        base.envelope = { attack: 0.06, decay: 0.20, sustain: 0.55, release: 1.2 };
-        base.volume = -12;
-      } else if (kind === "soft"){
-        base.oscillator.type = "sine";
-        base.envelope = { attack: 0.01, decay: 0.10, sustain: 0.22, release: 0.5 };
-        base.volume = -12;
+        if(kind === "strings"){
+          base.oscillator.type = "sawtooth";
+          base.envelope = { attack: 0.06, decay: 0.20, sustain: 0.55, release: 1.2 };
+          base.volume = -12;
+        } else if (kind === "soft"){
+          base.oscillator.type = "sine";
+          base.envelope = { attack: 0.01, decay: 0.10, sustain: 0.22, release: 0.5 };
+          base.volume = -12;
+        }
+
+        melodySynth = new Tone.PolySynth(Tone.Synth, base);
       }
 
-      melodySynth = new Tone.PolySynth(Tone.Synth, base);
       melodySynth.connect(melodyGain);
       melodySynth.connect(verb);
       return melodySynth;
@@ -673,24 +758,109 @@
       return chordSynth;
     }
 
+    function buildDrums(){
+      ensureMaster();
+      if(kick){ try{kick.dispose();}catch(e){} kick=null; }
+      if(snare){ try{snare.dispose();}catch(e){} snare=null; }
+      if(hat){ try{hat.dispose();}catch(e){} hat=null; }
+
+      kick = new Tone.MembraneSynth({
+        pitchDecay: 0.03,
+        octaves: 8,
+        oscillator: { type: "sine" },
+        envelope: { attack: 0.001, decay: 0.18, sustain: 0.0, release: 0.1 }
+      }).connect(drumGain);
+
+      snare = new Tone.NoiseSynth({
+        noise: { type: "white" },
+        envelope: { attack: 0.001, decay: 0.14, sustain: 0.0, release: 0.05 }
+      }).connect(drumGain);
+
+      hat = new Tone.MetalSynth({
+        frequency: 250,
+        envelope: { attack: 0.001, decay: 0.08, release: 0.01 },
+        harmonicity: 5.1,
+        modulationIndex: 32,
+        resonance: 3000,
+        octaves: 1.2
+      }).connect(drumGain);
+
+      // a touch of verb on drums (subtle)
+      kick.connect(verb);
+      snare.connect(verb);
+      hat.connect(verb);
+    }
+
     async function ensureAudio(){
       if(Tone.context.state !== "running") await Tone.start();
       buildMelodySynth(instEl.value);
       buildChordSynth();
+      buildDrums();
     }
 
     function stopPlayback(){
       if(melodyPart){ try{melodyPart.stop(); melodyPart.dispose();}catch(e){} melodyPart=null; }
       if(chordPart){ try{chordPart.stop(); chordPart.dispose();}catch(e){} chordPart=null; }
+      if(drumPart){ try{drumPart.stop(); drumPart.dispose();}catch(e){} drumPart=null; }
+
       Tone.Transport.stop();
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
+
       playBtn.disabled = !phrase;
       stopBtn.disabled = true;
     }
 
+    function scheduleDrums(totalBeats){
+      if(!drumsOn) return;
+
+      if(drumPart){ try{drumPart.stop(); drumPart.dispose();}catch(e){} drumPart=null; }
+
+      // 16th grid: 0.25 beats per step (since 1 beat = quarter note)
+      const step = 0.25;
+      const stepsTotal = Math.max(1, Math.round(totalBeats / step));
+      const events = [];
+
+      for(let s=0; s<stepsTotal; s++){
+        const tBeats = s * step;
+        const stepInBar = s % 16;
+
+        // simple pattern:
+        // kick on 1 and 3 (steps 0 and 8)
+        // snare on 2 and 4 (steps 4 and 12)
+        // hat on 8ths (every 2 steps) + occasional extra
+        if(stepInBar === 0 || stepInBar === 8){
+          events.push({ time: tBeats, type:"kick", vel: 0.95 });
+        }
+        if(stepInBar === 4 || stepInBar === 12){
+          events.push({ time: tBeats, type:"snare", vel: 0.75 });
+        }
+        if(stepInBar % 2 === 0){
+          const vel = (stepInBar === 0 || stepInBar === 8) ? 0.35 : 0.28;
+          events.push({ time: tBeats, type:"hat", vel });
+        }
+
+        // tiny bit of variety: occasional extra kick pickup
+        if(stepInBar === 10 && Math.random() < 0.35){
+          events.push({ time: tBeats, type:"kick", vel: 0.65 });
+        }
+      }
+
+      drumPart = new Tone.Part((time, v) => {
+        if(v.type === "kick"){
+          kick.triggerAttackRelease("C1", Tone.Time("8n").toSeconds(), time, v.vel);
+        } else if(v.type === "snare"){
+          snare.triggerAttackRelease(Tone.Time("16n").toSeconds(), time, v.vel);
+        } else if(v.type === "hat"){
+          hat.triggerAttackRelease(Tone.Time("32n").toSeconds(), time, v.vel);
+        }
+      }, events);
+
+      drumPart.start(0);
+    }
+
     function schedulePlayback(notes){
-      // Melody + Chords
+      // Melody + Chords (+ optional Drums)
       Tone.Transport.stop();
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
@@ -710,10 +880,9 @@
         melodySynth.triggerAttackRelease(name, durSec, time, 0.92);
       }, melEvents);
 
-      // Chord events: each bar (4 beats)
+      // Chords: each bar (4 beats)
       const chordEvents = currentChordEvents || [];
       chordPart = new Tone.Part((time, v) => {
-        // v.midis: [m1,m2,m3]
         const freqs = v.midis.map(m => Tone.Frequency(clamp(m, 24, 108), "midi"));
         chordSynth.triggerAttackRelease(freqs, Tone.Time(v.dur).toSeconds(), time, 0.55);
       }, chordEvents.map(ev => ({ time: ev.time, midis: ev.midis, dur: ev.durBeats })));
@@ -721,11 +890,14 @@
       chordPart.start(0);
       melodyPart.start(0);
 
+      // Drums (toggle)
+      scheduleDrums(currentTotalBeats || sumBeats(notes));
+
       Tone.Transport.start("+0.02");
     }
 
     // -------------------------
-    // Rhythm generation (fits bars)
+    // Rhythm generation (fits bars) + supports 16th/8th/quarter/half/whole
     // -------------------------
     function targetBeatsForLength(len){
       const bars = Math.max(1, Math.round(len / 8));
@@ -733,17 +905,21 @@
     }
 
     function makeDurations(count, targetBeats, section){
+      // Beats: 1 beat = quarter note
+      // 16th=0.25, 8th=0.5, quarter=1, half=2, whole=4
       const versePalette = [
-        {d:0.5,  w:5.6}, // 8th
+        {d:0.25, w:3.0}, // 16th
+        {d:0.5,  w:6.2}, // 8th
         {d:1.0,  w:3.2}, // quarter
-        {d:1.5,  w:1.0}, // dotted quarter
-        {d:2.0,  w:0.6}, // half
+        {d:2.0,  w:1.1}, // half
+        {d:4.0,  w:0.35},// whole
       ];
       const chorusPalette = [
-        {d:0.5,  w:3.4},
+        {d:0.25, w:2.0},
+        {d:0.5,  w:4.2},
         {d:1.0,  w:4.2},
-        {d:1.5,  w:1.6},
-        {d:2.0,  w:1.0},
+        {d:2.0,  w:1.6},
+        {d:4.0,  w:0.55},
       ];
       const palette = (section === "chorus") ? chorusPalette : versePalette;
 
@@ -752,8 +928,11 @@
 
       for(let i=0;i<count;i++){
         const notesLeft = count - i;
-        const minNeeded = (notesLeft - 1) * 0.5; // we ensure at least 0.5 beats each for musicality
-        const maxThis = Math.max(0.5, remaining - minNeeded);
+
+        // allow small notes (16ths), so minimum is 0.25 beats
+        const minEach = 0.25;
+        const minNeeded = (notesLeft - 1) * minEach;
+        const maxThis = Math.max(minEach, remaining - minNeeded);
 
         if(i === count - 1){
           durs.push(remaining);
@@ -771,25 +950,26 @@
         let d = choice(candidates);
 
         const after = remaining - d;
-        const canFinish = after >= (notesLeft-1)*0.5 - 1e-9;
+        const canFinish = after >= (notesLeft-1)*minEach - 1e-9;
         if(!canFinish){
           const sorted = candidates.map(c=>c.item).sort((a,b)=>b-a);
-          d = sorted.find(x => (remaining - x) >= (notesLeft-1)*0.5 - 1e-9) ?? 0.5;
+          d = sorted.find(x => (remaining - x) >= (notesLeft-1)*minEach - 1e-9) ?? minEach;
         }
 
         durs.push(d);
         remaining -= d;
       }
 
+      // fix tiny rounding errors
       if(Math.abs(remaining) > 1e-6 && durs.length){
         durs[durs.length-1] += remaining;
       }
 
-      // make last note feel resolved (slightly longer if possible)
+      // make last note feel resolved (lengthen slightly if possible)
       if(durs.length >= 2){
         const last = durs[durs.length-1];
-        if(last < 1.5 && durs[durs.length-2] > 0.5){
-          const take = Math.min(0.5, durs[durs.length-2] - 0.5);
+        if(last < 1.0 && durs[durs.length-2] > 0.25){
+          const take = Math.min(0.25, durs[durs.length-2] - 0.25);
           durs[durs.length-2] -= take;
           durs[durs.length-1] += take;
         }
@@ -843,7 +1023,6 @@
     }
 
     function boundedRange(m, section){
-      // Verse sits a bit lower; chorus slightly higher
       if(section === "chorus") return clamp(m, 52, 88);
       return clamp(m, 48, 82);
     }
@@ -888,22 +1067,18 @@
       const pcsArr = scalePCs(rootPC, mode);
       const scaleSet = new Set(pcsArr);
 
-      // progression + total beats
       const prog = chordProgression(mode);
       const totalBeats = targetBeatsForLength(length);
 
-      // durations aligned to bars
+      // durations aligned to bars, now supports 16th..whole
       const durs = makeDurations(length, totalBeats, section);
 
-      // tonic start/end
       const tonicMidi = 60 + rootPC;
       const startMidi = boundedRange(tonicMidi, section);
       const endMidi   = boundedRange(tonicMidi, section);
 
-      // scale tones around center
       const scaleMidis = scaleTonesMidi(pcsArr, tonicMidi);
 
-      // motif based on first chord
       const firstDeg = prog[0];
       const firstTriad = triadForDegree(rootPC, mode, firstDeg);
       const firstChordMidis = chordTonesMidi(firstTriad, tonicMidi);
@@ -947,13 +1122,11 @@
           const dist = Math.abs(interval);
           let w = 1 / (1 + dist);
 
-          // leap recovery
           if(Math.abs(lastInterval) >= 6){
             const opposite = (lastInterval > 0 && interval < 0) || (lastInterval < 0 && interval > 0);
             if(opposite && dist <= 2) w *= 2.2;
           }
 
-          // keep centered
           const center = (section === "chorus") ? (tonicMidi + 7) : (tonicMidi + 3);
           const drift = Math.abs(m - center);
           w *= 1 / (1 + drift/10);
@@ -967,12 +1140,10 @@
         return next;
       }
 
-      // Start on tonic
       notes.push({midi: boundedRange(nearestMidiForPC(rootPC, startMidi), section), durBeats: durs[0]});
       t += durs[0];
       cur = notes[0].midi;
 
-      // Fill middle
       for(let i=1;i<length-2;i++){
         const strong = isStrongBeat(t);
         const chordMidis = chordAtTime(t);
@@ -980,7 +1151,6 @@
         let injected = null;
         const third = length / 3;
 
-        // Motif structure
         if(length >= 16){
           if(i < third && i-1 < motifA.length) injected = motifA[i-1];
           else if(i >= third && i < 2*third){
@@ -1010,10 +1180,9 @@
         cur = next;
       }
 
-      // Cadence: dominant/leading tone -> tonic
       const domPC = (rootPC + 7) % 12;
       const leadPC = (rootPC + 11) % 12;
-      const useLead = (mode === "major" || mode === "harmonic_minor") && scaleSet.has(leadPC);
+      const useLead = (mode === "major" || mode === "harmonic_minor" || mode === "harmonic_major") && scaleSet.has(leadPC);
 
       const penultPC = useLead ? leadPC : domPC;
       let penult = nearestMidiForPC(penultPC, cur);
@@ -1025,7 +1194,6 @@
       return { notes, prog, cadence: useLead ? "Leading tone → Tonic" : "Dominant → Tonic", totalBeats };
     }
 
-    // Build chord events (one chord per bar)
     function buildChordEvents({key, mode, prog, totalBeats}){
       const rootPC = NOTE[key];
       const bars = Math.max(1, Math.round(totalBeats / 4));
@@ -1035,7 +1203,6 @@
         const deg = prog[Math.min(b, prog.length-1)];
         const triadPCs = triadForDegree(rootPC, mode, deg);
 
-        // chord register around C3–C4
         const center = 48 + rootPC;
         const midis = triadPCs
           .map(pc => nearestMidiForPC(pc, center))
@@ -1069,7 +1236,7 @@
       const range = Math.max(...midis) - Math.min(...midis);
 
       const root = NOTE[key];
-      const minorish = (mode.includes("minor") || mode==="dorian");
+      const minorish = (mode.includes("minor") || mode==="dorian" || mode==="phrygian" || mode==="locrian");
       const triad = minorish ? [0,3,7] : [0,4,7];
       const triadPC = new Set(triad.map(x => (x + root) % 12));
       const tonal = midis.filter(m => triadPC.has(m%12)).length / midis.length;
@@ -1521,8 +1688,8 @@
         phrase = out.notes;
         currentProg = out.prog;
         currentCadence = out.cadence;
+        currentTotalBeats = out.totalBeats;
 
-        // Chords aligned to bars
         currentChordEvents = buildChordEvents({key, mode, prog: currentProg, totalBeats: out.totalBeats});
 
         progText.textContent = formatProg(currentProg);
@@ -1542,6 +1709,7 @@
         phrase = null;
         currentProg = null;
         currentChordEvents = null;
+        currentTotalBeats = 0;
         progText.textContent = "—";
         cadText.textContent = "—";
         renderChips(null);
@@ -1590,9 +1758,11 @@
     drawRoll(null);
     biasVal.textContent = Number(biasEl.value).toFixed(2);
     tempoVal.textContent = tempoEl.value;
+    renderDrumBtn();
   </script>
 </body>
 </html>
+
 
 
 
