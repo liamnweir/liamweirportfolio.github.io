@@ -364,7 +364,7 @@
             <div class="field" style="min-width:220px">
               <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
               <input id="tempo" type="range" min="70" max="170" value="110" />
-              <div class="tiny" style="margin-top:6px">You can change tempo while playing.</div>
+              <div class="tiny" style="margin-top:6px" id="tempoHint">Set tempo, then press Play.</div>
             </div>
 
             <div class="field">
@@ -601,6 +601,7 @@
     // -------------------------
     const keyEl = $("key"), modeEl = $("mode"), sectionEl = $("section");
     const tempoEl = $("tempo"), tempoVal = $("tempoVal");
+    const tempoHint = $("tempoHint");
     const lenEl = $("length"), instEl = $("inst");
     const drumBtn = $("drumBtn");
     const chordBtn = $("chordBtn");
@@ -619,19 +620,29 @@
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
 
-    // tempo UI (and live tempo updates if playing)
-    function applyTempo(bpm, smooth=true){
+    // -------------------------
+    // Tempo gating (ONLY editable when stopped)
+    // -------------------------
+    function setTempoUIEnabled(enabled){
+      tempoEl.disabled = !enabled;
+      tempoEl.setAttribute("aria-disabled", String(!enabled));
+      tempoHint.textContent = enabled
+        ? "Set tempo, then press Play."
+        : "Stop the track to change tempo.";
+    }
+
+    function applyTempo(bpm){
       const v = Number(bpm);
       if(!Number.isFinite(v)) return;
-      if(Tone.Transport.state === "started" && smooth){
-        Tone.Transport.bpm.rampTo(v, 0.08);
-      }else{
-        Tone.Transport.bpm.value = v;
-      }
+      Tone.Transport.bpm.value = v;
     }
+
+    // Only update the displayed value while dragging; only APPLY to Tone when not playing
     tempoEl.addEventListener("input", () => {
       tempoVal.textContent = tempoEl.value;
-      applyTempo(tempoEl.value, true);
+      if(Tone.Transport.state !== "started"){
+        applyTempo(tempoEl.value);
+      }
     });
 
     // -------------------------
@@ -826,6 +837,10 @@
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
 
+      // Re-enable tempo editing once stopped
+      setTempoUIEnabled(true);
+      applyTempo(tempoEl.value);
+
       playBtn.disabled = !phrase;
       stopBtn.disabled = true;
     }
@@ -877,8 +892,9 @@
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
 
-      // Apply bpm before scheduling (and tempo slider can update while running)
-      applyTempo(tempoEl.value, false);
+      // Lock tempo during playback: disable slider and apply BPM once
+      setTempoUIEnabled(false);
+      applyTempo(tempoEl.value);
 
       // Melody events in beats, durations as musical note values
       let t = 0;
@@ -1656,7 +1672,6 @@
         "Average rating by mode"
       );
 
-      // Tempo buckets (replacing the old bias bucket plot)
       const buckets = {};
       const bucketOf = (bpm) => {
         const v = Number(bpm);
@@ -1734,11 +1749,12 @@
       setWarn(null);
       try{
         await ensureAudio();
-        stopPlayback();
+        stopPlayback(); // ensures transport is reset + tempo enabled
         schedulePlayback(phrase);
         playBtn.disabled = true;
         stopBtn.disabled = false;
       }catch(e){
+        setTempoUIEnabled(true);
         setWarn("Audio blocked by browser. Click Play again to enable sound.");
       }
     });
@@ -1768,9 +1784,13 @@
     tempoVal.textContent = tempoEl.value;
     renderDrumBtn();
     renderChordBtn();
+
+    // ensure tempo can be edited on load
+    setTempoUIEnabled(true);
   </script>
 </body>
 </html>
+
 
 
 
