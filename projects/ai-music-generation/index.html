@@ -191,7 +191,7 @@
       color: rgba(255,245,235,0.95);
     }
 
-    /* Melody chips (replaces raw text) */
+    /* Melody chips */
     .chipsWrap{
       margin-top: 12px;
       border-radius: 16px;
@@ -241,7 +241,7 @@
       opacity:0.95;
     }
 
-    /* Piano roll canvas wrap */
+    /* Piano roll */
     .canvasWrap{
       margin-top: 12px;
       border-radius: 16px;
@@ -305,9 +305,9 @@
       </div>
 
       <div class="pills">
-        <span class="pill"><span class="dot p"></span>Generator</span>
-        <span class="pill"><span class="dot m"></span>Playback</span>
-        <span class="pill"><span class="dot b"></span>MIDI Export</span>
+        <span class="pill"><span class="dot p"></span>Scale + Chords</span>
+        <span class="pill"><span class="dot m"></span>Arpeggio Logic</span>
+        <span class="pill"><span class="dot b"></span>Motif Repetition</span>
         <span class="pill"><span class="dot o"></span>Listening Ratings</span>
       </div>
     </div>
@@ -317,7 +317,7 @@
       <section class="card">
         <div class="hd">
           <h2>Controls</h2>
-          <div class="tiny" style="margin-top:6px">Generate → Play → Rate (saved locally on this device)</div>
+          <div class="tiny" style="margin-top:6px">Generate → Play (melody + chord pad) → Rate</div>
         </div>
 
         <div class="bd">
@@ -339,6 +339,14 @@
                 <option value="harmonic_minor">Harmonic Minor</option>
                 <option value="dorian">Dorian</option>
                 <option value="mixolydian">Mixolydian</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="label">Section</div>
+              <select id="section">
+                <option value="verse" selected>Verse</option>
+                <option value="chorus">Chorus</option>
               </select>
             </div>
 
@@ -366,7 +374,7 @@
               <div class="label">Instrument</div>
               <select id="inst">
                 <option value="piano" selected>Piano-ish</option>
-                <option value="strings">Strings pad</option>
+                <option value="strings">Strings lead</option>
                 <option value="soft">Soft synth</option>
               </select>
             </div>
@@ -381,7 +389,6 @@
 
           <div id="warn" class="alert"></div>
 
-          <!-- REPLACES RAW TEXT OUTPUT -->
           <div class="chipsWrap" aria-label="Generated melody preview">
             <div class="chipsHead">
               <div>
@@ -449,6 +456,12 @@
         </div>
 
         <div class="bd">
+          <h3>Harmony (current)</h3>
+          <div class="kv"><span>Progression</span><strong id="progText">—</strong></div>
+          <div class="kv"><span>Cadence</span><strong id="cadText">—</strong></div>
+
+          <div class="hr"></div>
+
           <h3>Structure Metrics (current)</h3>
           <div class="kv"><span>Repetition</span><strong id="m_rep">—</strong></div>
           <div class="kv"><span>Stepwise motion</span><strong id="m_step">—</strong></div>
@@ -484,10 +497,16 @@
     const $ = (id) => document.getElementById(id);
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
     const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const choice = (pairs) => {
+      const sum = pairs.reduce((a,p)=>a+p.w,0);
+      let r = Math.random()*sum;
+      for(const p of pairs){ r -= p.w; if(r<=0) return p.item; }
+      return pairs[pairs.length-1].item;
+    };
     const nowISO = () => new Date().toISOString();
 
     // -------------------------
-    // Music theory
+    // Theory
     // -------------------------
     const NOTE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11};
     const MODES = {
@@ -498,25 +517,63 @@
       mixolydian:    [0,2,4,5,7,9,10],
     };
     const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+    const ROMAN = ["I","II","III","IV","V","VI","VII"];
+
     function midiToName(m){
       const name = NAMES[m % 12];
       const oct = Math.floor(m/12) - 1;
       return name + oct;
     }
 
+    function scalePCs(root, modeKey){
+      return MODES[modeKey].map(x => (x + root) % 12);
+    }
+
+    function triadForDegree(root, modeKey, degree){
+      const pcs = scalePCs(root, modeKey);
+      const i = (degree-1) % 7;
+      const pc1 = pcs[i];
+      const pc3 = pcs[(i+2)%7];
+      const pc5 = pcs[(i+4)%7];
+      return [pc1, pc3, pc5];
+    }
+
+    function chordProgression(modeKey){
+      const majorLike = (modeKey === "major" || modeKey === "mixolydian");
+      const majors = [
+        [1,5,6,4],
+        [1,4,5,1],
+        [6,4,1,5],
+        [1,6,4,5],
+      ];
+      const minors = [
+        [1,6,3,7],
+        [1,4,7,3],
+        [1,5,6,7],
+        [1,7,6,7],
+      ];
+      return pick(majorLike ? majors : minors);
+    }
+
+    function formatProg(prog){ return prog.map(d => ROMAN[d-1]).join(" – "); }
+
     // -------------------------
     // Elements
     // -------------------------
-    const keyEl = $("key"), modeEl = $("mode"), tempoEl = $("tempo"), tempoVal = $("tempoVal");
+    const keyEl = $("key"), modeEl = $("mode"), sectionEl = $("section");
+    const tempoEl = $("tempo"), tempoVal = $("tempoVal");
     const biasEl = $("bias"), biasVal = $("biasVal"), lenEl = $("length"), instEl = $("inst");
+
     const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), midiBtn = $("midiBtn");
     const warnEl = $("warn");
-    const roll = $("roll"), rollInfo = $("rollInfo");
 
+    const roll = $("roll"), rollInfo = $("rollInfo");
     const chipsEl = $("chips");
     const melodyMeta = $("melodyMeta");
 
     const mRep = $("m_rep"), mStep = $("m_step"), mRange = $("m_range"), mTonal = $("m_tonal");
+    const progText = $("progText");
+    const cadText = $("cadText");
 
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
@@ -527,7 +584,10 @@
     // -------------------------
     // State
     // -------------------------
-    let phrase = null; // [{midi, durBeats}]
+    let phrase = null;                 // [{midi, durBeats}]
+    let currentProg = null;            // [degree,...]
+    let currentChordEvents = null;     // [{timeBeats, triadPCs}]
+    let currentCadence = "—";
     let currentStars = 0;
 
     // -------------------------
@@ -540,56 +600,88 @@
     }
 
     // -------------------------
-    // Audio
+    // Audio (shared bus + stable levels)
     // -------------------------
-    let synth = null, part = null;
     let masterReady = false;
-    let masterGain, reverb, limiter;
+    let bus, limiter, comp, verb;
+    let melodyGain, chordGain;
+    let melodySynth = null;
+    let chordSynth = null;
+    let melodyPart = null;
+    let chordPart = null;
 
     function ensureMaster(){
       if(masterReady) return;
-      masterGain = new Tone.Gain(0.92);
-      reverb = new Tone.Reverb({decay:2.1, preDelay:0.01, wet:0.18});
+
+      bus = new Tone.Gain(1.0);
+      comp = new Tone.Compressor({ threshold:-22, ratio:2.2, attack:0.01, release:0.25 });
       limiter = new Tone.Limiter(-1);
-      masterGain.connect(limiter);
+      verb = new Tone.Reverb({decay:2.4, preDelay:0.01, wet:0.22});
+
+      // Route: instruments -> gains -> bus -> comp -> limiter -> destination
+      bus.connect(comp);
+      comp.connect(limiter);
       limiter.toDestination();
+
+      // Reverb is a send into the bus
+      verb.connect(bus);
+
+      melodyGain = new Tone.Gain(0.95).connect(bus);
+      chordGain  = new Tone.Gain(0.55).connect(bus); // chords quieter so melody leads
+
       masterReady = true;
     }
 
-    function buildSynth(kind){
+    function buildMelodySynth(kind){
       ensureMaster();
-      if(synth){ try{synth.dispose();}catch(e){} synth=null; }
+      if(melodySynth){ try{melodySynth.dispose();}catch(e){} melodySynth=null; }
 
       const base = {
-        volume: -8,
+        volume: -10,
         oscillator: { type: "triangle" },
-        envelope: { attack: 0.01, decay: 0.25, sustain: 0.25, release: 0.9 }
+        envelope: { attack: 0.008, decay: 0.22, sustain: 0.28, release: 0.9 }
       };
 
       if(kind === "strings"){
         base.oscillator.type = "sawtooth";
-        base.envelope = { attack: 0.12, decay: 0.18, sustain: 0.75, release: 1.3 };
-        base.volume = -10;
+        base.envelope = { attack: 0.06, decay: 0.20, sustain: 0.55, release: 1.2 };
+        base.volume = -12;
       } else if (kind === "soft"){
         base.oscillator.type = "sine";
-        base.envelope = { attack: 0.01, decay: 0.08, sustain: 0.20, release: 0.35 };
-        base.volume = -10;
+        base.envelope = { attack: 0.01, decay: 0.10, sustain: 0.22, release: 0.5 };
+        base.volume = -12;
       }
 
-      synth = new Tone.PolySynth(Tone.Synth, base);
-      synth.connect(masterGain);
-      synth.connect(reverb);
-      reverb.connect(masterGain);
-      return synth;
+      melodySynth = new Tone.PolySynth(Tone.Synth, base);
+      melodySynth.connect(melodyGain);
+      melodySynth.connect(verb);
+      return melodySynth;
+    }
+
+    function buildChordSynth(){
+      ensureMaster();
+      if(chordSynth){ try{chordSynth.dispose();}catch(e){} chordSynth=null; }
+
+      chordSynth = new Tone.PolySynth(Tone.Synth, {
+        volume: -16,
+        oscillator: { type: "sawtooth" },
+        envelope: { attack: 0.25, decay: 0.55, sustain: 0.65, release: 1.8 }
+      });
+
+      chordSynth.connect(chordGain);
+      chordSynth.connect(verb);
+      return chordSynth;
     }
 
     async function ensureAudio(){
       if(Tone.context.state !== "running") await Tone.start();
-      buildSynth(instEl.value);
+      buildMelodySynth(instEl.value);
+      buildChordSynth();
     }
 
     function stopPlayback(){
-      if(part){ try{part.stop(); part.dispose();}catch(e){} part=null; }
+      if(melodyPart){ try{melodyPart.stop(); melodyPart.dispose();}catch(e){} melodyPart=null; }
+      if(chordPart){ try{chordPart.stop(); chordPart.dispose();}catch(e){} chordPart=null; }
       Tone.Transport.stop();
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
@@ -598,81 +690,365 @@
     }
 
     function schedulePlayback(notes){
+      // Melody + Chords
       Tone.Transport.stop();
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
       Tone.Transport.bpm.value = Number(tempoEl.value);
 
+      // Melody events
       let t = 0;
-      const events = notes.map(n => {
+      const melEvents = notes.map(n => {
         const evt = { time: t, midi: clamp(n.midi, 24, 108), dur: Number(n.durBeats) };
         t += evt.dur;
         return evt;
       });
 
-      part = new Tone.Part((time, v) => {
+      melodyPart = new Tone.Part((time, v) => {
         const name = midiToName(v.midi);
         const durSec = Tone.Time(v.dur).toSeconds();
-        synth.triggerAttackRelease(name, durSec, time, 0.9);
-      }, events);
+        melodySynth.triggerAttackRelease(name, durSec, time, 0.92);
+      }, melEvents);
 
-      part.start(0);
+      // Chord events: each bar (4 beats)
+      const chordEvents = currentChordEvents || [];
+      chordPart = new Tone.Part((time, v) => {
+        // v.midis: [m1,m2,m3]
+        const freqs = v.midis.map(m => Tone.Frequency(clamp(m, 24, 108), "midi"));
+        chordSynth.triggerAttackRelease(freqs, Tone.Time(v.dur).toSeconds(), time, 0.55);
+      }, chordEvents.map(ev => ({ time: ev.time, midis: ev.midis, dur: ev.durBeats })));
+
+      chordPart.start(0);
+      melodyPart.start(0);
+
       Tone.Transport.start("+0.02");
     }
 
     // -------------------------
-    // Generator
+    // Rhythm generation (fits bars)
     // -------------------------
-    function allowedNotes(root, modeKey){
-      const pcs = MODES[modeKey].map(x => (x + root));
-      const base = 60;
-      const out = [];
-      for(let oct=-1; oct<=1; oct++){
-        for(const pc of pcs) out.push(base + pc + 12*oct);
-      }
-      return out.sort((a,b)=>a-b);
+    function targetBeatsForLength(len){
+      const bars = Math.max(1, Math.round(len / 8));
+      return bars * 4;
     }
 
-    function sampleDur(){
-      const r = Math.random();
-      if(r < 0.12) return 0.125;
-      if(r < 0.65) return 0.25;
-      if(r < 0.92) return 0.5;
-      return 1.0;
-    }
+    function makeDurations(count, targetBeats, section){
+      const versePalette = [
+        {d:0.5,  w:5.6}, // 8th
+        {d:1.0,  w:3.2}, // quarter
+        {d:1.5,  w:1.0}, // dotted quarter
+        {d:2.0,  w:0.6}, // half
+      ];
+      const chorusPalette = [
+        {d:0.5,  w:3.4},
+        {d:1.0,  w:4.2},
+        {d:1.5,  w:1.6},
+        {d:2.0,  w:1.0},
+      ];
+      const palette = (section === "chorus") ? chorusPalette : versePalette;
 
-    function generate({key, mode, bias, length}){
-      const root = NOTE[key];
-      const allowed = allowedNotes(root, mode);
-      const tonic = 60 + root;
+      const durs = [];
+      let remaining = targetBeats;
 
-      let cur = tonic;
-      const notes = [];
+      for(let i=0;i<count;i++){
+        const notesLeft = count - i;
+        const minNeeded = (notesLeft - 1) * 0.5; // we ensure at least 0.5 beats each for musicality
+        const maxThis = Math.max(0.5, remaining - minNeeded);
 
-      for(let i=0;i<length;i++){
-        const near = allowed.filter(n => Math.abs(n - cur) <= 2);
-        const pool = (Math.random() < bias && near.length) ? near : allowed;
-
-        const target = (i < length/2) ? cur + 2 : cur - 2;
-        const weighted = pool
-          .map(n => ({n, w: 1 / (1 + Math.abs(n - target))}))
-          .sort((a,b)=>b.w-a.w)
-          .slice(0, Math.max(6, Math.floor(pool.length*0.35)))
-          .map(x=>x.n);
-
-        let finalPool = weighted;
-        if(i >= length-2){
-          const dom = tonic + 7;
-          const cad = allowed.filter(n => Math.min(Math.abs(n-tonic), Math.abs(n-dom)) <= 3);
-          if(cad.length) finalPool = cad;
+        if(i === count - 1){
+          durs.push(remaining);
+          remaining = 0;
+          break;
         }
 
-        cur = pick(finalPool);
-        const d = (i===length-1) ? 0.5 : sampleDur();
-        notes.push({midi: cur, durBeats: d});
+        const phrasePos = i / Math.max(1, count-1);
+        const longBoost = (phrasePos > 0.66) ? 1.25 : 1.0;
+
+        const candidates = palette
+          .filter(p => p.d <= maxThis + 1e-9)
+          .map(p => ({item: p.d, w: p.w * (p.d >= 1.0 ? longBoost : 1.0)}));
+
+        let d = choice(candidates);
+
+        const after = remaining - d;
+        const canFinish = after >= (notesLeft-1)*0.5 - 1e-9;
+        if(!canFinish){
+          const sorted = candidates.map(c=>c.item).sort((a,b)=>b-a);
+          d = sorted.find(x => (remaining - x) >= (notesLeft-1)*0.5 - 1e-9) ?? 0.5;
+        }
+
+        durs.push(d);
+        remaining -= d;
       }
 
-      return notes;
+      if(Math.abs(remaining) > 1e-6 && durs.length){
+        durs[durs.length-1] += remaining;
+      }
+
+      // make last note feel resolved (slightly longer if possible)
+      if(durs.length >= 2){
+        const last = durs[durs.length-1];
+        if(last < 1.5 && durs[durs.length-2] > 0.5){
+          const take = Math.min(0.5, durs[durs.length-2] - 0.5);
+          durs[durs.length-2] -= take;
+          durs[durs.length-1] += take;
+        }
+      }
+
+      return durs;
+    }
+
+    // -------------------------
+    // Musical melody generation (theory-based)
+    // -------------------------
+    function nearestMidiForPC(pc, aroundMidi){
+      const base = aroundMidi - (aroundMidi % 12) + pc;
+      const opts = [base-12, base, base+12];
+      return opts.reduce((best, m) => (Math.abs(m-aroundMidi) < Math.abs(best-aroundMidi) ? m : best), opts[0]);
+    }
+
+    function inScale(midi, scaleSet){ return scaleSet.has(((midi % 12) + 12) % 12); }
+
+    function chordTonesMidi(triadPCs, aroundMidi){
+      const out = [];
+      for(const pc of triadPCs){
+        const m = nearestMidiForPC(pc, aroundMidi);
+        out.push(m-12, m, m+12);
+      }
+      return Array.from(new Set(out)).sort((a,b)=>a-b);
+    }
+
+    function scaleTonesMidi(scalePCsArr, centerMidi){
+      const out = [];
+      for(const pc of scalePCsArr){
+        const m = nearestMidiForPC(pc, centerMidi);
+        out.push(m-12, m, m+12);
+      }
+      return Array.from(new Set(out)).sort((a,b)=>a-b);
+    }
+
+    function degreeAtTime(prog, tBeats, totalBeats){
+      const bars = Math.max(1, Math.round(totalBeats / 4));
+      const bar = clamp(Math.floor(tBeats / 4), 0, bars-1);
+      const idx = clamp(bar, 0, prog.length-1);
+      return prog[idx];
+    }
+
+    function isStrongBeat(tBeats){
+      const posInBar = ((tBeats % 4) + 4) % 4;
+      const eps = 1e-6;
+      const onBeat = Math.abs(posInBar - Math.round(posInBar)) < eps;
+      if(!onBeat) return false;
+      return (posInBar === 0 || posInBar === 2);
+    }
+
+    function boundedRange(m, section){
+      // Verse sits a bit lower; chorus slightly higher
+      if(section === "chorus") return clamp(m, 52, 88);
+      return clamp(m, 48, 82);
+    }
+
+    function makeMotif(rootMidi, scaleMidis, chordMidis, section){
+      const motif = [];
+      let cur = rootMidi;
+      for(let i=0;i<4;i++){
+        const strong = (i === 0 || i === 2);
+        const pool = strong ? chordMidis : scaleMidis;
+
+        const near = pool.filter(m => Math.abs(m-cur) <= 5);
+        const candidates = (near.length ? near : pool).map(m => {
+          const dist = Math.abs(m-cur);
+          return {item:m, w: 1 / (1 + dist)};
+        });
+
+        let next = choice(candidates);
+        next = boundedRange(next, section);
+
+        motif.push(next);
+        cur = next;
+      }
+      return motif;
+    }
+
+    function varyMotif(motif, scaleSet, section){
+      const out = motif.slice();
+      const changes = (Math.random() < 0.6) ? 1 : 2;
+
+      for(let c=0;c<changes;c++){
+        const idx = 1 + Math.floor(Math.random() * (out.length-2));
+        const cur = out[idx];
+        const opts = [cur-2, cur-1, cur+1, cur+2].filter(m => inScale(m, scaleSet));
+        if(opts.length) out[idx] = boundedRange(pick(opts), section);
+      }
+      return out;
+    }
+
+    function generateMelodyTheory({key, mode, bias, length, section}){
+      const rootPC = NOTE[key];
+      const pcsArr = scalePCs(rootPC, mode);
+      const scaleSet = new Set(pcsArr);
+
+      // progression + total beats
+      const prog = chordProgression(mode);
+      const totalBeats = targetBeatsForLength(length);
+
+      // durations aligned to bars
+      const durs = makeDurations(length, totalBeats, section);
+
+      // tonic start/end
+      const tonicMidi = 60 + rootPC;
+      const startMidi = boundedRange(tonicMidi, section);
+      const endMidi   = boundedRange(tonicMidi, section);
+
+      // scale tones around center
+      const scaleMidis = scaleTonesMidi(pcsArr, tonicMidi);
+
+      // motif based on first chord
+      const firstDeg = prog[0];
+      const firstTriad = triadForDegree(rootPC, mode, firstDeg);
+      const firstChordMidis = chordTonesMidi(firstTriad, tonicMidi);
+
+      const motifA = makeMotif(startMidi, scaleMidis, firstChordMidis, section);
+      const motifAprime = varyMotif(motifA, scaleSet, section);
+
+      const notes = [];
+      let cur = startMidi;
+      let t = 0;
+      let lastInterval = 0;
+
+      function chordAtTime(tBeats){
+        const deg = degreeAtTime(prog, tBeats, totalBeats);
+        const triad = triadForDegree(rootPC, mode, deg);
+        return chordTonesMidi(triad, cur);
+      }
+
+      function chooseNext(chordMidis, strong){
+        const scalePool = scaleMidis;
+        const chordPool = chordMidis;
+
+        const stepPool = scalePool.filter(m => Math.abs(m-cur) <= 2);
+        const canStep = stepPool.length > 0;
+        const wantStep = (Math.random() < bias) && canStep;
+
+        let basePool = strong ? chordPool : scalePool;
+        let pool = basePool;
+
+        if(wantStep){
+          const inter = basePool.filter(m => Math.abs(m-cur) <= 2);
+          pool = inter.length ? inter : stepPool;
+        } else {
+          const maxJump = (section === "chorus") ? (strong ? 9 : 7) : (strong ? 7 : 5);
+          pool = basePool.filter(m => Math.abs(m-cur) <= maxJump);
+          if(!pool.length) pool = basePool;
+        }
+
+        const weighted = pool.map(m => {
+          const interval = m - cur;
+          const dist = Math.abs(interval);
+          let w = 1 / (1 + dist);
+
+          // leap recovery
+          if(Math.abs(lastInterval) >= 6){
+            const opposite = (lastInterval > 0 && interval < 0) || (lastInterval < 0 && interval > 0);
+            if(opposite && dist <= 2) w *= 2.2;
+          }
+
+          // keep centered
+          const center = (section === "chorus") ? (tonicMidi + 7) : (tonicMidi + 3);
+          const drift = Math.abs(m - center);
+          w *= 1 / (1 + drift/10);
+
+          if(strong && chordPool.includes(m)) w *= 2.2;
+          return {item: boundedRange(m, section), w};
+        });
+
+        const next = choice(weighted);
+        lastInterval = next - cur;
+        return next;
+      }
+
+      // Start on tonic
+      notes.push({midi: boundedRange(nearestMidiForPC(rootPC, startMidi), section), durBeats: durs[0]});
+      t += durs[0];
+      cur = notes[0].midi;
+
+      // Fill middle
+      for(let i=1;i<length-2;i++){
+        const strong = isStrongBeat(t);
+        const chordMidis = chordAtTime(t);
+
+        let injected = null;
+        const third = length / 3;
+
+        // Motif structure
+        if(length >= 16){
+          if(i < third && i-1 < motifA.length) injected = motifA[i-1];
+          else if(i >= third && i < 2*third){
+            const j = i - Math.floor(third);
+            if(j < motifAprime.length) injected = motifAprime[j];
+          }
+        } else if(length >= 8){
+          if(i-1 < motifA.length) injected = motifA[i-1];
+        }
+
+        let next;
+        if(injected !== null){
+          next = inScale(injected, scaleSet) ? injected : nearestMidiForPC(((injected%12)+12)%12, cur);
+          next = boundedRange(next, section);
+
+          if(strong && !chordMidis.includes(next)){
+            next = chordMidis.reduce((best, m) => (Math.abs(m-cur) < Math.abs(best-cur) ? m : best), chordMidis[0]);
+            next = boundedRange(next, section);
+          }
+          lastInterval = next - cur;
+        } else {
+          next = chooseNext(chordMidis, strong);
+        }
+
+        notes.push({midi: next, durBeats: durs[i]});
+        t += durs[i];
+        cur = next;
+      }
+
+      // Cadence: dominant/leading tone -> tonic
+      const domPC = (rootPC + 7) % 12;
+      const leadPC = (rootPC + 11) % 12;
+      const useLead = (mode === "major" || mode === "harmonic_minor") && scaleSet.has(leadPC);
+
+      const penultPC = useLead ? leadPC : domPC;
+      let penult = nearestMidiForPC(penultPC, cur);
+      penult = boundedRange(penult, section);
+
+      notes.push({midi: penult, durBeats: durs[length-2]});
+      notes.push({midi: boundedRange(nearestMidiForPC(rootPC, endMidi), section), durBeats: durs[length-1]});
+
+      return { notes, prog, cadence: useLead ? "Leading tone → Tonic" : "Dominant → Tonic", totalBeats };
+    }
+
+    // Build chord events (one chord per bar)
+    function buildChordEvents({key, mode, prog, totalBeats}){
+      const rootPC = NOTE[key];
+      const bars = Math.max(1, Math.round(totalBeats / 4));
+      const events = [];
+
+      for(let b=0;b<bars;b++){
+        const deg = prog[Math.min(b, prog.length-1)];
+        const triadPCs = triadForDegree(rootPC, mode, deg);
+
+        // chord register around C3–C4
+        const center = 48 + rootPC;
+        const midis = triadPCs
+          .map(pc => nearestMidiForPC(pc, center))
+          .map(m => m <= 36 ? m+12 : m)
+          .sort((a,b)=>a-b);
+
+        events.push({
+          time: b*4,
+          durBeats: 4,
+          midis
+        });
+      }
+      return events;
     }
 
     // -------------------------
@@ -709,7 +1085,7 @@
     }
 
     // -------------------------
-    // Melody preview chips (NO RAW TEXT)
+    // Melody chips
     // -------------------------
     function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
 
@@ -721,7 +1097,7 @@
       }
       const total = sumBeats(notes);
       const maxDur = Math.max(...notes.map(n=>n.durBeats));
-      melodyMeta.textContent = `${notes.length} notes • ${total.toFixed(2)} beats`;
+      melodyMeta.textContent = `${notes.length} notes • ${total.toFixed(2)} beats • starts/ends on tonic • ${formatProg(currentProg || [])}`;
 
       chipsEl.innerHTML = notes.map(n => {
         const w = Math.max(12, Math.round((n.durBeats / maxDur) * 100));
@@ -761,7 +1137,7 @@
 
     function pitchFill(midi){
       const t = (midi - 36) / (96 - 36);
-      const hue = 265 - (t * 220); // purple -> green/cyan
+      const hue = 265 - (t * 220);
       return `hsla(${hue}, 92%, 60%, 0.62)`;
     }
     function pitchStroke(midi){
@@ -799,7 +1175,6 @@
       const total = sumBeats(notes);
       const beatW = usableW / Math.max(0.001, total);
 
-      // lanes
       for(let r=0;r<rows;r++){
         const midi = maxM - r;
         const pc = midi % 12;
@@ -809,7 +1184,6 @@
         ctx.fillRect(left, y, usableW, rowH);
       }
 
-      // beat grid
       const quarters = Math.ceil(total / 0.25);
       for(let b=0;b<=quarters;b++){
         const x = left + (b*0.25)*beatW;
@@ -822,7 +1196,6 @@
         ctx.stroke();
       }
 
-      // notes
       let t=0;
       for(const n of notes){
         const x = left + t*beatW;
@@ -830,12 +1203,10 @@
         const y = top + (maxM - n.midi)*rowH + 1;
         const nh = Math.max(3, rowH-2);
 
-        // shadow
         ctx.fillStyle = "rgba(0,0,0,0.24)";
         roundRect(ctx, x+3, y+2, Math.max(2, nw-2), nh, 10);
         ctx.fill();
 
-        // main
         ctx.fillStyle = pitchFill(n.midi);
         ctx.strokeStyle = pitchStroke(n.midi);
         ctx.lineWidth = 1.2;
@@ -843,7 +1214,6 @@
         ctx.fill();
         ctx.stroke();
 
-        // highlight
         ctx.fillStyle = "rgba(255,255,255,0.10)";
         roundRect(ctx, x+2, y+1, Math.max(2, nw-4), Math.max(2, nh*0.35), 10);
         ctx.fill();
@@ -857,7 +1227,7 @@
     window.addEventListener("resize", () => drawRoll(phrase));
 
     // -------------------------
-    // MIDI export
+    // MIDI export (melody only)
     // -------------------------
     function exportMIDI(notes, bpm){
       const PPQ = 480;
@@ -906,7 +1276,7 @@
     // -------------------------
     // Ratings + plots
     // -------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v4";
+    const RATINGS_KEY = "liam_ai_music_ratings_v5_harmony";
 
     function loadRatings(){
       try{ return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
@@ -941,7 +1311,7 @@
       ratingsBody.innerHTML = view.map(r => `
         <tr>
           <td>${"★".repeat(r.stars)}${"☆".repeat(5-r.stars)}</td>
-          <td>${r.key} ${r.mode.replaceAll("_"," ")} • tempo ${r.bpm} • bias ${Number(r.bias).toFixed(2)}</td>
+          <td>${r.key} ${r.mode.replaceAll("_"," ")} • ${r.section} • tempo ${r.bpm} • bias ${Number(r.bias).toFixed(2)} • ${r.prog}</td>
           <td>${r.length}</td>
         </tr>
       `).join("");
@@ -962,6 +1332,7 @@
 
       const key = keyEl.value;
       const mode = modeEl.value;
+      const section = sectionEl.value;
       const bpm = Number(tempoEl.value);
       const bias = Number(biasEl.value);
       const length = Number(lenEl.value);
@@ -971,7 +1342,9 @@
         ts: nowISO(),
         stars: currentStars,
         comment: (commentEl.value || "").trim(),
-        key, mode, bpm, bias, length,
+        key, mode, section, bpm, bias, length,
+        prog: formatProg(currentProg || []),
+        cadence: currentCadence,
         metrics: m
       };
 
@@ -990,7 +1363,7 @@
       const list = loadRatings();
       if(!list.length){ setWarn("No ratings to export yet."); return; }
 
-      const header = ["ts","stars","comment","key","mode","bpm","bias","length","repetition","stepwise","range","tonal"];
+      const header = ["ts","stars","comment","key","mode","section","bpm","bias","length","progression","cadence","repetition","stepwise","range","tonal"];
       const esc = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
 
       const rows = list.map(r => ([
@@ -999,9 +1372,12 @@
         esc(r.comment),
         esc(r.key),
         esc(r.mode),
+        esc(r.section),
         r.bpm,
         r.bias,
         r.length,
+        esc(r.prog),
+        esc(r.cadence),
         (r.metrics?.repetition ?? "").toFixed?.(4) ?? "",
         (r.metrics?.stepwise ?? "").toFixed?.(4) ?? "",
         r.metrics?.range ?? "",
@@ -1136,11 +1512,21 @@
 
       const key = keyEl.value;
       const mode = modeEl.value;
+      const section = sectionEl.value;
       const bias = Number(biasEl.value);
       const length = Number(lenEl.value);
 
       try{
-        phrase = generate({key, mode, bias, length});
+        const out = generateMelodyTheory({key, mode, bias, length, section});
+        phrase = out.notes;
+        currentProg = out.prog;
+        currentCadence = out.cadence;
+
+        // Chords aligned to bars
+        currentChordEvents = buildChordEvents({key, mode, prog: currentProg, totalBeats: out.totalBeats});
+
+        progText.textContent = formatProg(currentProg);
+        cadText.textContent = currentCadence;
 
         renderChips(phrase);
 
@@ -1151,10 +1537,13 @@
 
         playBtn.disabled = false;
         midiBtn.disabled = false;
-
         saveBtn.disabled = !(currentStars>0);
       }catch(e){
         phrase = null;
+        currentProg = null;
+        currentChordEvents = null;
+        progText.textContent = "—";
+        cadText.textContent = "—";
         renderChips(null);
         drawRoll(null);
         renderMetrics({repetition:0,stepwise:0,range:0,tonal:0});
@@ -1204,6 +1593,7 @@
   </script>
 </body>
 </html>
+
 
 
 
