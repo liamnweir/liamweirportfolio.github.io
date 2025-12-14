@@ -10,87 +10,243 @@
 
   <style>
     :root{
-      --bg:#0a0a12; --panel:rgba(255,255,255,.05); --border:rgba(255,255,255,.10);
-      --text:#eef0ff; --muted:rgba(238,240,255,.78);
-      --accent:rgba(120,140,255,.20); --accentBorder:rgba(120,140,255,.40);
-      --warnBg:rgba(255,180,120,.10); --warnBorder:rgba(255,180,120,.30);
-      --shadow:0 24px 50px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg0:#070818;
+      --bg1:#0b1028;
+      --panel: rgba(255,255,255,0.075);
+      --panel2: rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.12);
+      --text: #eef0ff;
+      --muted: rgba(238,240,255,0.78);
+
+      --a1:#7C5CFF;
+      --a2:#2FE3B4;
+      --a3:#FFB86B;
+      --a4:#4CC9FF;
+
+      --shadow: 0 22px 60px rgba(0,0,0,0.45);
+      --radius: 18px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:var(--bg);color:var(--text)}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 15% 10%, rgba(124,92,255,0.30), transparent 60%),
+        radial-gradient(800px 540px at 85% 20%, rgba(47,227,180,0.22), transparent 60%),
+        radial-gradient(900px 600px at 70% 90%, rgba(76,201,255,0.18), transparent 65%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
     a{color:inherit}
+
     .topbar{
       position:fixed; top:0; left:0; width:100%;
-      background:rgba(10,10,25,.85); backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--border); z-index:10;
-      padding:14px 16px; display:flex; justify-content:flex-start;
+      background: rgba(10,12,30,0.70);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      z-index:10;
+      padding: 14px 16px;
+      display:flex;
+      justify-content:flex-start;
     }
+
     .back{
-      text-decoration:none; font-weight:800; letter-spacing:.2px;
-      padding:10px 14px; border-radius:999px;
-      background:var(--accent); border:1px solid var(--accentBorder);
+      text-decoration:none;
+      font-weight:900;
+      letter-spacing:.2px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:
+        linear-gradient(135deg, rgba(124,92,255,0.22), rgba(47,227,180,0.14));
+      box-shadow: 0 14px 30px rgba(0,0,0,0.25);
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:86px 16px 60px}
-    h1{margin:0 0 6px;font-size:2.2rem}
-    h2{margin:0 0 10px;font-size:1.25rem}
+    .back:hover{filter:brightness(1.07)}
+
+    .wrap{max-width:1140px;margin:0 auto;padding:88px 16px 60px}
+    h1{margin:0 0 8px;font-size:2.25rem;letter-spacing:.2px}
+    h2{margin:0 0 10px;font-size:1.22rem}
     h3{margin:0 0 8px;font-size:1.05rem}
-    p{margin:8px 0;line-height:1.6;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}
-    @media (max-width:980px){.grid{grid-template-columns:1fr}}
-    .panel{
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:16px;
+    p{margin:8px 0;line-height:1.65;color:var(--muted)}
+
+    .hero{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      gap:12px;
+      justify-content:space-between;
+      margin-bottom:14px;
     }
+
+    .pills{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      font-size:.86rem;
+      color: rgba(238,240,255,0.82);
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:999px;
+      background: rgba(255,255,255,0.80);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.10);
+    }
+    .pill.ai .dot{background: rgba(124,92,255,0.95); box-shadow:0 0 0 4px rgba(124,92,255,0.20)}
+    .pill.music .dot{background: rgba(47,227,180,0.95); box-shadow:0 0 0 4px rgba(47,227,180,0.18)}
+    .pill.eval .dot{background: rgba(255,184,107,0.95); box-shadow:0 0 0 4px rgba(255,184,107,0.18)}
+    .pill.web .dot{background: rgba(76,201,255,0.95); box-shadow:0 0 0 4px rgba(76,201,255,0.18)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.18fr .82fr;
+      gap:16px;
+      margin-top:14px
+    }
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+    .panel{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,0.14);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.10);
+      background:
+        linear-gradient(135deg, rgba(124,92,255,0.14), rgba(47,227,180,0.10));
+    }
+    .panel .bd{padding:16px}
+
     .row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-    .field{min-width:170px}
-    .label{font-size:.9rem;color:var(--muted);margin:0 0 6px}
+    .field{min-width:170px; flex: 1 1 170px}
+    .label{font-size:.9rem;color:rgba(238,240,255,0.80);margin:0 0 6px}
+
     select,input[type="text"],input[type="number"],input[type="range"]{
       width:100%;
-      background:rgba(255,255,255,.06); color:var(--text);
-      border:1px solid rgba(255,255,255,.14); border-radius:14px;
-      padding:10px 12px; outline:none;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border:1px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+    }
+    select:focus,input:focus{
+      border-color: rgba(124,92,255,0.55);
+      box-shadow: 0 0 0 4px rgba(124,92,255,0.18);
     }
     input[type="range"]{padding:10px 0}
+
     .btn{
-      appearance:none; border:1px solid var(--accentBorder);
-      background:var(--accent); color:var(--text);
-      padding:10px 14px; border-radius:14px; cursor:pointer;
-      font-weight:800; letter-spacing:.2px;
+      appearance:none;
+      border:1px solid rgba(255,255,255,0.16);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 900;
+      letter-spacing:.2px;
+      background: rgba(255,255,255,0.08);
+      transition: transform .18s ease, filter .18s ease, background .18s ease;
     }
-    .btn:disabled{opacity:.45;cursor:not-allowed}
-    .btn.secondary{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
-    .pill{display:inline-block;margin:6px 6px 0 0;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:.86rem;color:var(--muted)}
-    .warn{display:none;margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--warnBorder);background:var(--warnBg);color:#ffe9da}
+    .btn:hover{filter:brightness(1.08); transform: translateY(-1px)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+    .btn.primary{
+      border-color: rgba(124,92,255,0.35);
+      background: linear-gradient(135deg, rgba(124,92,255,0.28), rgba(76,201,255,0.16));
+    }
+    .btn.good{
+      border-color: rgba(47,227,180,0.32);
+      background: linear-gradient(135deg, rgba(47,227,180,0.22), rgba(124,92,255,0.12));
+    }
+    .btn.secondary{
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .warn{
+      display:none;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,184,107,0.35);
+      background: rgba(255,184,107,0.12);
+      color: rgba(255,240,228,0.95);
+    }
+
     pre{
-      margin:10px 0 0; padding:12px; border-radius:14px;
-      background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.10);
-      overflow:auto; min-height:160px; color:rgba(238,240,255,.92); font-family:var(--mono); font-size:.92rem;
+      margin:10px 0 0;
+      padding:12px;
+      border-radius:14px;
+      background: rgba(0,0,0,0.28);
+      border:1px solid rgba(255,255,255,0.12);
+      overflow:auto;
+      min-height:160px;
+      color: rgba(238,240,255,0.92);
+      font-family: var(--mono);
+      font-size: .92rem;
     }
-    .kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.10)}
-    .kv:last-child{border-bottom:none}
-    .mono{font-family:var(--mono)}
-    .tiny{font-size:.88rem;color:rgba(238,240,255,.70)}
-    .hr{border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0}
+
+    .hr{border:0;border-top:1px solid rgba(255,255,255,0.10);margin:14px 0}
+
     .canvasWrap{
-      margin-top:12px;border-radius:14px; overflow:hidden;
-      border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.25)
+      margin-top:12px;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(800px 280px at 15% 30%, rgba(124,92,255,0.14), transparent 60%),
+        radial-gradient(800px 280px at 85% 70%, rgba(47,227,180,0.10), transparent 60%),
+        rgba(0,0,0,0.24);
     }
     canvas{display:block;width:100%;height:auto}
+
+    .tiny{font-size:.88rem;color: rgba(238,240,255,0.70)}
+    .mono{font-family: var(--mono)}
+
+    .kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.10)}
+    .kv:last-child{border-bottom:none}
+
     .stars{display:flex;gap:6px;align-items:center}
     .star{
-      width:34px;height:34px;border-radius:12px;display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04);
-      cursor:pointer; user-select:none; font-size:18px
+      width:36px;height:36px;border-radius:12px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      cursor:pointer; user-select:none; font-size:18px;
+      transition: transform .15s ease, filter .15s ease;
     }
-    .star.on{background:var(--accent);border-color:var(--accentBorder)}
+    .star:hover{transform: translateY(-1px); filter:brightness(1.08)}
+    .star.on{
+      background: linear-gradient(135deg, rgba(255,184,107,0.30), rgba(124,92,255,0.14));
+      border-color: rgba(255,184,107,0.38);
+    }
+
     table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
-    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.10);vertical-align:top}
-    th{text-align:left;color:rgba(238,240,255,.82);font-weight:900}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.10);vertical-align:top}
+    th{text-align:left;color:rgba(238,240,255,0.85);font-weight:900}
+
     code{font-family:var(--mono);font-size:.92em}
-    details summary{cursor:pointer;color:rgba(238,240,255,.9);font-weight:800}
+
+    .asideNote{
+      padding:12px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+    }
+
     .list{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.65}
   </style>
 </head>
@@ -101,234 +257,187 @@
   </div>
 
   <div class="wrap">
-    <h1>AI Music Generation System</h1>
-    <p>
-      A clean, single-file demo that generates short symbolic melodies (notes + durations), plays them back, visualizes a piano roll,
-      computes simple structure metrics, and collects listener ratings (stored locally + exportable CSV).
-    </p>
-    <div>
-      <span class="pill">AI</span><span class="pill">Music</span><span class="pill">HCI / Evaluation</span><span class="pill">Tone.js</span><span class="pill">GitHub Pages</span>
+    <div class="hero">
+      <div>
+        <h1>AI Music Generation System</h1>
+        <p>
+          Generate symbolic melodies (notes + durations), play them back, visualize a piano roll,
+          compute structure metrics, and collect listener ratings (stored locally + exportable CSV).
+        </p>
+      </div>
+      <div class="pills" aria-label="tags">
+        <span class="pill ai"><span class="dot"></span>AI</span>
+        <span class="pill music"><span class="dot"></span>Music</span>
+        <span class="pill eval"><span class="dot"></span>Listening Study</span>
+        <span class="pill web"><span class="dot"></span>Tone.js</span>
+      </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT: DEMO -->
+      <!-- LEFT: MAIN APP -->
       <section class="panel">
-        <h2>Interactive Demo</h2>
-
-        <div class="row">
-          <div class="field">
-            <div class="label">Key</div>
-            <select id="key">
-              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
-              <option value="E">E</option><option value="F">F</option><option value="F#">F#</option><option value="G">G</option>
-              <option value="G#">G#</option><option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <div class="label">Mode</div>
-            <select id="mode">
-              <option value="major">Major (Ionian)</option>
-              <option value="natural_minor">Natural Minor (Aeolian)</option>
-              <option value="harmonic_minor">Harmonic Minor</option>
-              <option value="dorian">Dorian</option>
-              <option value="mixolydian">Mixolydian</option>
-            </select>
-          </div>
-
-          <div class="field" style="min-width:220px">
-            <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
-            <input id="tempo" type="range" min="70" max="170" value="110" />
-          </div>
-
-          <div class="field" style="min-width:220px">
-            <div class="label">Stepwise Bias: <span id="biasVal">0.75</span></div>
-            <input id="bias" type="range" min="0" max="1" step="0.01" value="0.75" />
-          </div>
-
-          <div class="field">
-            <div class="label">Length</div>
-            <select id="length">
-              <option value="8">8 notes</option>
-              <option value="16" selected>16 notes</option>
-              <option value="24">24 notes</option>
-              <option value="32">32 notes</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <div class="label">Instrument</div>
-            <select id="inst">
-              <option value="piano" selected>Piano-ish</option>
-              <option value="strings">Strings pad</option>
-              <option value="soft">Soft synth</option>
-            </select>
-          </div>
+        <div class="hd">
+          <h2 style="margin:0">Generator + Playback</h2>
+          <div class="tiny" style="margin-top:6px">Tip: Generate → Play → Rate (data stays on your device)</div>
         </div>
 
-        <div class="row" style="margin-top:10px">
-          <button class="btn" id="genBtn">Generate</button>
-          <button class="btn" id="playBtn" disabled>Play</button>
-          <button class="btn secondary" id="stopBtn" disabled>Stop</button>
-          <button class="btn secondary" id="copyBtn" disabled>Copy Notes</button>
-          <button class="btn secondary" id="midiBtn" disabled>Export MIDI</button>
-        </div>
+        <div class="bd">
+          <div class="row">
+            <div class="field">
+              <div class="label">Key</div>
+              <select id="key">
+                <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
+                <option value="E">E</option><option value="F">F</option><option value="F#">F#</option><option value="G">G</option>
+                <option value="G#">G#</option><option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
+              </select>
+            </div>
 
-        <div id="warn" class="warn"></div>
+            <div class="field">
+              <div class="label">Mode</div>
+              <select id="mode">
+                <option value="major">Major (Ionian)</option>
+                <option value="natural_minor">Natural Minor (Aeolian)</option>
+                <option value="harmonic_minor">Harmonic Minor</option>
+                <option value="dorian">Dorian</option>
+                <option value="mixolydian">Mixolydian</option>
+              </select>
+            </div>
 
-        <div class="label" style="margin-top:12px">Generated phrase (note : beats)</div>
-        <pre id="out">(click Generate)</pre>
+            <div class="field" style="min-width:220px">
+              <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
+              <input id="tempo" type="range" min="70" max="170" value="110" />
+            </div>
 
-        <div class="canvasWrap" aria-label="Piano roll">
-          <canvas id="roll"></canvas>
-        </div>
-        <div class="tiny" id="rollInfo" style="margin-top:8px">—</div>
+            <div class="field" style="min-width:220px">
+              <div class="label">Stepwise Bias: <span id="biasVal">0.75</span></div>
+              <input id="bias" type="range" min="0" max="1" step="0.01" value="0.75" />
+            </div>
 
-        <div class="hr"></div>
+            <div class="field">
+              <div class="label">Length</div>
+              <select id="length">
+                <option value="8">8 notes</option>
+                <option value="16" selected>16 notes</option>
+                <option value="24">24 notes</option>
+                <option value="32">32 notes</option>
+              </select>
+            </div>
 
-        <h3>Listening Study (User Ratings)</h3>
-        <p>Rate the current phrase. Ratings are stored locally on this device and can be exported as CSV.</p>
-
-        <div class="row" style="align-items:center">
-          <div>
-            <div class="label">Stars</div>
-            <div class="stars" id="stars">
-              <div class="star" data-s="1">★</div><div class="star" data-s="2">★</div><div class="star" data-s="3">★</div>
-              <div class="star" data-s="4">★</div><div class="star" data-s="5">★</div>
+            <div class="field">
+              <div class="label">Instrument</div>
+              <select id="inst">
+                <option value="piano" selected>Piano-ish</option>
+                <option value="strings">Strings pad</option>
+                <option value="soft">Soft synth</option>
+              </select>
             </div>
           </div>
 
-          <div style="flex:1;min-width:260px">
-            <div class="label">Optional comment</div>
-            <input id="comment" type="text" placeholder="e.g., 'Nice cadence, rhythm feels jumpy'" />
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="genBtn">Generate</button>
+            <button class="btn good" id="playBtn" disabled>Play</button>
+            <button class="btn secondary" id="stopBtn" disabled>Stop</button>
+            <button class="btn secondary" id="midiBtn" disabled>Export MIDI</button>
           </div>
 
-          <div class="row" style="align-items:flex-end">
-            <button class="btn" id="saveBtn" disabled>Save Rating</button>
-            <button class="btn secondary" id="csvBtn">Export CSV</button>
-            <button class="btn secondary" id="clearBtn">Clear</button>
+          <div id="warn" class="warn"></div>
+
+          <div class="label" style="margin-top:12px">Generated phrase (note : beats)</div>
+          <pre id="out">(click Generate)</pre>
+
+          <div class="canvasWrap" aria-label="Piano roll">
+            <canvas id="roll"></canvas>
           </div>
+          <div class="tiny" id="rollInfo" style="margin-top:8px">—</div>
+
+          <div class="hr"></div>
+
+          <h3>Listening Study (User Ratings)</h3>
+          <p>Rate the current phrase. Ratings are stored locally on this device and can be exported as CSV.</p>
+
+          <div class="row" style="align-items:center">
+            <div>
+              <div class="label">Stars</div>
+              <div class="stars" id="stars">
+                <div class="star" data-s="1">★</div><div class="star" data-s="2">★</div><div class="star" data-s="3">★</div>
+                <div class="star" data-s="4">★</div><div class="star" data-s="5">★</div>
+              </div>
+            </div>
+
+            <div style="flex:1;min-width:260px">
+              <div class="label">Optional comment</div>
+              <input id="comment" type="text" placeholder="e.g., 'Nice cadence, rhythm feels jumpy'" />
+            </div>
+
+            <div class="row" style="align-items:flex-end">
+              <button class="btn primary" id="saveBtn" disabled>Save Rating</button>
+              <button class="btn secondary" id="csvBtn">Export CSV</button>
+              <button class="btn secondary" id="clearBtn">Clear</button>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr><th style="width:120px">Stars</th><th>Condition</th><th style="width:140px">Notes</th></tr>
+            </thead>
+            <tbody id="ratingsBody">
+              <tr><td colspan="3" class="tiny">No ratings yet.</td></tr>
+            </tbody>
+          </table>
+
+          <p class="tiny">
+            Shortcuts: <span class="mono">Space</span> play/stop • <span class="mono">G</span> generate •
+            <span class="mono">M</span> export MIDI
+          </p>
         </div>
-
-        <table>
-          <thead>
-            <tr><th style="width:120px">Stars</th><th>Condition</th><th style="width:140px">Notes</th></tr>
-          </thead>
-          <tbody id="ratingsBody">
-            <tr><td colspan="3" class="tiny">No ratings yet.</td></tr>
-          </tbody>
-        </table>
-
-        <p class="tiny">
-          Shortcuts: <span class="mono">Space</span> play/stop • <span class="mono">G</span> generate •
-          <span class="mono">C</span> copy • <span class="mono">M</span> export MIDI
-        </p>
       </section>
 
-      <!-- RIGHT: METRICS + HIRING MAGNET SECTIONS -->
+      <!-- RIGHT: METRICS + RESULTS -->
       <aside class="panel">
-        <h2>Writeup (Hiring Magnet)</h2>
-
-        <h3>Problem → Why it matters</h3>
-        <p>
-          Creators want fast, controllable ways to generate musical ideas without losing musical coherence.
-          This project explores simple controllable generation + lightweight evaluation so we can connect model behavior to listener preferences.
-        </p>
-
-        <h3>Your contributions</h3>
-        <ul class="list">
-          <li>Built a browser-based symbolic melody generator with key/mode, tempo, length, and stepwise controls.</li>
-          <li>Implemented playback (Tone.js), MIDI export, and a piano-roll visualization for interpretability.</li>
-          <li>Designed a listening-study loop (ratings + comments) with exportable data for later analysis.</li>
-          <li>Added simple structure metrics to compare “features” vs. what listeners actually like.</li>
-        </ul>
-
-        <div class="hr"></div>
-
-        <h3>Architecture diagram</h3>
-        <pre class="mono" style="min-height:0">
-Browser UI
-  ├─ Generator (rule-based baseline) → notes+durations
-  ├─ Playback (Tone.js)              → audio
-  ├─ Export (MIDI/Clipboard)         → files/text
-  └─ Evaluation
-       ├─ metrics (repetition/stepwise/range/tonal)
-       └─ listener ratings (localStorage → CSV)</pre>
-
-        <div class="hr"></div>
-
-        <h3>Perception / Structure Metrics</h3>
-        <p class="tiny">Heuristics you can report now, then validate with your listening data.</p>
-        <div class="kv"><span>Repetition</span><strong id="m_rep">—</strong></div>
-        <div class="kv"><span>Stepwise motion</span><strong id="m_step">—</strong></div>
-        <div class="kv"><span>Range (semitones)</span><strong id="m_range">—</strong></div>
-        <div class="kv"><span>Tonal stability</span><strong id="m_tonal">—</strong></div>
-
-        <div class="hr"></div>
-
-        <h3>Evidence (results, not just features)</h3>
-        <p class="tiny">
-          These plots update from your saved ratings. They’re the start of a real “results” section:
-          distribution, condition comparisons, and an interpretation you can write up.
-        </p>
-
-        <div class="canvasWrap" style="margin-top:10px">
-          <canvas id="plot1"></canvas>
+        <div class="hd">
+          <h2 style="margin:0">Metrics + Results</h2>
+          <div class="tiny" style="margin-top:6px">These update from the current phrase + saved ratings.</div>
         </div>
-        <div class="tiny" style="margin-top:6px">Plot 1: Rating distribution (1–5 stars)</div>
 
-        <div class="canvasWrap" style="margin-top:12px">
-          <canvas id="plot2"></canvas>
+        <div class="bd">
+          <div class="asideNote">
+            <h3 style="margin-bottom:6px">What this measures</h3>
+            <ul class="list" style="margin-top:6px">
+              <li><strong>Repetition:</strong> how often pitches repeat (higher = more repeats).</li>
+              <li><strong>Stepwise motion:</strong> fraction of intervals within ±2 semitones.</li>
+              <li><strong>Range:</strong> max–min pitch in semitones.</li>
+              <li><strong>Tonal stability:</strong> fraction of notes in the tonic triad.</li>
+            </ul>
+          </div>
+
+          <div class="hr"></div>
+
+          <h3>Structure Metrics (current phrase)</h3>
+          <div class="kv"><span>Repetition</span><strong id="m_rep">—</strong></div>
+          <div class="kv"><span>Stepwise motion</span><strong id="m_step">—</strong></div>
+          <div class="kv"><span>Range (semitones)</span><strong id="m_range">—</strong></div>
+          <div class="kv"><span>Tonal stability</span><strong id="m_tonal">—</strong></div>
+
+          <div class="hr"></div>
+
+          <h3>Saved Ratings (from this device)</h3>
+          <p class="tiny">Use Export CSV to analyze in Python/R (e.g., correlate ratings with metrics).</p>
+
+          <div class="canvasWrap" style="margin-top:10px">
+            <canvas id="plot1"></canvas>
+          </div>
+          <div class="tiny" style="margin-top:6px">Rating distribution (1–5 stars)</div>
+
+          <div class="canvasWrap" style="margin-top:12px">
+            <canvas id="plot2"></canvas>
+          </div>
+          <div class="tiny" style="margin-top:6px">Average rating by mode</div>
+
+          <div class="canvasWrap" style="margin-top:12px">
+            <canvas id="plot3"></canvas>
+          </div>
+          <div class="tiny" style="margin-top:6px">Average rating by stepwise-bias bucket</div>
         </div>
-        <div class="tiny" style="margin-top:6px">Plot 2: Average rating by mode (from your data)</div>
-
-        <div class="canvasWrap" style="margin-top:12px">
-          <canvas id="plot3"></canvas>
-        </div>
-        <div class="tiny" style="margin-top:6px">Plot 3: Average rating by stepwise-bias bucket</div>
-
-        <details style="margin-top:10px">
-          <summary>Interpretation template (edit after you collect data)</summary>
-          <p class="tiny" style="margin-top:8px">
-            In our pilot ratings on this device, listeners preferred <strong>(MODE / BIAS RANGE)</strong>.
-            Higher stepwise bias tended to <strong>(increase/decrease)</strong> ratings, suggesting that
-            singability/connected motion is <strong>(important/not sufficient)</strong> without rhythmic variety.
-          </p>
-        </details>
-
-        <div class="hr"></div>
-
-        <h3>Demo media (add these to get hired faster)</h3>
-        <ul class="list">
-          <li>Add a 30–60s screen recording: <code>assets/demo.mp4</code> and link it here.</li>
-          <li>Add 3–5 example outputs: <code>assets/example1.mid</code>, <code>example1.wav</code>, etc.</li>
-        </ul>
-        <p class="tiny">
-          Place files in your repo under <code>assets/</code>, then link them:
-          <br>
-          <span class="mono">• demo video: assets/demo.mp4</span>
-          <br>
-          <span class="mono">• examples: assets/ex1.mid, assets/ex1.wav ...</span>
-        </p>
-
-        <div class="hr"></div>
-
-        <h3>Code & reproducibility</h3>
-        <ul class="list">
-          <li>Repo: <code>(paste your GitHub repo link here)</code></li>
-          <li>Run locally: <code>python -m http.server</code> (or VS Code “Live Server”), open this file.</li>
-          <li>Data: export CSV from this page and analyze in Python/R (correlate metrics with ratings).</li>
-          <li>Next: replace baseline generator with a Transformer backend and do A/B tests.</li>
-        </ul>
-
-        <details style="margin-top:10px">
-          <summary>Optional (advanced): ML backend hook</summary>
-          <p class="tiny" style="margin-top:8px">
-            If you later host a model (e.g., Hugging Face Spaces), add a simple POST endpoint returning:
-            <code>{"notes":[{"midi":60,"durBeats":0.5}, ...]}</code>.
-            Then you can compare baseline vs. model with the same evaluation UI.
-          </p>
-        </details>
       </aside>
     </div>
   </div>
@@ -365,14 +474,11 @@ Browser UI
     // -------------------------
     const keyEl = $("key"), modeEl = $("mode"), tempoEl = $("tempo"), tempoVal = $("tempoVal");
     const biasEl = $("bias"), biasVal = $("biasVal"), lenEl = $("length"), instEl = $("inst");
-    const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), copyBtn = $("copyBtn"), midiBtn = $("midiBtn");
+    const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), midiBtn = $("midiBtn");
     const outEl = $("out"), warnEl = $("warn");
     const roll = $("roll"), rollInfo = $("rollInfo");
-
     const mRep = $("m_rep"), mStep = $("m_step"), mRange = $("m_range"), mTonal = $("m_tonal");
-
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
-
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
 
     tempoEl.addEventListener("input", () => tempoVal.textContent = tempoEl.value);
@@ -385,7 +491,7 @@ Browser UI
     let currentStars = 0;
 
     // -------------------------
-    // Audio (simple + stable)
+    // Audio
     // -------------------------
     let synth = null, part = null;
     let masterReady = false;
@@ -398,10 +504,9 @@ Browser UI
 
     function ensureMaster(){
       if(masterReady) return;
-      masterGain = new Tone.Gain(0.90);
-      reverb = new Tone.Reverb({decay:2.2, preDelay:0.01, wet:0.18});
+      masterGain = new Tone.Gain(0.92);
+      reverb = new Tone.Reverb({decay:2.1, preDelay:0.01, wet:0.18});
       limiter = new Tone.Limiter(-1);
-      // synth -> masterGain -> limiter -> destination, with reverb send
       masterGain.connect(limiter);
       limiter.toDestination();
       masterReady = true;
@@ -428,12 +533,9 @@ Browser UI
       }
 
       synth = new Tone.PolySynth(Tone.Synth, base);
-      // dry
       synth.connect(masterGain);
-      // reverb send (no delay, so long notes won't "repeat")
       synth.connect(reverb);
       reverb.connect(masterGain);
-
       return synth;
     }
 
@@ -475,7 +577,7 @@ Browser UI
     }
 
     // -------------------------
-    // Generator (simple baseline)
+    // Generator
     // -------------------------
     function allowedNotes(root, modeKey){
       const pcs = MODES[modeKey].map(x => (x + root));
@@ -487,14 +589,12 @@ Browser UI
       return out.sort((a,b)=>a-b);
     }
 
-    // Simple duration pattern (keeps code small + musical enough)
-    // Uses mostly 1/4 and 1/2 with occasional 1/8 and 1.
     function sampleDur(){
       const r = Math.random();
-      if(r < 0.12) return 0.125; // 1/8
-      if(r < 0.65) return 0.25;  // 1/4
-      if(r < 0.92) return 0.5;   // 1/2
-      return 1.0;                // 1
+      if(r < 0.12) return 0.125;
+      if(r < 0.65) return 0.25;
+      if(r < 0.92) return 0.5;
+      return 1.0;
     }
 
     function generate({key, mode, bias, length}){
@@ -506,11 +606,9 @@ Browser UI
       const notes = [];
 
       for(let i=0;i<length;i++){
-        // stepwise candidates within 2 semitones
         const near = allowed.filter(n => Math.abs(n - cur) <= 2);
         const pool = (Math.random() < bias && near.length) ? near : allowed;
 
-        // small contour: first half gently rises, second half gently falls
         const target = (i < length/2) ? cur + 2 : cur - 2;
         const weighted = pool
           .map(n => ({n, w: 1 / (1 + Math.abs(n - target))}))
@@ -518,7 +616,6 @@ Browser UI
           .slice(0, Math.max(6, Math.floor(pool.length*0.35)))
           .map(x=>x.n);
 
-        // cadence: last 2 notes prefer near tonic or dominant
         let finalPool = weighted;
         if(i >= length-2){
           const dom = tonic + 7;
@@ -527,7 +624,7 @@ Browser UI
         }
 
         cur = pick(finalPool);
-        const d = (i===length-1) ? 0.5 : sampleDur(); // anchor ending a bit
+        const d = (i===length-1) ? 0.5 : sampleDur();
         notes.push({midi: cur, durBeats: d});
       }
 
@@ -572,7 +669,7 @@ Browser UI
     }
 
     // -------------------------
-    // Piano roll (always auto-fit)
+    // Piano roll (upgraded look)
     // -------------------------
     function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
 
@@ -586,12 +683,32 @@ Browser UI
       return {ctx, w, h: cssH};
     }
 
+    function isBlackKey(pc){
+      return [1,3,6,8,10].includes(pc);
+    }
+
+    function pitchColor(midi){
+      // hue across pitch range for a colorful roll
+      const t = (midi - 36) / (96 - 36); // roughly C2..C7
+      const hue = 260 - (t * 220); // purple -> cyan/green
+      return `hsla(${hue}, 90%, 62%, 0.65)`;
+    }
+
+    function pitchStroke(midi){
+      const t = (midi - 36) / (96 - 36);
+      const hue = 260 - (t * 220);
+      return `hsla(${hue}, 95%, 72%, 0.95)`;
+    }
+
     function drawRoll(notes){
-      const cssH = 240;
+      const cssH = 260;
       const {ctx, w, h} = fitCanvas(roll, cssH);
 
-      ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "rgba(5,5,12,0.85)";
+      // background
+      const g = ctx.createLinearGradient(0,0,w,h);
+      g.addColorStop(0, "rgba(8,10,22,0.85)");
+      g.addColorStop(1, "rgba(6,8,18,0.65)");
+      ctx.fillStyle = g;
       ctx.fillRect(0,0,w,h);
 
       if(!notes || !notes.length){
@@ -601,11 +718,11 @@ Browser UI
 
       const midis = notes.map(n=>n.midi);
       const lo = Math.min(...midis), hi = Math.max(...midis);
-      const pad = 2;
+      const pad = 3;
       const minM = Math.max(24, lo-pad), maxM = Math.min(108, hi+pad);
       const rows = Math.max(1, maxM - minM + 1);
 
-      const left = 10, right = 10, top = 10, bottom = 10;
+      const left = 14, right = 12, top = 12, bottom = 12;
       const usableW = w - left - right;
       const usableH = h - top - bottom;
       const rowH = usableH / rows;
@@ -613,38 +730,62 @@ Browser UI
       const total = sumBeats(notes);
       const beatW = usableW / Math.max(0.001, total);
 
-      // beat grid (quarter beats)
-      ctx.strokeStyle = "rgba(255,255,255,0.10)";
-      ctx.lineWidth = 1;
-      for(let b=0;b<=Math.ceil(total/0.25);b++){
+      // keybed-style horizontal lanes
+      for(let r=0;r<rows;r++){
+        const midi = maxM - r;
+        const pc = (midi % 12);
+        const y = top + r*rowH;
+        const black = isBlackKey(pc);
+
+        ctx.fillStyle = black ? "rgba(255,255,255,0.035)" : "rgba(255,255,255,0.02)";
+        ctx.fillRect(left, y, usableW, rowH);
+
+        // subtle lane divider
+        ctx.strokeStyle = "rgba(255,255,255,0.06)";
+        ctx.beginPath();
+        ctx.moveTo(left, y);
+        ctx.lineTo(left+usableW, y);
+        ctx.stroke();
+      }
+
+      // vertical beat grid (quarters + bars)
+      const quarters = Math.ceil(total / 0.25);
+      for(let b=0;b<=quarters;b++){
         const x = left + (b*0.25)*beatW;
+        const isBar = (b % 16 === 0); // 4 beats if 0.25 grid => 16 quarters
+        ctx.strokeStyle = isBar ? "rgba(76,201,255,0.14)" : "rgba(255,255,255,0.08)";
+        ctx.lineWidth = isBar ? 1.5 : 1;
         ctx.beginPath();
         ctx.moveTo(x, top);
         ctx.lineTo(x, h-bottom);
         ctx.stroke();
       }
 
-      // note rows shading
-      for(let r=0;r<rows;r++){
-        const y = top + r*rowH;
-        ctx.fillStyle = (r%2===0) ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.015)";
-        ctx.fillRect(left, y, usableW, rowH);
-      }
-
       // notes
       let t=0;
       for(const n of notes){
         const x = left + t*beatW;
-        const nw = Math.max(2, n.durBeats*beatW);
+        const nw = Math.max(3, n.durBeats*beatW);
         const y = top + (maxM - n.midi)*rowH + 1;
-        const nh = Math.max(2, rowH-2);
+        const nh = Math.max(3, rowH-2);
 
-        ctx.fillStyle = "rgba(120,140,255,0.42)";
-        ctx.strokeStyle = "rgba(120,140,255,0.80)";
-        ctx.lineWidth = 1;
-        roundRect(ctx, x+1, y, Math.max(2, nw-2), nh, 6);
+        // shadow
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        roundRect(ctx, x+3, y+2, Math.max(2, nw-2), nh, 10);
+        ctx.fill();
+
+        // main note
+        ctx.fillStyle = pitchColor(n.midi);
+        ctx.strokeStyle = pitchStroke(n.midi);
+        ctx.lineWidth = 1.2;
+        roundRect(ctx, x+1, y, Math.max(2, nw-2), nh, 10);
         ctx.fill();
         ctx.stroke();
+
+        // tiny highlight
+        ctx.fillStyle = "rgba(255,255,255,0.10)";
+        roundRect(ctx, x+2, y+1, Math.max(2, nw-4), Math.max(2, nh*0.35), 10);
+        ctx.fill();
 
         t += n.durBeats;
       }
@@ -666,23 +807,8 @@ Browser UI
     window.addEventListener("resize", () => drawRoll(phrase));
 
     // -------------------------
-    // Copy + MIDI export
+    // MIDI export
     // -------------------------
-    function phraseText(notes){
-      return notes.map(n => `${midiToName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(", ");
-    }
-
-    copyBtn.addEventListener("click", async () => {
-      if(!phrase) return;
-      const txt = phraseText(phrase);
-      try{
-        await navigator.clipboard.writeText(txt);
-        setWarn(null);
-      }catch(e){
-        setWarn("Clipboard blocked by browser. Select/copy manually from the output box.");
-      }
-    });
-
     function exportMIDI(notes, bpm){
       const PPQ = 480;
       const u16 = n => [(n>>8)&255, n&255];
@@ -697,18 +823,15 @@ Browser UI
       const header = [...str("MThd"), ...u32(6), ...u16(0), ...u16(1), ...u16(PPQ)];
       const ev = [];
 
-      // tempo meta
       const mpqn = Math.round(60000000 / Math.max(1, bpm));
       ev.push(...vlq(0), 0xFF, 0x51, 0x03, (mpqn>>16)&255, (mpqn>>8)&255, mpqn&255);
-      // program change (piano)
       ev.push(...vlq(0), 0xC0, 0x00);
 
       for(const n of notes){
         const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
-        ev.push(...vlq(0),      0x90, clamp(n.midi,0,127), 100); // note on
-        ev.push(...vlq(durTicks),0x80, clamp(n.midi,0,127), 0);  // note off
+        ev.push(...vlq(0),      0x90, clamp(n.midi,0,127), 100);
+        ev.push(...vlq(durTicks),0x80, clamp(n.midi,0,127), 0);
       }
-      // end track
       ev.push(...vlq(0), 0xFF, 0x2F, 0x00);
 
       const track = [...str("MTrk"), ...u32(ev.length), ...ev];
@@ -731,9 +854,9 @@ Browser UI
     });
 
     // -------------------------
-    // Ratings + Evidence plots
+    // Ratings + plots
     // -------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v2_simple";
+    const RATINGS_KEY = "liam_ai_music_ratings_v3_color";
 
     function loadRatings(){
       try{ return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
@@ -854,19 +977,23 @@ Browser UI
       setWarn(null);
     });
 
-    // Simple bar chart (minimal code)
+    // Simple bar chart (now with colorful bars)
     function barChart(canvas, labels, values, title){
       const cssH = 200;
       const {ctx, w, h} = fitCanvas(canvas, cssH);
       ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "rgba(5,5,12,0.85)";
+
+      const bg = ctx.createLinearGradient(0,0,w,h);
+      bg.addColorStop(0, "rgba(10,12,28,0.82)");
+      bg.addColorStop(1, "rgba(8,10,22,0.62)");
+      ctx.fillStyle = bg;
       ctx.fillRect(0,0,w,h);
 
       const padL = 44, padR = 12, padT = 28, padB = 36;
       const innerW = w - padL - padR;
       const innerH = h - padT - padB;
 
-      ctx.fillStyle = "rgba(238,240,255,0.85)";
+      ctx.fillStyle = "rgba(238,240,255,0.88)";
       ctx.font = "12px " + getComputedStyle(document.body).fontFamily;
       ctx.fillText(title || "", 12, 18);
 
@@ -884,7 +1011,7 @@ Browser UI
       ctx.lineTo(padL + innerW, padT + innerH);
       ctx.stroke();
 
-      // y ticks (0..max)
+      // y ticks
       ctx.fillStyle = "rgba(238,240,255,0.65)";
       ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
       for(let t=0;t<=2;t++){
@@ -902,13 +1029,19 @@ Browser UI
         const x = padL + i*(barW+gap);
         const y = padT + innerH - bh;
 
-        ctx.fillStyle = "rgba(120,140,255,0.42)";
-        ctx.strokeStyle = "rgba(120,140,255,0.85)";
-        roundRect(ctx, x, y, barW, bh, 8);
+        // gradient per bar
+        const gg = ctx.createLinearGradient(0, y, 0, y+bh);
+        gg.addColorStop(0, "rgba(124,92,255,0.65)");
+        gg.addColorStop(1, "rgba(47,227,180,0.30)");
+
+        ctx.fillStyle = gg;
+        ctx.strokeStyle = "rgba(76,201,255,0.55)";
+        ctx.lineWidth = 1.1;
+        roundRect(ctx, x, y, barW, bh, 10);
         ctx.fill(); ctx.stroke();
 
         // x labels
-        ctx.fillStyle = "rgba(238,240,255,0.70)";
+        ctx.fillStyle = "rgba(238,240,255,0.72)";
         ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
         const lab = labels[i];
         const tx = x + barW/2;
@@ -948,7 +1081,7 @@ Browser UI
       );
 
       // Plot 3: avg rating by bias bucket
-      const buckets = {}; // "0.00", "0.25", ...
+      const buckets = {};
       const bucketOf = (b) => (Math.round(b/0.25)*0.25).toFixed(2);
       for(const r of list){
         const k = bucketOf(Number(r.bias));
@@ -984,14 +1117,12 @@ Browser UI
         drawRoll(phrase);
 
         playBtn.disabled = false;
-        copyBtn.disabled = false;
         midiBtn.disabled = false;
-
         saveBtn.disabled = !(currentStars>0);
       }catch(e){
         phrase = null;
         outEl.textContent = "(generation failed)";
-        playBtn.disabled = true; stopBtn.disabled = true; copyBtn.disabled = true; midiBtn.disabled = true; saveBtn.disabled = true;
+        playBtn.disabled = true; stopBtn.disabled = true; midiBtn.disabled = true; saveBtn.disabled = true;
         drawRoll(null);
         renderMetrics({repetition:0,stepwise:0,range:0,tonal:0});
         setWarn(e?.message || "Generation failed.");
@@ -1024,8 +1155,6 @@ Browser UI
         else if(!playBtn.disabled) playBtn.click();
       }else if(e.key.toLowerCase() === "g"){
         genBtn.click();
-      }else if(e.key.toLowerCase() === "c"){
-        if(!copyBtn.disabled) copyBtn.click();
       }else if(e.key.toLowerCase() === "m"){
         if(!midiBtn.disabled) midiBtn.click();
       }
