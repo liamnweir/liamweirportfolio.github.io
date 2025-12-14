@@ -5,249 +5,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Music Generation System | Liam Weir</title>
 
-  <!-- Tone.js (audio playback) -->
+  <!-- Tone.js -->
   <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
 
   <style>
     :root{
-      --bg0:#070818;
-      --bg1:#0b1028;
-      --panel: rgba(255,255,255,0.075);
-      --panel2: rgba(255,255,255,0.055);
-      --border: rgba(255,255,255,0.12);
-      --text: #eef0ff;
+      --bg0:#07071a;
+      --bg1:#0b1634;
+      --panel: rgba(255,255,255,0.085);
+      --panel2: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.14);
+      --text:#eef0ff;
       --muted: rgba(238,240,255,0.78);
 
-      --a1:#7C5CFF;
-      --a2:#2FE3B4;
-      --a3:#FFB86B;
-      --a4:#4CC9FF;
+      --p:#7c5cff;   /* purple */
+      --m:#2fe3b4;   /* mint */
+      --b:#4cc9ff;   /* blue */
+      --o:#ffb86b;   /* orange */
+      --r:#ff5ca8;   /* pink */
 
-      --shadow: 0 22px 60px rgba(0,0,0,0.45);
+      --shadow: 0 22px 70px rgba(0,0,0,0.45);
       --radius: 18px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+
     body{
       margin:0;
       font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-      color:var(--text);
+      color: var(--text);
       background:
-        radial-gradient(900px 600px at 15% 10%, rgba(124,92,255,0.30), transparent 60%),
-        radial-gradient(800px 540px at 85% 20%, rgba(47,227,180,0.22), transparent 60%),
-        radial-gradient(900px 600px at 70% 90%, rgba(76,201,255,0.18), transparent 65%),
+        radial-gradient(900px 600px at 12% 8%, rgba(124,92,255,0.35), transparent 60%),
+        radial-gradient(900px 600px at 88% 18%, rgba(47,227,180,0.22), transparent 62%),
+        radial-gradient(900px 600px at 60% 92%, rgba(76,201,255,0.18), transparent 65%),
+        radial-gradient(800px 560px at 30% 78%, rgba(255,92,168,0.13), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
 
-    a{color:inherit}
+    a{ color:inherit; text-decoration:none }
 
+    /* Top bar */
     .topbar{
       position:fixed; top:0; left:0; width:100%;
-      background: rgba(10,12,30,0.70);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      z-index:10;
+      z-index:20;
       padding: 14px 16px;
       display:flex;
       justify-content:flex-start;
+      background: rgba(10,12,30,0.68);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
     }
-
     .back{
-      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       font-weight:900;
       letter-spacing:.2px;
       padding:10px 14px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,0.14);
+      border:1px solid rgba(255,255,255,0.16);
       background:
-        linear-gradient(135deg, rgba(124,92,255,0.22), rgba(47,227,180,0.14));
-      box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+        linear-gradient(135deg, rgba(124,92,255,0.24), rgba(47,227,180,0.14));
+      box-shadow: 0 14px 32px rgba(0,0,0,0.25);
     }
-    .back:hover{filter:brightness(1.07)}
+    .back:hover{ filter:brightness(1.08) }
 
-    .wrap{max-width:1140px;margin:0 auto;padding:88px 16px 60px}
-    h1{margin:0 0 8px;font-size:2.25rem;letter-spacing:.2px}
-    h2{margin:0 0 10px;font-size:1.22rem}
-    h3{margin:0 0 8px;font-size:1.05rem}
-    p{margin:8px 0;line-height:1.65;color:var(--muted)}
+    .wrap{ max-width:1160px; margin:0 auto; padding: 92px 16px 64px }
 
     .hero{
       display:flex;
       flex-wrap:wrap;
+      gap:14px;
       align-items:flex-end;
-      gap:12px;
       justify-content:space-between;
       margin-bottom:14px;
     }
+    h1{ margin:0 0 8px; font-size:2.35rem; letter-spacing:.2px }
+    p{ margin:8px 0; line-height:1.7; color:var(--muted) }
 
-    .pills{display:flex;flex-wrap:wrap;gap:8px}
+    .pills{ display:flex; flex-wrap:wrap; gap:8px }
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 7px 10px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
       font-size:.86rem;
-      color: rgba(238,240,255,0.82);
+      color: rgba(238,240,255,0.86);
     }
-    .pill .dot{
-      width:8px;height:8px;border-radius:999px;
-      background: rgba(255,255,255,0.80);
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.10);
-    }
-    .pill.ai .dot{background: rgba(124,92,255,0.95); box-shadow:0 0 0 4px rgba(124,92,255,0.20)}
-    .pill.music .dot{background: rgba(47,227,180,0.95); box-shadow:0 0 0 4px rgba(47,227,180,0.18)}
-    .pill.eval .dot{background: rgba(255,184,107,0.95); box-shadow:0 0 0 4px rgba(255,184,107,0.18)}
-    .pill.web .dot{background: rgba(76,201,255,0.95); box-shadow:0 0 0 4px rgba(76,201,255,0.18)}
+    .dot{ width:9px; height:9px; border-radius:999px; box-shadow:0 0 0 4px rgba(255,255,255,0.10) }
+    .dot.p{ background:rgba(124,92,255,0.95); box-shadow:0 0 0 4px rgba(124,92,255,0.20) }
+    .dot.m{ background:rgba(47,227,180,0.95); box-shadow:0 0 0 4px rgba(47,227,180,0.18) }
+    .dot.b{ background:rgba(76,201,255,0.95); box-shadow:0 0 0 4px rgba(76,201,255,0.18) }
+    .dot.o{ background:rgba(255,184,107,0.95); box-shadow:0 0 0 4px rgba(255,184,107,0.18) }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.18fr .82fr;
-      gap:16px;
-      margin-top:14px
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      margin-top: 14px;
     }
-    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+    @media (max-width:980px){ .grid{ grid-template-columns:1fr } }
 
-    .panel{
+    .card{
       border-radius: var(--radius);
-      border:1px solid rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.14);
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+        linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .panel .hd{
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,0.10);
+    .card .hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
       background:
-        linear-gradient(135deg, rgba(124,92,255,0.14), rgba(47,227,180,0.10));
+        linear-gradient(135deg, rgba(124,92,255,0.16), rgba(47,227,180,0.10), rgba(76,201,255,0.10));
     }
-    .panel .bd{padding:16px}
+    .card .bd{ padding: 16px }
 
-    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-    .field{min-width:170px; flex: 1 1 170px}
-    .label{font-size:.9rem;color:rgba(238,240,255,0.80);margin:0 0 6px}
+    h2{ margin:0; font-size:1.2rem }
+    h3{ margin:0 0 8px; font-size:1.05rem }
+    .tiny{ font-size:.88rem; color: rgba(238,240,255,0.72) }
+    .mono{ font-family: var(--mono) }
 
-    select,input[type="text"],input[type="number"],input[type="range"]{
+    .row{ display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end }
+    .field{ min-width: 170px; flex: 1 1 170px }
+    .label{ font-size:.9rem; color: rgba(238,240,255,0.82); margin: 0 0 6px }
+
+    select,input[type="text"],input[type="range"]{
       width:100%;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.09);
       color: var(--text);
-      border:1px solid rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.16);
       border-radius: 14px;
       padding: 10px 12px;
       outline:none;
     }
     select:focus,input:focus{
-      border-color: rgba(124,92,255,0.55);
+      border-color: rgba(124,92,255,0.58);
       box-shadow: 0 0 0 4px rgba(124,92,255,0.18);
     }
-    input[type="range"]{padding:10px 0}
+    input[type="range"]{ padding: 10px 0 }
 
     .btn{
       appearance:none;
-      border:1px solid rgba(255,255,255,0.16);
-      color: var(--text);
+      cursor:pointer;
+      user-select:none;
       padding: 10px 14px;
       border-radius: 14px;
-      cursor:pointer;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
       font-weight: 900;
       letter-spacing:.2px;
-      background: rgba(255,255,255,0.08);
-      transition: transform .18s ease, filter .18s ease, background .18s ease;
+      transition: transform .18s ease, filter .18s ease;
     }
-    .btn:hover{filter:brightness(1.08); transform: translateY(-1px)}
-    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.08) }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none }
 
     .btn.primary{
-      border-color: rgba(124,92,255,0.35);
-      background: linear-gradient(135deg, rgba(124,92,255,0.28), rgba(76,201,255,0.16));
+      border-color: rgba(124,92,255,0.38);
+      background: linear-gradient(135deg, rgba(124,92,255,0.30), rgba(76,201,255,0.16));
     }
-    .btn.good{
-      border-color: rgba(47,227,180,0.32);
+    .btn.play{
+      border-color: rgba(47,227,180,0.34);
       background: linear-gradient(135deg, rgba(47,227,180,0.22), rgba(124,92,255,0.12));
     }
-    .btn.secondary{
-      border-color: rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.06);
+    .btn.warn{
+      border-color: rgba(255,184,107,0.32);
+      background: linear-gradient(135deg, rgba(255,184,107,0.18), rgba(255,92,168,0.10));
     }
 
-    .warn{
+    .hr{ border:0; border-top: 1px solid rgba(255,255,255,0.10); margin: 14px 0 }
+
+    .alert{
       display:none;
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,184,107,0.35);
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,184,107,0.36);
       background: rgba(255,184,107,0.12);
-      color: rgba(255,240,228,0.95);
+      color: rgba(255,245,235,0.95);
     }
 
-    pre{
-      margin:10px 0 0;
-      padding:12px;
-      border-radius:14px;
-      background: rgba(0,0,0,0.28);
-      border:1px solid rgba(255,255,255,0.12);
-      overflow:auto;
-      min-height:160px;
-      color: rgba(238,240,255,0.92);
-      font-family: var(--mono);
-      font-size: .92rem;
-    }
-
-    .hr{border:0;border-top:1px solid rgba(255,255,255,0.10);margin:14px 0}
-
-    .canvasWrap{
-      margin-top:12px;
-      border-radius:14px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.12);
-      background:
-        radial-gradient(800px 280px at 15% 30%, rgba(124,92,255,0.14), transparent 60%),
-        radial-gradient(800px 280px at 85% 70%, rgba(47,227,180,0.10), transparent 60%),
-        rgba(0,0,0,0.24);
-    }
-    canvas{display:block;width:100%;height:auto}
-
-    .tiny{font-size:.88rem;color: rgba(238,240,255,0.70)}
-    .mono{font-family: var(--mono)}
-
-    .kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.10)}
-    .kv:last-child{border-bottom:none}
-
-    .stars{display:flex;gap:6px;align-items:center}
-    .star{
-      width:36px;height:36px;border-radius:12px;
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.06);
-      cursor:pointer; user-select:none; font-size:18px;
-      transition: transform .15s ease, filter .15s ease;
-    }
-    .star:hover{transform: translateY(-1px); filter:brightness(1.08)}
-    .star.on{
-      background: linear-gradient(135deg, rgba(255,184,107,0.30), rgba(124,92,255,0.14));
-      border-color: rgba(255,184,107,0.38);
-    }
-
-    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
-    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.10);vertical-align:top}
-    th{text-align:left;color:rgba(238,240,255,0.85);font-weight:900}
-
-    code{font-family:var(--mono);font-size:.92em}
-
-    .asideNote{
-      padding:12px 12px;
+    /* Melody chips (replaces raw text) */
+    .chipsWrap{
+      margin-top: 12px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.20);
+      padding: 12px;
+    }
+    .chipsHead{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .chip{
+      position:relative;
+      padding: 8px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
+      min-width: 64px;
+      overflow:hidden;
+    }
+    .chip .n{ font-weight: 900; letter-spacing:.2px; font-size:.92rem }
+    .chip .bar{
+      position:absolute;
+      left:8px;
+      right:8px;
+      bottom:7px;
+      height:4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow:hidden;
+    }
+    .chip .bar > i{
+      display:block;
+      height:100%;
+      width:50%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(124,92,255,0.95), rgba(47,227,180,0.95), rgba(76,201,255,0.95));
+      opacity:0.95;
     }
 
-    .list{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.65}
+    /* Piano roll canvas wrap */
+    .canvasWrap{
+      margin-top: 12px;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        radial-gradient(900px 280px at 15% 30%, rgba(124,92,255,0.16), transparent 60%),
+        radial-gradient(900px 280px at 85% 70%, rgba(47,227,180,0.12), transparent 60%),
+        rgba(0,0,0,0.22);
+    }
+    canvas{ display:block; width:100%; height:auto }
+
+    /* Right panel metrics */
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .kv:last-child{ border-bottom:none }
+
+    /* Ratings */
+    .stars{ display:flex; gap:6px; align-items:center }
+    .star{
+      width:36px; height:36px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      cursor:pointer;
+      user-select:none;
+      font-size:18px;
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .star:hover{ transform: translateY(-1px); filter:brightness(1.08) }
+    .star.on{
+      border-color: rgba(255,184,107,0.42);
+      background: linear-gradient(135deg, rgba(255,184,107,0.28), rgba(124,92,255,0.14));
+    }
+
+    table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:.92rem }
+    th,td{ padding:10px; border-bottom:1px solid rgba(255,255,255,0.10); vertical-align:top }
+    th{ text-align:left; color: rgba(238,240,255,0.86); font-weight: 900 }
   </style>
 </head>
 
@@ -261,24 +299,25 @@
       <div>
         <h1>AI Music Generation System</h1>
         <p>
-          Generate symbolic melodies (notes + durations), play them back, visualize a piano roll,
-          compute structure metrics, and collect listener ratings (stored locally + exportable CSV).
+          Generate short symbolic melodies with controls for key/mode, tempo, length, and melodic motion.
+          Play results instantly, export MIDI, and collect listening ratings for comparison.
         </p>
       </div>
-      <div class="pills" aria-label="tags">
-        <span class="pill ai"><span class="dot"></span>AI</span>
-        <span class="pill music"><span class="dot"></span>Music</span>
-        <span class="pill eval"><span class="dot"></span>Listening Study</span>
-        <span class="pill web"><span class="dot"></span>Tone.js</span>
+
+      <div class="pills">
+        <span class="pill"><span class="dot p"></span>Generator</span>
+        <span class="pill"><span class="dot m"></span>Playback</span>
+        <span class="pill"><span class="dot b"></span>MIDI Export</span>
+        <span class="pill"><span class="dot o"></span>Listening Ratings</span>
       </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT: MAIN APP -->
-      <section class="panel">
+      <!-- LEFT -->
+      <section class="card">
         <div class="hd">
-          <h2 style="margin:0">Generator + Playback</h2>
-          <div class="tiny" style="margin-top:6px">Tip: Generate → Play → Rate (data stays on your device)</div>
+          <h2>Controls</h2>
+          <div class="tiny" style="margin-top:6px">Generate → Play → Rate (saved locally on this device)</div>
         </div>
 
         <div class="bd">
@@ -333,17 +372,28 @@
             </div>
           </div>
 
-          <div class="row" style="margin-top:10px">
+          <div class="row" style="margin-top:12px">
             <button class="btn primary" id="genBtn">Generate</button>
-            <button class="btn good" id="playBtn" disabled>Play</button>
-            <button class="btn secondary" id="stopBtn" disabled>Stop</button>
-            <button class="btn secondary" id="midiBtn" disabled>Export MIDI</button>
+            <button class="btn play" id="playBtn" disabled>Play</button>
+            <button class="btn warn" id="stopBtn" disabled>Stop</button>
+            <button class="btn" id="midiBtn" disabled>Export MIDI</button>
           </div>
 
-          <div id="warn" class="warn"></div>
+          <div id="warn" class="alert"></div>
 
-          <div class="label" style="margin-top:12px">Generated phrase (note : beats)</div>
-          <pre id="out">(click Generate)</pre>
+          <!-- REPLACES RAW TEXT OUTPUT -->
+          <div class="chipsWrap" aria-label="Generated melody preview">
+            <div class="chipsHead">
+              <div>
+                <div class="label" style="margin:0">Melody preview</div>
+                <div class="tiny" id="melodyMeta">—</div>
+              </div>
+              <div class="tiny">Bars = relative duration</div>
+            </div>
+            <div class="chips" id="chips">
+              <div class="tiny">Click Generate to create a melody.</div>
+            </div>
+          </div>
 
           <div class="canvasWrap" aria-label="Piano roll">
             <canvas id="roll"></canvas>
@@ -352,8 +402,8 @@
 
           <div class="hr"></div>
 
-          <h3>Listening Study (User Ratings)</h3>
-          <p>Rate the current phrase. Ratings are stored locally on this device and can be exported as CSV.</p>
+          <h3>Listening Ratings</h3>
+          <p class="tiny">Rate the current melody. Ratings are stored locally and exportable as CSV.</p>
 
           <div class="row" style="align-items:center">
             <div>
@@ -366,13 +416,13 @@
 
             <div style="flex:1;min-width:260px">
               <div class="label">Optional comment</div>
-              <input id="comment" type="text" placeholder="e.g., 'Nice cadence, rhythm feels jumpy'" />
+              <input id="comment" type="text" placeholder="e.g., 'Good contour, cadence feels strong'" />
             </div>
 
             <div class="row" style="align-items:flex-end">
-              <button class="btn primary" id="saveBtn" disabled>Save Rating</button>
-              <button class="btn secondary" id="csvBtn">Export CSV</button>
-              <button class="btn secondary" id="clearBtn">Clear</button>
+              <button class="btn primary" id="saveBtn" disabled>Save</button>
+              <button class="btn" id="csvBtn">Export CSV</button>
+              <button class="btn" id="clearBtn">Clear</button>
             </div>
           </div>
 
@@ -386,33 +436,20 @@
           </table>
 
           <p class="tiny">
-            Shortcuts: <span class="mono">Space</span> play/stop • <span class="mono">G</span> generate •
-            <span class="mono">M</span> export MIDI
+            Shortcuts: <span class="mono">Space</span> play/stop • <span class="mono">G</span> generate • <span class="mono">M</span> export MIDI
           </p>
         </div>
       </section>
 
-      <!-- RIGHT: METRICS + RESULTS -->
-      <aside class="panel">
+      <!-- RIGHT -->
+      <aside class="card">
         <div class="hd">
-          <h2 style="margin:0">Metrics + Results</h2>
-          <div class="tiny" style="margin-top:6px">These update from the current phrase + saved ratings.</div>
+          <h2>Metrics + Results</h2>
+          <div class="tiny" style="margin-top:6px">Metrics update per melody; plots update from saved ratings.</div>
         </div>
 
         <div class="bd">
-          <div class="asideNote">
-            <h3 style="margin-bottom:6px">What this measures</h3>
-            <ul class="list" style="margin-top:6px">
-              <li><strong>Repetition:</strong> how often pitches repeat (higher = more repeats).</li>
-              <li><strong>Stepwise motion:</strong> fraction of intervals within ±2 semitones.</li>
-              <li><strong>Range:</strong> max–min pitch in semitones.</li>
-              <li><strong>Tonal stability:</strong> fraction of notes in the tonic triad.</li>
-            </ul>
-          </div>
-
-          <div class="hr"></div>
-
-          <h3>Structure Metrics (current phrase)</h3>
+          <h3>Structure Metrics (current)</h3>
           <div class="kv"><span>Repetition</span><strong id="m_rep">—</strong></div>
           <div class="kv"><span>Stepwise motion</span><strong id="m_step">—</strong></div>
           <div class="kv"><span>Range (semitones)</span><strong id="m_range">—</strong></div>
@@ -420,13 +457,11 @@
 
           <div class="hr"></div>
 
-          <h3>Saved Ratings (from this device)</h3>
-          <p class="tiny">Use Export CSV to analyze in Python/R (e.g., correlate ratings with metrics).</p>
-
+          <h3>Ratings Summary (this device)</h3>
           <div class="canvasWrap" style="margin-top:10px">
             <canvas id="plot1"></canvas>
           </div>
-          <div class="tiny" style="margin-top:6px">Rating distribution (1–5 stars)</div>
+          <div class="tiny" style="margin-top:6px">Rating distribution (counts)</div>
 
           <div class="canvasWrap" style="margin-top:12px">
             <canvas id="plot2"></canvas>
@@ -436,7 +471,7 @@
           <div class="canvasWrap" style="margin-top:12px">
             <canvas id="plot3"></canvas>
           </div>
-          <div class="tiny" style="margin-top:6px">Average rating by stepwise-bias bucket</div>
+          <div class="tiny" style="margin-top:6px">Average rating by bias bucket</div>
         </div>
       </aside>
     </div>
@@ -444,7 +479,7 @@
 
   <script>
     // -------------------------
-    // Tiny helpers
+    // Helpers
     // -------------------------
     const $ = (id) => document.getElementById(id);
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -452,7 +487,7 @@
     const nowISO = () => new Date().toISOString();
 
     // -------------------------
-    // Theory
+    // Music theory
     // -------------------------
     const NOTE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11};
     const MODES = {
@@ -475,9 +510,14 @@
     const keyEl = $("key"), modeEl = $("mode"), tempoEl = $("tempo"), tempoVal = $("tempoVal");
     const biasEl = $("bias"), biasVal = $("biasVal"), lenEl = $("length"), instEl = $("inst");
     const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), midiBtn = $("midiBtn");
-    const outEl = $("out"), warnEl = $("warn");
+    const warnEl = $("warn");
     const roll = $("roll"), rollInfo = $("rollInfo");
+
+    const chipsEl = $("chips");
+    const melodyMeta = $("melodyMeta");
+
     const mRep = $("m_rep"), mStep = $("m_step"), mRange = $("m_range"), mTonal = $("m_tonal");
+
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
 
@@ -491,16 +531,20 @@
     let currentStars = 0;
 
     // -------------------------
+    // Alerts
+    // -------------------------
+    function setWarn(msg){
+      if(!msg){ warnEl.style.display="none"; warnEl.textContent=""; return; }
+      warnEl.style.display="block";
+      warnEl.textContent = msg;
+    }
+
+    // -------------------------
     // Audio
     // -------------------------
     let synth = null, part = null;
     let masterReady = false;
     let masterGain, reverb, limiter;
-
-    function setWarn(msg){
-      if(!msg){ warnEl.style.display="none"; warnEl.textContent=""; return; }
-      warnEl.style.display="block"; warnEl.textContent = msg;
-    }
 
     function ensureMaster(){
       if(masterReady) return;
@@ -581,7 +625,7 @@
     // -------------------------
     function allowedNotes(root, modeKey){
       const pcs = MODES[modeKey].map(x => (x + root));
-      const base = 60; // around C4
+      const base = 60;
       const out = [];
       for(let oct=-1; oct<=1; oct++){
         for(const pc of pcs) out.push(base + pc + 12*oct);
@@ -657,10 +701,6 @@
       return {repetition, stepwise, range, tonal};
     }
 
-    function renderPhrase(notes){
-      outEl.textContent = notes.map(n => `${midiToName(n.midi)} : ${Number(n.durBeats).toFixed(3)}`).join("\n");
-    }
-
     function renderMetrics(m){
       mRep.textContent   = m.repetition.toFixed(2);
       mStep.textContent  = m.stepwise.toFixed(2);
@@ -669,10 +709,35 @@
     }
 
     // -------------------------
-    // Piano roll (upgraded look)
+    // Melody preview chips (NO RAW TEXT)
     // -------------------------
     function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
 
+    function renderChips(notes){
+      if(!notes || !notes.length){
+        chipsEl.innerHTML = `<div class="tiny">Click Generate to create a melody.</div>`;
+        melodyMeta.textContent = "—";
+        return;
+      }
+      const total = sumBeats(notes);
+      const maxDur = Math.max(...notes.map(n=>n.durBeats));
+      melodyMeta.textContent = `${notes.length} notes • ${total.toFixed(2)} beats`;
+
+      chipsEl.innerHTML = notes.map(n => {
+        const w = Math.max(12, Math.round((n.durBeats / maxDur) * 100));
+        const name = midiToName(n.midi);
+        return `
+          <div class="chip" title="${name}">
+            <div class="n">${name}</div>
+            <div class="bar"><i style="width:${w}%"></i></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // -------------------------
+    // Piano roll (colorful)
+    // -------------------------
     function fitCanvas(canvas, cssH){
       const dpr = Math.max(1, window.devicePixelRatio || 1);
       const w = Math.max(320, Math.floor(canvas.getBoundingClientRect().width));
@@ -682,33 +747,37 @@
       ctx.setTransform(dpr,0,0,dpr,0,0);
       return {ctx, w, h: cssH};
     }
-
-    function isBlackKey(pc){
-      return [1,3,6,8,10].includes(pc);
+    function roundRect(ctx, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x, y+h, rr);
+      ctx.arcTo(x, y+h, x, y, rr);
+      ctx.arcTo(x, y, x+w, y, rr);
+      ctx.closePath();
     }
+    function isBlackKey(pc){ return [1,3,6,8,10].includes(pc); }
 
-    function pitchColor(midi){
-      // hue across pitch range for a colorful roll
-      const t = (midi - 36) / (96 - 36); // roughly C2..C7
-      const hue = 260 - (t * 220); // purple -> cyan/green
-      return `hsla(${hue}, 90%, 62%, 0.65)`;
+    function pitchFill(midi){
+      const t = (midi - 36) / (96 - 36);
+      const hue = 265 - (t * 220); // purple -> green/cyan
+      return `hsla(${hue}, 92%, 60%, 0.62)`;
     }
-
     function pitchStroke(midi){
       const t = (midi - 36) / (96 - 36);
-      const hue = 260 - (t * 220);
-      return `hsla(${hue}, 95%, 72%, 0.95)`;
+      const hue = 265 - (t * 220);
+      return `hsla(${hue}, 95%, 70%, 0.95)`;
     }
 
     function drawRoll(notes){
-      const cssH = 260;
+      const cssH = 270;
       const {ctx, w, h} = fitCanvas(roll, cssH);
 
-      // background
-      const g = ctx.createLinearGradient(0,0,w,h);
-      g.addColorStop(0, "rgba(8,10,22,0.85)");
-      g.addColorStop(1, "rgba(6,8,18,0.65)");
-      ctx.fillStyle = g;
+      const bg = ctx.createLinearGradient(0,0,w,h);
+      bg.addColorStop(0, "rgba(8,10,26,0.86)");
+      bg.addColorStop(1, "rgba(7,8,18,0.62)");
+      ctx.fillStyle = bg;
       ctx.fillRect(0,0,w,h);
 
       if(!notes || !notes.length){
@@ -730,31 +799,23 @@
       const total = sumBeats(notes);
       const beatW = usableW / Math.max(0.001, total);
 
-      // keybed-style horizontal lanes
+      // lanes
       for(let r=0;r<rows;r++){
         const midi = maxM - r;
-        const pc = (midi % 12);
+        const pc = midi % 12;
         const y = top + r*rowH;
         const black = isBlackKey(pc);
-
-        ctx.fillStyle = black ? "rgba(255,255,255,0.035)" : "rgba(255,255,255,0.02)";
+        ctx.fillStyle = black ? "rgba(255,255,255,0.040)" : "rgba(255,255,255,0.022)";
         ctx.fillRect(left, y, usableW, rowH);
-
-        // subtle lane divider
-        ctx.strokeStyle = "rgba(255,255,255,0.06)";
-        ctx.beginPath();
-        ctx.moveTo(left, y);
-        ctx.lineTo(left+usableW, y);
-        ctx.stroke();
       }
 
-      // vertical beat grid (quarters + bars)
+      // beat grid
       const quarters = Math.ceil(total / 0.25);
       for(let b=0;b<=quarters;b++){
         const x = left + (b*0.25)*beatW;
-        const isBar = (b % 16 === 0); // 4 beats if 0.25 grid => 16 quarters
-        ctx.strokeStyle = isBar ? "rgba(76,201,255,0.14)" : "rgba(255,255,255,0.08)";
-        ctx.lineWidth = isBar ? 1.5 : 1;
+        const isBar = (b % 16 === 0);
+        ctx.strokeStyle = isBar ? "rgba(76,201,255,0.16)" : "rgba(255,255,255,0.08)";
+        ctx.lineWidth = isBar ? 1.6 : 1;
         ctx.beginPath();
         ctx.moveTo(x, top);
         ctx.lineTo(x, h-bottom);
@@ -770,19 +831,19 @@
         const nh = Math.max(3, rowH-2);
 
         // shadow
-        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        ctx.fillStyle = "rgba(0,0,0,0.24)";
         roundRect(ctx, x+3, y+2, Math.max(2, nw-2), nh, 10);
         ctx.fill();
 
-        // main note
-        ctx.fillStyle = pitchColor(n.midi);
+        // main
+        ctx.fillStyle = pitchFill(n.midi);
         ctx.strokeStyle = pitchStroke(n.midi);
         ctx.lineWidth = 1.2;
         roundRect(ctx, x+1, y, Math.max(2, nw-2), nh, 10);
         ctx.fill();
         ctx.stroke();
 
-        // tiny highlight
+        // highlight
         ctx.fillStyle = "rgba(255,255,255,0.10)";
         roundRect(ctx, x+2, y+1, Math.max(2, nw-4), Math.max(2, nh*0.35), 10);
         ctx.fill();
@@ -791,17 +852,6 @@
       }
 
       rollInfo.textContent = `Range: ${hi-lo} semitones • Total: ${total.toFixed(2)} beats`;
-    }
-
-    function roundRect(ctx, x, y, w, h, r){
-      const rr = Math.min(r, w/2, h/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr, y);
-      ctx.arcTo(x+w, y, x+w, y+h, rr);
-      ctx.arcTo(x+w, y+h, x, y+h, rr);
-      ctx.arcTo(x, y+h, x, y, rr);
-      ctx.arcTo(x, y, x+w, y, rr);
-      ctx.closePath();
     }
 
     window.addEventListener("resize", () => drawRoll(phrase));
@@ -829,7 +879,7 @@
 
       for(const n of notes){
         const durTicks = Math.max(1, Math.round(n.durBeats * PPQ));
-        ev.push(...vlq(0),      0x90, clamp(n.midi,0,127), 100);
+        ev.push(...vlq(0),       0x90, clamp(n.midi,0,127), 100);
         ev.push(...vlq(durTicks),0x80, clamp(n.midi,0,127), 0);
       }
       ev.push(...vlq(0), 0xFF, 0x2F, 0x00);
@@ -856,7 +906,7 @@
     // -------------------------
     // Ratings + plots
     // -------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v3_color";
+    const RATINGS_KEY = "liam_ai_music_ratings_v4";
 
     function loadRatings(){
       try{ return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
@@ -922,8 +972,7 @@
         stars: currentStars,
         comment: (commentEl.value || "").trim(),
         key, mode, bpm, bias, length,
-        metrics: m,
-        phrase: phrase.map(n => ({midi:n.midi, durBeats:n.durBeats}))
+        metrics: m
       };
 
       const list = loadRatings();
@@ -941,30 +990,23 @@
       const list = loadRatings();
       if(!list.length){ setWarn("No ratings to export yet."); return; }
 
-      const header = [
-        "ts","stars","comment","key","mode","bpm","bias","length",
-        "repetition","stepwise","range","tonal","phrase"
-      ];
-
+      const header = ["ts","stars","comment","key","mode","bpm","bias","length","repetition","stepwise","range","tonal"];
       const esc = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
-      const rows = list.map(r => {
-        const phr = r.phrase.map(n => `${midiToName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(" ");
-        return [
-          esc(r.ts),
-          r.stars,
-          esc(r.comment),
-          esc(r.key),
-          esc(r.mode),
-          r.bpm,
-          r.bias,
-          r.length,
-          (r.metrics?.repetition ?? "").toFixed?.(4) ?? "",
-          (r.metrics?.stepwise ?? "").toFixed?.(4) ?? "",
-          r.metrics?.range ?? "",
-          (r.metrics?.tonal ?? "").toFixed?.(4) ?? "",
-          esc(phr)
-        ].join(",");
-      });
+
+      const rows = list.map(r => ([
+        esc(r.ts),
+        r.stars,
+        esc(r.comment),
+        esc(r.key),
+        esc(r.mode),
+        r.bpm,
+        r.bias,
+        r.length,
+        (r.metrics?.repetition ?? "").toFixed?.(4) ?? "",
+        (r.metrics?.stepwise ?? "").toFixed?.(4) ?? "",
+        r.metrics?.range ?? "",
+        (r.metrics?.tonal ?? "").toFixed?.(4) ?? ""
+      ].join(",")));
 
       downloadText("ai_music_ratings.csv", [header.join(","), ...rows].join("\n"), "text/csv");
       setWarn(null);
@@ -977,7 +1019,6 @@
       setWarn(null);
     });
 
-    // Simple bar chart (now with colorful bars)
     function barChart(canvas, labels, values, title){
       const cssH = 200;
       const {ctx, w, h} = fitCanvas(canvas, cssH);
@@ -985,7 +1026,7 @@
 
       const bg = ctx.createLinearGradient(0,0,w,h);
       bg.addColorStop(0, "rgba(10,12,28,0.82)");
-      bg.addColorStop(1, "rgba(8,10,22,0.62)");
+      bg.addColorStop(1, "rgba(7,8,18,0.62)");
       ctx.fillStyle = bg;
       ctx.fillRect(0,0,w,h);
 
@@ -1002,7 +1043,6 @@
       const gap = 8;
       const barW = Math.max(6, (innerW - gap*(n-1)) / n);
 
-      // axes
       ctx.strokeStyle = "rgba(255,255,255,0.12)";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1011,7 +1051,6 @@
       ctx.lineTo(padL + innerW, padT + innerH);
       ctx.stroke();
 
-      // y ticks
       ctx.fillStyle = "rgba(238,240,255,0.65)";
       ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
       for(let t=0;t<=2;t++){
@@ -1022,17 +1061,15 @@
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+innerW, y); ctx.stroke();
       }
 
-      // bars
       for(let i=0;i<n;i++){
         const v = values[i];
         const bh = (v/maxV)*innerH;
         const x = padL + i*(barW+gap);
         const y = padT + innerH - bh;
 
-        // gradient per bar
         const gg = ctx.createLinearGradient(0, y, 0, y+bh);
-        gg.addColorStop(0, "rgba(124,92,255,0.65)");
-        gg.addColorStop(1, "rgba(47,227,180,0.30)");
+        gg.addColorStop(0, "rgba(124,92,255,0.68)");
+        gg.addColorStop(1, "rgba(47,227,180,0.32)");
 
         ctx.fillStyle = gg;
         ctx.strokeStyle = "rgba(76,201,255,0.55)";
@@ -1040,7 +1077,6 @@
         roundRect(ctx, x, y, barW, bh, 10);
         ctx.fill(); ctx.stroke();
 
-        // x labels
         ctx.fillStyle = "rgba(238,240,255,0.72)";
         ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
         const lab = labels[i];
@@ -1057,11 +1093,9 @@
     function renderPlots(){
       const list = loadRatings();
 
-      // Plot 1: star distribution
       const counts = [1,2,3,4,5].map(s => list.filter(r => r.stars===s).length);
       barChart(plot1, ["1","2","3","4","5"], counts, "Rating distribution (counts)");
 
-      // Plot 2: avg rating by mode
       const byMode = {};
       for(const r of list){
         const k = r.mode;
@@ -1080,7 +1114,6 @@
         "Average rating by mode"
       );
 
-      // Plot 3: avg rating by bias bucket
       const buckets = {};
       const bucketOf = (b) => (Math.round(b/0.25)*0.25).toFixed(2);
       for(const r of list){
@@ -1091,7 +1124,7 @@
       const bucketKeys = ["0.00","0.25","0.50","0.75","1.00"];
       const bucketVals = bucketKeys.map(k => buckets[k] ? (buckets[k].sum / buckets[k].n) : 0);
 
-      barChart(plot3, bucketKeys, bucketVals, "Average rating by stepwise bias bucket");
+      barChart(plot3, bucketKeys, bucketVals, "Average rating by bias bucket");
     }
 
     // -------------------------
@@ -1106,10 +1139,10 @@
       const bias = Number(biasEl.value);
       const length = Number(lenEl.value);
 
-      outEl.textContent = "Generating...";
       try{
         phrase = generate({key, mode, bias, length});
-        renderPhrase(phrase);
+
+        renderChips(phrase);
 
         const m = metrics(phrase, key, mode);
         renderMetrics(m);
@@ -1118,13 +1151,14 @@
 
         playBtn.disabled = false;
         midiBtn.disabled = false;
+
         saveBtn.disabled = !(currentStars>0);
       }catch(e){
         phrase = null;
-        outEl.textContent = "(generation failed)";
-        playBtn.disabled = true; stopBtn.disabled = true; midiBtn.disabled = true; saveBtn.disabled = true;
+        renderChips(null);
         drawRoll(null);
         renderMetrics({repetition:0,stepwise:0,range:0,tonal:0});
+        playBtn.disabled = true; stopBtn.disabled = true; midiBtn.disabled = true; saveBtn.disabled = true;
         setWarn(e?.message || "Generation failed.");
       }
     });
@@ -1139,7 +1173,7 @@
         playBtn.disabled = true;
         stopBtn.disabled = false;
       }catch(e){
-        setWarn("Audio blocked by browser. Click Play again (or interact once more) to enable sound.");
+        setWarn("Audio blocked by browser. Click Play again to enable sound.");
       }
     });
 
@@ -1160,9 +1194,10 @@
       }
     });
 
-    // Initial render
+    // Init
     renderTable();
     renderPlots();
+    renderChips(null);
     drawRoll(null);
     biasVal.textContent = Number(biasEl.value).toFixed(2);
     tempoVal.textContent = tempoEl.value;
