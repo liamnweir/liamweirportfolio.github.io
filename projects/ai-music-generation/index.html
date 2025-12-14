@@ -416,26 +416,31 @@
             </select>
           </div>
 
-          <!-- NEW: rhythmic complexity controls (browser generator uses these) -->
+          <!-- Rhythmic complexity controls (browser generator uses these) -->
           <div>
             <div class="label">Min Note Length (beats)</div>
             <input id="minDur" type="number" step="0.01" value="0.25" min="0.01" />
           </div>
           <div>
             <div class="label">Max Note Length (beats)</div>
-            <input id="maxDur" type="number" step="0.01" value="1.50" min="0.01" />
+            <input id="maxDur" type="number" step="0.01" value="4.00" min="0.01" />
           </div>
           <div style="min-width: 280px;">
-            <div class="label">Rhythm Variety: <span id="rhythmVal">0.60</span></div>
-            <input id="rhythmVar" type="range" min="0" max="1" step="0.01" value="0.60" />
+            <div class="label">Rhythm Variety: <span id="rhythmVal">0.65</span></div>
+            <input id="rhythmVar" type="range" min="0" max="1" step="0.01" value="0.65" />
           </div>
           <div>
             <div class="label">Quantize Durations</div>
             <select id="quantize">
-              <option value="none" selected>None (any length)</option>
+              <option value="common" selected>Common values (1/16–whole)</option>
+              <option value="none">None (any length)</option>
               <option value="0.25">1/4 beat</option>
               <option value="0.125">1/8 beat</option>
               <option value="0.0625">1/16 beat</option>
+              <option value="0.5">1/2 beat</option>
+              <option value="1">1 beat</option>
+              <option value="2">2 beats</option>
+              <option value="4">4 beats</option>
               <option value="0.3333333">Triplet (1/3 beat)</option>
             </select>
           </div>
@@ -445,10 +450,9 @@
             <select id="instrument">
               <option value="piano" selected>Piano</option>
               <option value="guitar">Guitar (plucked)</option>
-              <option value="bass">Bass</option>
               <option value="violin">Violin</option>
               <option value="strings">Strings (pad)</option>
-              <option value="synth">Synth (bright)</option>
+              <option value="synth">Synth (soft)</option>
             </select>
           </div>
 
@@ -526,7 +530,6 @@
         <div class="metric"><span>Range (semitones)</span><strong id="rangeScore">—</strong></div>
         <div class="metric"><span>Tonal Stability</span><strong id="tonalScore">—</strong></div>
 
-        <!-- CRUCIAL: explanation section (auto-updated every generation) -->
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
         <h3 style="margin:0 0 8px;">Why this melody works (in words)</h3>
         <p class="muted" style="margin-top:0;" id="melodyExplain">
@@ -534,7 +537,6 @@
         </p>
 
         <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:14px 0;" />
-
         <h3 style="margin:0 0 8px;">What to write about</h3>
         <p class="muted" style="margin-top:0;">
           • Dataset (MIDI phrases)<br/>
@@ -617,8 +619,8 @@
             <h3 style="margin:0;">Method</h3>
             <ul class="list">
               <li><strong>Pitch generator:</strong> stepwise-biased walk constrained to a mode; soft arch-shaped contour; cadence pull at phrase end.</li>
-              <li><strong>Rhythm generator:</strong> durations sampled within user-set min/max bounds, with a variety knob and optional quantization grid.</li>
-              <li><strong>Playback:</strong> Tone.js synth approximations (no samples required).</li>
+              <li><strong>Rhythm generator:</strong> durations sampled from common musical values (1/16 → whole) or continuously from min/max, with optional quantization.</li>
+              <li><strong>Playback:</strong> Tone.js synth approximations routed through a shared “master bus” so instruments are balanced.</li>
             </ul>
           </div>
           <div>
@@ -636,7 +638,7 @@
         <h3 style="margin:0;">Results & Discussion</h3>
         <p class="muted" style="margin-top:8px;">
           The contour + cadence biases increase perceived “phrase-ness” (beginning–middle–end). Stepwise bias increases singability and reduces large leaps;
-          rhythmic variability allows more complex phrasing (long notes act as anchors, shorter notes provide motion). In future work, listener ratings can be analyzed against these metrics and rhythm statistics.
+          rhythmic variability allows more complex phrasing (long notes act as anchors, short notes provide motion). In future work, listener ratings can be analyzed against these metrics and rhythm statistics.
         </p>
 
         <div style="margin-top:10px;">
@@ -738,60 +740,111 @@
     let currentStars = 0;
 
     // ----------------------------
-    // Instrument factory
+    // GLOBAL MASTER BUS (fixes: volume imbalance, harshness, and "repeated note" illusion)
+    //
+    // The "long note sounds like it repeats" is almost always caused by echo/delay effects
+    // (or harsh re-attack). This build uses a shared reverb (no echo) + gentle filtering +
+    // a limiter, and removes per-instrument delay that can sound like re-triggering.
+    // ----------------------------
+    let MASTER_READY = false;
+    let dryBus, reverb, wetBus, toneFilter, compressor, limiter, masterGain;
+
+    function ensureMasterBus(){
+      if (MASTER_READY) return;
+
+      dryBus = new Tone.Gain(1);
+      wetBus = new Tone.Gain(0.40); // reverb send amount (higher = wetter)
+
+      // soften brightness so instruments aren't "super sharp"
+      toneFilter = new Tone.Filter({ type: "lowpass", frequency: 9500, rolloff: -24 });
+
+      // shared reverb (NO delay/echo)
+      reverb = new Tone.Reverb({ decay: 3.0, wet: 1.0, preDelay: 0.01 });
+
+      // gentle leveling
+      compressor = new Tone.Compressor({ threshold: -24, ratio: 3, attack: 0.01, release: 0.20 });
+      limiter = new Tone.Limiter(-1.0);
+
+      // overall output trim
+      masterGain = new Tone.Gain(0.85);
+
+      // routing:
+      // dryBus -> filter -> compressor -> limiter -> masterGain -> destination
+      // dryBus -> reverb -> wetBus -> compressor ...
+      dryBus.connect(toneFilter);
+      toneFilter.connect(compressor);
+
+      dryBus.connect(reverb);
+      reverb.connect(wetBus);
+      wetBus.connect(compressor);
+
+      compressor.connect(limiter);
+      limiter.connect(masterGain);
+      masterGain.toDestination();
+
+      MASTER_READY = true;
+    }
+
+    // ----------------------------
+    // Instrument factory (balanced + smoother envelopes)
+    // - REMOVED: bass option completely
+    // - All instruments routed to the same master bus for equal loudness
+    // - No delay effects (prevents "it repeats" on sustained notes)
     // ----------------------------
     function makeInstrument(kind){
+      ensureMasterBus();
+
       if (instrument) {
         try { instrument.dispose(); } catch(e) {}
         instrument = null;
       }
 
-      const reverb = new Tone.Reverb({ decay: 2.2, wet: 0.15 }).toDestination();
+      // A consistent gain stage so every instrument starts from the same perceived level.
+      // (PolySynth and PluckSynth have different loudness; this helps normalize.)
+      const channel = new Tone.Gain(1).connect(dryBus);
 
       if (kind === "piano"){
         instrument = new Tone.PolySynth(Tone.Synth, {
+          volume: -6,
           oscillator: { type: "triangle" },
-          envelope: { attack: 0.005, decay: 0.25, sustain: 0.15, release: 0.9 }
-        }).connect(reverb);
+          envelope: { attack: 0.01, decay: 0.25, sustain: 0.22, release: 1.05 }
+        }).connect(channel);
 
       } else if (kind === "guitar"){
-        instrument = new Tone.PolySynth(Tone.PluckSynth, { volume: -6 }).connect(reverb);
-
-      } else if (kind === "bass"){
-        instrument = new Tone.MonoSynth({
-          oscillator: { type: "sine" },
-          filter: { Q: 2, type: "lowpass", rolloff: -24 },
-          envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.4 },
-          filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2, baseFrequency: 80, octaves: 2.2 }
-        }).connect(reverb);
+        // PluckSynth can be spiky; soften with slightly lower volume
+        instrument = new Tone.PolySynth(Tone.PluckSynth, {
+          volume: -10
+        }).connect(channel);
 
       } else if (kind === "violin"){
-        const vib = new Tone.Vibrato(5, 0.18).connect(reverb);
+        // soften saw with less brightness + slower attack
         instrument = new Tone.PolySynth(Tone.Synth, {
+          volume: -8,
           oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.06, decay: 0.15, sustain: 0.65, release: 0.6 }
-        }).connect(vib);
+          envelope: { attack: 0.06, decay: 0.18, sustain: 0.60, release: 0.85 }
+        }).connect(channel);
 
       } else if (kind === "strings"){
-        const chorus = new Tone.Chorus(2.5, 1.6, 0.25).start().connect(reverb);
         instrument = new Tone.PolySynth(Tone.Synth, {
+          volume: -9,
           oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.2, decay: 0.2, sustain: 0.75, release: 1.4 }
-        }).connect(chorus);
+          envelope: { attack: 0.22, decay: 0.20, sustain: 0.80, release: 1.60 }
+        }).connect(channel);
 
       } else {
-        const delay = new Tone.FeedbackDelay("8n", 0.25).connect(reverb);
+        // soft synth: no feedback delay (prevents perceived repeats)
         instrument = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: "square" },
-          envelope: { attack: 0.01, decay: 0.12, sustain: 0.2, release: 0.25 }
-        }).connect(delay);
+          volume: -9,
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.015, decay: 0.10, sustain: 0.25, release: 0.35 }
+        }).connect(channel);
       }
 
       return instrument;
     }
 
     // ----------------------------
-    // Browser generator (baseline) + NEW rhythm complexity
+    // Browser generator (baseline) + rhythmic variety
     // ----------------------------
     function buildAllowedNotes(rootSemitone, modeKey){
       const scale = MODES[modeKey].map(x => x + rootSemitone);
@@ -810,33 +863,53 @@
       return Math.max(q, Math.round(x / q) * q);
     }
 
-    // NEW: produces ANY duration in [minDur,maxDur], with a "variety" control and optional quantization
+    // Common musical values in beats (assuming 1 beat = quarter note)
+    // includes 1/16, 1/8, 1/4, 1/2, 1, 2, 4
+    const COMMON_DURS = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4];
+
     function sampleDuration(minDur, maxDur, variety, quantizeStep){
       let lo = Math.max(0.01, Number(minDur) || 0.25);
-      let hi = Math.max(lo, Number(maxDur) || 1.50);
+      let hi = Math.max(lo, Number(maxDur) || 4.0);
       const v = clamp(Number(variety) || 0, 0, 1);
 
-      // v=0 => near-constant (centered)
-      // v=1 => full spread across the interval
+      let dur;
+
+      // If "common": pick from musical values within bounds, weighted by variety
+      if (quantizeStep === "common"){
+        const pool = COMMON_DURS.filter(d => d >= lo - 1e-9 && d <= hi + 1e-9);
+        const usable = pool.length ? pool : [clamp((lo+hi)/2, lo, hi)];
+
+        // variety controls how often we choose extremes vs middle values
+        // v=0 => prefer middle; v=1 => more uniform
+        if (usable.length >= 3 && v < 1){
+          const midIdx = Math.floor(usable.length / 2);
+          const r = Math.random();
+          if (r < (1 - v) * 0.70) dur = usable[midIdx];
+          else if (r < (1 - v) * 0.85) dur = usable[Math.max(0, midIdx - 1)];
+          else if (r < (1 - v) * 1.00) dur = usable[Math.min(usable.length - 1, midIdx + 1)];
+          else dur = pick(usable);
+        } else {
+          dur = pick(usable);
+        }
+
+        return Math.max(0.01, dur);
+      }
+
+      // Continuous duration sample (optionally quantized to a grid)
       const center = (lo + hi) / 2;
       const spread = (hi - lo) / 2;
 
-      // Mix of centered and uniform
       const r1 = (Math.random() * 2 - 1) * spread;             // uniform around center
       const r2 = (Math.random() + Math.random() - 1) * spread; // triangular around center
       const mix = (1 - v) * r2 + v * r1;
+      dur = clamp(center + mix, lo, hi);
 
-      let dur = clamp(center + mix, lo, hi);
-
-      // Optional quantization (or none)
       if (quantizeStep !== "none"){
         const q = Number(quantizeStep);
         if (isFinite(q) && q > 0) dur = quantizeBeats(dur, q);
       }
 
-      // Avoid exact 0
-      dur = Math.max(0.01, dur);
-      return dur;
+      return Math.max(0.01, dur);
     }
 
     function generatePhraseBrowser({ key, mode, smooth, length, minDur, maxDur, rhythmVar, quantizeStep }){
@@ -871,14 +944,13 @@
 
         current = pick(pool);
 
-        // NEW: variable duration
         let durBeats = sampleDuration(minDur, maxDur, rhythmVar, quantizeStep);
 
-        // Keep the very last note slightly longer (still within maxDur)
+        // slightly "anchor" the very last note (still obeys maxDur)
         if (i === N - 1){
-          const hi = Math.max(Number(minDur)||0.01, Number(maxDur)||1.5);
-          durBeats = clamp(Math.max(durBeats, Math.min(hi, (Number(minDur)||0.25) * 1.5)), 0.01, hi);
-          if (quantizeStep !== "none"){
+          const hi = Math.max(Number(minDur)||0.01, Number(maxDur)||4.0);
+          durBeats = clamp(Math.max(durBeats, Math.min(hi, 1.0)), 0.01, hi);
+          if (quantizeStep !== "none" && quantizeStep !== "common"){
             const q = Number(quantizeStep);
             if (isFinite(q) && q > 0) durBeats = quantizeBeats(durBeats, q);
           }
@@ -918,7 +990,7 @@
 
     function renderPhrase(notes){
       const lines = notes.map((n, i) =>
-        `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${Number(n.durBeats).toFixed(3)} beats)`
+        `${String(i+1).padStart(2,"0")}. ${midiToNoteName(n.midi)}  (${Number(n.durBeats).toFixed(4)} beats)`
       );
       out.textContent = lines.join("\n");
     }
@@ -960,9 +1032,15 @@
     }
 
     // ----------------------------
-    // Playback
+    // Playback (FIX: long notes must not sound like repeated hits)
+    //
+    // Key changes:
+    // 1) No feedback delay anywhere (that was the "repeat" illusion).
+    // 2) Schedule EXACTLY one event per note, using triggerAttackRelease.
+    // 3) We also explicitly reset transport position before start.
     // ----------------------------
     async function ensureAudio(){
+      ensureMasterBus();
       if (Tone.context.state !== "running") await Tone.start();
       const kind = document.getElementById("instrument").value;
       makeInstrument(kind);
@@ -976,21 +1054,22 @@
       }
       Tone.Transport.stop();
       Tone.Transport.cancel();
+      Tone.Transport.position = 0;
       playBtn.disabled = !phrase;
       stopBtn.disabled = true;
     }
 
     function schedulePlayback(notes){
-      const instKind = document.getElementById("instrument").value;
-      const transpose = (instKind === "bass") ? -12 : 0;
-
+      Tone.Transport.stop();
+      Tone.Transport.cancel();
+      Tone.Transport.position = 0;
       Tone.Transport.bpm.value = Number(document.getElementById("tempo").value);
 
       let t = 0;
       const events = notes.map(n => {
-        const midi = clamp(n.midi + transpose, 24, 108);
+        const midi = clamp(n.midi, 24, 108);
         const noteName = midiToNoteName(midi);
-        const dur = n.durBeats;
+        const dur = Number(n.durBeats);
         const evt = { time: t, note: noteName, durBeats: dur };
         t += dur;
         return evt;
@@ -998,17 +1077,17 @@
 
       part = new Tone.Part((time, value) => {
         const durSeconds = Tone.Time(value.durBeats).toSeconds();
-        instrument.triggerAttackRelease(value.note, durSeconds, time);
-      }, events).start(0);
+        instrument.triggerAttackRelease(value.note, durSeconds, time, 0.9);
+      }, events);
 
-      Tone.Transport.start();
+      part.start(0);
+
+      // small start offset to avoid click on some browsers
+      Tone.Transport.start("+0.02");
     }
 
     // ============================================================
-    // Piano roll: FIXED to always fit melody (accurate pitch + duration)
-    // - DPR-scaled canvas so it matches visual size (no stretching blur)
-    // - Always fits the entire melody horizontally (compressed to width)
-    // - Fit-to-melody ensures every pitch row is visible
+    // Piano roll rendering (auto-fit so whole melody is visible)
     // ============================================================
     function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
 
@@ -1023,11 +1102,24 @@
     function setupCanvasToContainer(canvas){
       const dpr = Math.max(1, window.devicePixelRatio || 1);
       const rect = canvas.getBoundingClientRect();
-      const cssW = Math.max(320, Math.floor(rect.width));
+      const parent = canvas.parentElement;
+      const cssW =
+        Math.max(
+          320,
+          Math.floor(rect.width || 0),
+          Math.floor(parent?.getBoundingClientRect()?.width || 0),
+          Math.floor(parent?.clientWidth || 0)
+        );
       return { dpr, cssW };
     }
 
     function drawPianoRoll(notes){
+      const rectNow = pianoRoll.getBoundingClientRect();
+      if (rectNow.width < 10){
+        requestAnimationFrame(() => drawPianoRoll(notes));
+        return;
+      }
+
       const ctx = pianoRoll.getContext("2d");
       if (!notes || !notes.length){
         ctx.clearRect(0,0,pianoRoll.width,pianoRoll.height);
@@ -1051,13 +1143,10 @@
       const topPad = 12;
       const bottomPad = 12;
 
-      // Canvas width must match container width (DPR-scaled) for accuracy
       const { dpr, cssW } = setupCanvasToContainer(pianoRoll);
 
-      // Choose row height so all pitches are visible (fit mode)
       let rowH;
       if (fit){
-        // Aim for readable rows but guarantee full visibility
         rowH = clamp(Math.floor(520 / rows), 9, 18);
       } else {
         rowH = clamp(Math.floor(260 / rows), 8, 14);
@@ -1065,27 +1154,23 @@
 
       const cssH = topPad + bottomPad + rows * rowH;
 
-      // Set internal resolution (DPR) + CSS size
       pianoRoll.style.width = "100%";
       pianoRoll.style.height = "auto";
       pianoRoll.width = Math.floor(cssW * dpr);
       pianoRoll.height = Math.floor(cssH * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const w = cssW;
       const h = cssH;
 
-      // Background
       ctx.clearRect(0,0,w,h);
       ctx.fillStyle = "rgba(5,5,12,0.85)";
       ctx.fillRect(0,0,w,h);
 
       const usableW = Math.max(1, w - leftPad - rightPad);
-      const beatW = usableW / Math.max(0.0001, totalBeats); // compress to fit: whole melody always visible
+      const beatW = usableW / Math.max(0.0001, totalBeats);
 
-      // Grid step adapts to total length (makes it easier to follow)
-      // shorter phrases: finer grid; longer phrases: coarser
-      let gridStep = 0.25; // quarter beat
+      let gridStep = 0.25;
       if (totalBeats > 16) gridStep = 1;
       if (totalBeats > 32) gridStep = 2;
       if (totalBeats > 64) gridStep = 4;
@@ -1106,7 +1191,6 @@
         ctx.restore();
       }
 
-      // Key stripes
       ctx.save();
       for (let m = minMidi; m <= maxMidi; m++){
         const pc = m % 12;
@@ -1117,13 +1201,11 @@
       }
       ctx.restore();
 
-      // Labels
       if (showLabels){
         ctx.save();
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
         for (let m = minMidi; m <= maxMidi; m++){
-          // label C and G to help tracking without clutter
           const pc = m % 12;
           if (pc !== 0 && pc !== 7) continue;
           const y = topPad + (maxMidi - m) * rowH + Math.floor(rowH * 0.78);
@@ -1132,7 +1214,6 @@
         ctx.restore();
       }
 
-      // Notes (exact durations + order)
       let t = 0;
       for (let i=0; i<notes.length; i++){
         const n = notes[i];
@@ -1151,7 +1232,6 @@
         ctx.globalAlpha = 0.95;
         ctx.stroke();
 
-        // show note label if it helps (long notes)
         if (nw > 52 && nh >= 11){
           ctx.globalAlpha = 0.9;
           ctx.fillStyle = "rgba(235,240,255,0.92)";
@@ -1163,7 +1243,6 @@
         t += n.durBeats;
       }
 
-      // Border
       ctx.save();
       ctx.strokeStyle = "rgba(255,255,255,0.10)";
       ctx.lineWidth = 1;
@@ -1191,7 +1270,7 @@
     window.addEventListener("resize", () => drawPianoRoll(phrase));
 
     // ============================================================
-    // CRUCIAL: Explanation section (specific, per generated melody)
+    // Explanation section
     // ============================================================
     function describeMelody(notes, key, mode){
       if (!notes || !notes.length) return "Generate a phrase to see a concrete explanation of why the produced melody tends to sound coherent.";
@@ -1236,13 +1315,13 @@
       const longNotes = durs.filter(x => x >= (minD + (maxD-minD)*0.66)).length;
 
       return (
-        `This phrase in ${key} ${mode.replaceAll("_"," ")} tends to work musically because it has ` +
+        `This phrase in ${key} ${mode.replaceAll("_"," ")} tends to work because it has ` +
         `${contour} contour (high point near note ${peakIdx+1}, low near note ${troughIdx+1}), ` +
-        `and it keeps motion mostly stepwise (${stepPct}% steps), which makes the line feel connected and singable. ` +
-        `The ending leans toward ${cadenceType}, which helps your ear interpret it as a “phrase” with an endpoint. ` +
-        `Its pitch range is ${range} semitones (expressive without feeling random). ` +
-        `Rhythm-wise, the phrase spans ${total.toFixed(2)} beats with durations from ${minD.toFixed(3)} to ${maxD.toFixed(3)} beats; ` +
-        `${longNotes ? "a few longer notes act as anchors while shorter notes provide motion." : "durations stay relatively even, which keeps the groove steady."}`
+        `and mostly stepwise motion (${stepPct}% steps), which makes it feel connected and singable. ` +
+        `It ends with ${cadenceType}, giving the ear a clear sense of “phrase ending.” ` +
+        `The pitch range is ${range} semitones (expressive without feeling random). ` +
+        `Rhythm spans ${total.toFixed(2)} beats with durations from ${minD.toFixed(4)} to ${maxD.toFixed(4)} beats; ` +
+        `${longNotes ? "longer notes act as anchors while shorter notes create motion." : "durations stay relatively even, which keeps the groove steady."}`
       );
     }
 
@@ -1251,7 +1330,7 @@
     // ============================================================
     function notesToText(notes){
       if (!notes) return "";
-      return notes.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(", ");
+      return notes.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(4)}`).join(", ");
     }
 
     copyBtn.addEventListener("click", async () => {
@@ -1439,7 +1518,7 @@
 
       const rows = list.map(r => {
         const safe = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
-        const phraseText = r.phrase.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(3)}`).join(" ");
+        const phraseText = r.phrase.map(n => `${midiToNoteName(n.midi)}:${Number(n.durBeats).toFixed(4)}`).join(" ");
         return [
           safe(r.ts),
           r.stars,
@@ -1522,7 +1601,6 @@
           renderMetrics(metrics);
 
         } else {
-          // Browser generator uses rhythm controls (any duration imaginable)
           if (!isFinite(minDur) || !isFinite(maxDur) || minDur <= 0 || maxDur <= 0){
             throw new Error("Min/Max Note Length must be positive numbers.");
           }
@@ -1613,11 +1691,13 @@
       try { stopPlayback(); } catch(e) {}
     });
 
+    // initial render
     renderRatingsTable();
     drawPianoRoll(null);
   </script>
 </body>
 </html>
+
 
 
 
