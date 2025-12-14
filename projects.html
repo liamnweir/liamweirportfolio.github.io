@@ -58,7 +58,7 @@
 
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 2rem;
     }
 
@@ -168,8 +168,31 @@
       line-height: 1.6;
       font-size: 0.93rem;
     }
-
     .bullets li { margin: 0.25rem 0; }
+
+    /* Mini “Why it matters / Evidence / Deliverables” box */
+    .impact {
+      margin-top: 0.9rem;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
+    }
+    .impact h4{
+      margin: 0 0 0.55rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.2px;
+      opacity: 0.95;
+    }
+    .impact ul{
+      margin: 0;
+      padding-left: 1.1rem;
+      color: #d0d3ff;
+      line-height: 1.6;
+      font-size: 0.93rem;
+    }
+    .impact li{ margin: 0.25rem 0; }
+    .impact strong{ color: #eef0ff; }
   </style>
 </head>
 
@@ -192,24 +215,35 @@
 
     <div class="projects-grid">
 
-      <!-- PROJECT 1 -->
+      <!-- PROJECT 1: AI MUSIC GENERATION -->
       <div class="project-card">
         <h3>AI Music Generation System</h3>
         <p>
           Generates short symbolic phrases with controllable musical structure (key/mode, stepwise bias, rhythm variety),
-          plus built-in playback, metrics, and a lightweight listener-rating loop.
+          plus in-browser playback, musical metrics, and an embedded listener-rating loop.
         </p>
+
+        <div class="impact">
+          <h4>Project impact</h4>
+          <ul>
+            <li><strong>Why it matters:</strong> A fast way to prototype musical ideas and test how structure (mode, rhythm, contour) changes perceived “musicality.”</li>
+            <li><strong>Evidence built-in:</strong> Listener ratings + exportable CSV and objective structure metrics (repetition, stepwise motion, tonal stability).</li>
+            <li><strong>Deliverables:</strong> Interactive demo, piano roll visualization, copyable note output, and downloadable MIDI.</li>
+          </ul>
+        </div>
+
         <span class="tag">AI</span>
         <span class="tag">Music</span>
         <span class="tag">Tone.js</span>
         <span class="tag">Evaluation</span>
+        <span class="tag">MIDI</span>
 
         <a class="project-btn" href="/liamweirportfolio.github.io/projects/ai-music-generation/index.html">
           Open project page
         </a>
       </div>
 
-      <!-- PROJECT 2 -->
+      <!-- PROJECT 2: REMIX ASSISTANT -->
       <div class="project-card">
         <div class="badge"><span class="dot"></span>New • Practical tool project</div>
         <h3>Remix Assistant (MIDI)</h3>
@@ -219,24 +253,26 @@
           (lofi / EDM / baroque-ish).
         </p>
 
-        <ul class="bullets">
-          <li><strong>Why it matters:</strong> Turns a raw melody into arrangement-ready options fast—this is a creator tool, not just a demo.</li>
-          <li><strong>Evidence built-in:</strong> A/B comparisons + exportable results so you can show outcomes, not just features.</li>
-          <li><strong>Deliverables:</strong> Before/after previews and downloadable MIDI outputs.</li>
-        </ul>
+        <div class="impact">
+          <h4>Project impact</h4>
+          <ul>
+            <li><strong>Why it matters:</strong> Turns a raw melody into arrangement-ready options fast—this is a creator tool, not just a demo.</li>
+            <li><strong>Evidence built-in:</strong> A/B comparisons + exportable results so you can show outcomes, not just features.</li>
+            <li><strong>Deliverables:</strong> Before/after previews and downloadable MIDI outputs.</li>
+          </ul>
+        </div>
 
         <span class="tag">MIDI</span>
         <span class="tag">Generative</span>
         <span class="tag">HCI</span>
         <span class="tag">Tooling</span>
 
-        <!-- This is the EXACT link you confirmed works -->
         <a class="project-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/projects/remix.html">
           Open project page
         </a>
       </div>
 
-      <!-- PROJECT PLACEHOLDER 3 -->
+      <!-- PROJECT 3 -->
       <div class="project-card coming-soon">
         <h3>Human–AI Interface Concept Study</h3>
         <p>
@@ -253,3 +289,4 @@
   </div>
 </body>
 </html>
+
