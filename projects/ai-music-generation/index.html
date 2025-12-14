@@ -179,7 +179,7 @@
       background: linear-gradient(135deg, rgba(255,184,107,0.18), rgba(255,92,168,0.10));
     }
 
-    /* Drum toggle look */
+    /* Toggle look */
     .btn.toggleOn{
       border-color: rgba(255,184,107,0.42);
       background: linear-gradient(135deg, rgba(255,184,107,0.22), rgba(47,227,180,0.10));
@@ -323,7 +323,7 @@
       <section class="card">
         <div class="hd">
           <h2>Controls</h2>
-          <div class="tiny" style="margin-top:6px">Generate → Play (melody + chord pad + optional drums) → Rate</div>
+          <div class="tiny" style="margin-top:6px">Generate → Play (melody + optional chord pad + optional drums) → Rate</div>
         </div>
 
         <div class="bd">
@@ -364,11 +364,7 @@
             <div class="field" style="min-width:220px">
               <div class="label">Tempo: <span id="tempoVal">110</span> BPM</div>
               <input id="tempo" type="range" min="70" max="170" value="110" />
-            </div>
-
-            <div class="field" style="min-width:220px">
-              <div class="label">Stepwise Bias: <span id="biasVal">0.75</span></div>
-              <input id="bias" type="range" min="0" max="1" step="0.01" value="0.75" />
+              <div class="tiny" style="margin-top:6px">You can change tempo while playing.</div>
             </div>
 
             <div class="field">
@@ -398,6 +394,12 @@
               <div class="label">Drum track</div>
               <button class="btn" id="drumBtn" type="button" aria-pressed="false">Drums: Off</button>
               <div class="tiny" style="margin-top:6px">Simple kick/snare/hat pattern (toggles on playback)</div>
+            </div>
+
+            <div class="field" style="min-width:220px">
+              <div class="label">Chord pad</div>
+              <button class="btn toggleOn" id="chordBtn" type="button" aria-pressed="true">Chords: On</button>
+              <div class="tiny" style="margin-top:6px">Background chords (toggles on playback)</div>
             </div>
           </div>
 
@@ -505,7 +507,7 @@
           <div class="canvasWrap" style="margin-top:12px">
             <canvas id="plot3"></canvas>
           </div>
-          <div class="tiny" style="margin-top:6px">Average rating by bias bucket</div>
+          <div class="tiny" style="margin-top:6px">Average rating by tempo bucket</div>
         </div>
       </aside>
     </div>
@@ -526,21 +528,31 @@
     };
     const nowISO = () => new Date().toISOString();
 
+    // Convert durBeats (quarter-note beats) to Transport durations
+    function durBeatsToTransport(d){
+      const eps = 1e-6;
+      if(Math.abs(d - 0.25) < eps) return "16n";
+      if(Math.abs(d - 0.5)  < eps) return "8n";
+      if(Math.abs(d - 1.0)  < eps) return "4n";
+      if(Math.abs(d - 2.0)  < eps) return "2n";
+      if(Math.abs(d - 4.0)  < eps) return "1m"; // 4 beats
+      return "8n";
+    }
+
     // -------------------------
     // Theory
     // -------------------------
     const NOTE = {"C":0,"C#":1,"D":2,"D#":3,"E":4,"F":5,"F#":6,"G":7,"G#":8,"A":9,"A#":10,"B":11};
     const MODES = {
-      // 7-tone modes so diatonic triads still work
-      major:          [0,2,4,5,7,9,11],      // Ionian
+      major:          [0,2,4,5,7,9,11],
       dorian:         [0,2,3,5,7,9,10],
       phrygian:       [0,1,3,5,7,8,10],
       lydian:         [0,2,4,6,7,9,11],
       mixolydian:     [0,2,4,5,7,9,10],
-      natural_minor:  [0,2,3,5,7,8,10],      // Aeolian
+      natural_minor:  [0,2,3,5,7,8,10],
       locrian:        [0,1,3,5,6,8,10],
       harmonic_minor: [0,2,3,5,7,8,11],
-      melodic_minor:  [0,2,3,5,7,9,11],      // Ascending melodic minor
+      melodic_minor:  [0,2,3,5,7,9,11],
       harmonic_major: [0,2,4,5,7,8,11],
     };
     const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -589,8 +601,9 @@
     // -------------------------
     const keyEl = $("key"), modeEl = $("mode"), sectionEl = $("section");
     const tempoEl = $("tempo"), tempoVal = $("tempoVal");
-    const biasEl = $("bias"), biasVal = $("biasVal"), lenEl = $("length"), instEl = $("inst");
+    const lenEl = $("length"), instEl = $("inst");
     const drumBtn = $("drumBtn");
+    const chordBtn = $("chordBtn");
 
     const genBtn = $("genBtn"), playBtn = $("playBtn"), stopBtn = $("stopBtn"), midiBtn = $("midiBtn");
     const warnEl = $("warn");
@@ -606,31 +619,44 @@
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
 
-    tempoEl.addEventListener("input", () => tempoVal.textContent = tempoEl.value);
-    biasEl.addEventListener("input", () => biasVal.textContent = Number(biasEl.value).toFixed(2));
+    // tempo UI (and live tempo updates if playing)
+    function applyTempo(bpm, smooth=true){
+      const v = Number(bpm);
+      if(!Number.isFinite(v)) return;
+      if(Tone.Transport.state === "started" && smooth){
+        Tone.Transport.bpm.rampTo(v, 0.08);
+      }else{
+        Tone.Transport.bpm.value = v;
+      }
+    }
+    tempoEl.addEventListener("input", () => {
+      tempoVal.textContent = tempoEl.value;
+      applyTempo(tempoEl.value, true);
+    });
 
     // -------------------------
     // State
     // -------------------------
-    let phrase = null;                 // [{midi, durBeats}]
-    let currentProg = null;            // [degree,...]
-    let currentChordEvents = null;     // [{timeBeats, triadPCs}]
+    let phrase = null;
+    let currentProg = null;
+    let currentChordEvents = null;
     let currentCadence = "—";
     let currentStars = 0;
     let currentTotalBeats = 0;
 
     let drumsOn = false;
+    let chordsOn = true;
 
-    function renderDrumBtn(){
-      drumBtn.textContent = drumsOn ? "Drums: On" : "Drums: Off";
-      drumBtn.setAttribute("aria-pressed", String(drumsOn));
-      drumBtn.classList.toggle("toggleOn", drumsOn);
+    function renderToggleBtn(btn, on, onText, offText){
+      btn.textContent = on ? onText : offText;
+      btn.setAttribute("aria-pressed", String(on));
+      btn.classList.toggle("toggleOn", on);
     }
+    function renderDrumBtn(){ renderToggleBtn(drumBtn, drumsOn, "Drums: On", "Drums: Off"); }
+    function renderChordBtn(){ renderToggleBtn(chordBtn, chordsOn, "Chords: On", "Chords: Off"); }
 
-    drumBtn.addEventListener("click", () => {
-      drumsOn = !drumsOn;
-      renderDrumBtn();
-    });
+    drumBtn.addEventListener("click", () => { drumsOn = !drumsOn; renderDrumBtn(); });
+    chordBtn.addEventListener("click", () => { chordsOn = !chordsOn; renderChordBtn(); });
 
     // -------------------------
     // Alerts
@@ -654,7 +680,6 @@
     let melodyPart = null;
     let chordPart = null;
 
-    // Drum synths/part
     let kick = null, snare = null, hat = null;
     let drumPart = null;
 
@@ -666,12 +691,10 @@
       limiter = new Tone.Limiter(-1);
       verb = new Tone.Reverb({decay:2.4, preDelay:0.01, wet:0.22});
 
-      // Route: instruments -> gains -> bus -> comp -> limiter -> destination
       bus.connect(comp);
       comp.connect(limiter);
       limiter.toDestination();
 
-      // Reverb is a send into the bus
       verb.connect(bus);
 
       melodyGain = new Tone.Gain(0.95).connect(bus);
@@ -685,8 +708,6 @@
       ensureMaster();
       if(melodySynth){ try{melodySynth.dispose();}catch(e){} melodySynth=null; }
 
-      // Default: PolySynth over a voice type
-      // (No bass options included.)
       if(kind === "fm"){
         melodySynth = new Tone.PolySynth(Tone.FMSynth, {
           volume: -14,
@@ -718,7 +739,6 @@
           modulationEnvelope: { attack: 0.005, decay: 0.6, sustain: 0.0, release: 0.8 }
         });
       } else {
-        // original 3
         const base = {
           volume: -10,
           oscillator: { type: "triangle" },
@@ -785,7 +805,6 @@
         octaves: 1.2
       }).connect(drumGain);
 
-      // a touch of verb on drums (subtle)
       kick.connect(verb);
       snare.connect(verb);
       hat.connect(verb);
@@ -811,13 +830,13 @@
       stopBtn.disabled = true;
     }
 
+    // Drums scheduled on Transport grid using musical durations
     function scheduleDrums(totalBeats){
       if(!drumsOn) return;
 
       if(drumPart){ try{drumPart.stop(); drumPart.dispose();}catch(e){} drumPart=null; }
 
-      // 16th grid: 0.25 beats per step (since 1 beat = quarter note)
-      const step = 0.25;
+      const step = 0.25; // 16th note in beats
       const stepsTotal = Math.max(1, Math.round(totalBeats / step));
       const events = [];
 
@@ -825,10 +844,6 @@
         const tBeats = s * step;
         const stepInBar = s % 16;
 
-        // simple pattern:
-        // kick on 1 and 3 (steps 0 and 8)
-        // snare on 2 and 4 (steps 4 and 12)
-        // hat on 8ths (every 2 steps) + occasional extra
         if(stepInBar === 0 || stepInBar === 8){
           events.push({ time: tBeats, type:"kick", vel: 0.95 });
         }
@@ -839,8 +854,6 @@
           const vel = (stepInBar === 0 || stepInBar === 8) ? 0.35 : 0.28;
           events.push({ time: tBeats, type:"hat", vel });
         }
-
-        // tiny bit of variety: occasional extra kick pickup
         if(stepInBar === 10 && Math.random() < 0.35){
           events.push({ time: tBeats, type:"kick", vel: 0.65 });
         }
@@ -848,11 +861,11 @@
 
       drumPart = new Tone.Part((time, v) => {
         if(v.type === "kick"){
-          kick.triggerAttackRelease("C1", Tone.Time("8n").toSeconds(), time, v.vel);
+          kick.triggerAttackRelease("C1", "8n", time, v.vel);
         } else if(v.type === "snare"){
-          snare.triggerAttackRelease(Tone.Time("16n").toSeconds(), time, v.vel);
+          snare.triggerAttackRelease("16n", time, v.vel);
         } else if(v.type === "hat"){
-          hat.triggerAttackRelease(Tone.Time("32n").toSeconds(), time, v.vel);
+          hat.triggerAttackRelease("32n", time, v.vel);
         }
       }, events);
 
@@ -860,37 +873,41 @@
     }
 
     function schedulePlayback(notes){
-      // Melody + Chords (+ optional Drums)
       Tone.Transport.stop();
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
-      Tone.Transport.bpm.value = Number(tempoEl.value);
 
-      // Melody events
+      // Apply bpm before scheduling (and tempo slider can update while running)
+      applyTempo(tempoEl.value, false);
+
+      // Melody events in beats, durations as musical note values
       let t = 0;
       const melEvents = notes.map(n => {
-        const evt = { time: t, midi: clamp(n.midi, 24, 108), dur: Number(n.durBeats) };
-        t += evt.dur;
+        const evt = { time: t, midi: clamp(n.midi, 24, 108), durBeats: Number(n.durBeats) };
+        t += evt.durBeats;
         return evt;
       });
 
       melodyPart = new Tone.Part((time, v) => {
         const name = midiToName(v.midi);
-        const durSec = Tone.Time(v.dur).toSeconds();
-        melodySynth.triggerAttackRelease(name, durSec, time, 0.92);
+        const durStr = durBeatsToTransport(v.durBeats);
+        melodySynth.triggerAttackRelease(name, durStr, time, 0.92);
       }, melEvents);
-
-      // Chords: each bar (4 beats)
-      const chordEvents = currentChordEvents || [];
-      chordPart = new Tone.Part((time, v) => {
-        const freqs = v.midis.map(m => Tone.Frequency(clamp(m, 24, 108), "midi"));
-        chordSynth.triggerAttackRelease(freqs, Tone.Time(v.dur).toSeconds(), time, 0.55);
-      }, chordEvents.map(ev => ({ time: ev.time, midis: ev.midis, dur: ev.durBeats })));
-
-      chordPart.start(0);
       melodyPart.start(0);
 
-      // Drums (toggle)
+      // Chords each bar (optional)
+      if(chordsOn){
+        const chordEvents = currentChordEvents || [];
+        chordPart = new Tone.Part((time, v) => {
+          const freqs = v.midis.map(m => Tone.Frequency(clamp(m, 24, 108), "midi"));
+          chordSynth.triggerAttackRelease(freqs, "1m", time, 0.55);
+        }, chordEvents.map(ev => ({ time: ev.time, midis: ev.midis })));
+        chordPart.start(0);
+      } else {
+        chordPart = null;
+      }
+
+      // Drums (optional)
       scheduleDrums(currentTotalBeats || sumBeats(notes));
 
       Tone.Transport.start("+0.02");
@@ -905,14 +922,12 @@
     }
 
     function makeDurations(count, targetBeats, section){
-      // Beats: 1 beat = quarter note
-      // 16th=0.25, 8th=0.5, quarter=1, half=2, whole=4
       const versePalette = [
-        {d:0.25, w:3.0}, // 16th
-        {d:0.5,  w:6.2}, // 8th
-        {d:1.0,  w:3.2}, // quarter
-        {d:2.0,  w:1.1}, // half
-        {d:4.0,  w:0.35},// whole
+        {d:0.25, w:3.0},
+        {d:0.5,  w:6.2},
+        {d:1.0,  w:3.2},
+        {d:2.0,  w:1.1},
+        {d:4.0,  w:0.35},
       ];
       const chorusPalette = [
         {d:0.25, w:2.0},
@@ -929,7 +944,6 @@
       for(let i=0;i<count;i++){
         const notesLeft = count - i;
 
-        // allow small notes (16ths), so minimum is 0.25 beats
         const minEach = 0.25;
         const minNeeded = (notesLeft - 1) * minEach;
         const maxThis = Math.max(minEach, remaining - minNeeded);
@@ -960,12 +974,10 @@
         remaining -= d;
       }
 
-      // fix tiny rounding errors
       if(Math.abs(remaining) > 1e-6 && durs.length){
         durs[durs.length-1] += remaining;
       }
 
-      // make last note feel resolved (lengthen slightly if possible)
       if(durs.length >= 2){
         const last = durs[durs.length-1];
         if(last < 1.0 && durs[durs.length-2] > 0.25){
@@ -979,7 +991,7 @@
     }
 
     // -------------------------
-    // Musical melody generation (theory-based)
+    // Musical melody generation (theory-based) WITHOUT bias
     // -------------------------
     function nearestMidiForPC(pc, aroundMidi){
       const base = aroundMidi - (aroundMidi % 12) + pc;
@@ -1062,7 +1074,7 @@
       return out;
     }
 
-    function generateMelodyTheory({key, mode, bias, length, section}){
+    function generateMelodyTheory({key, mode, length, section}){
       const rootPC = NOTE[key];
       const pcsArr = scalePCs(rootPC, mode);
       const scaleSet = new Set(pcsArr);
@@ -1070,7 +1082,6 @@
       const prog = chordProgression(mode);
       const totalBeats = targetBeatsForLength(length);
 
-      // durations aligned to bars, now supports 16th..whole
       const durs = makeDurations(length, totalBeats, section);
 
       const tonicMidi = 60 + rootPC;
@@ -1097,25 +1108,16 @@
         return chordTonesMidi(triad, cur);
       }
 
+      // NO stepwise-bias: just musical weighting
       function chooseNext(chordMidis, strong){
         const scalePool = scaleMidis;
         const chordPool = chordMidis;
 
-        const stepPool = scalePool.filter(m => Math.abs(m-cur) <= 2);
-        const canStep = stepPool.length > 0;
-        const wantStep = (Math.random() < bias) && canStep;
-
         let basePool = strong ? chordPool : scalePool;
-        let pool = basePool;
 
-        if(wantStep){
-          const inter = basePool.filter(m => Math.abs(m-cur) <= 2);
-          pool = inter.length ? inter : stepPool;
-        } else {
-          const maxJump = (section === "chorus") ? (strong ? 9 : 7) : (strong ? 7 : 5);
-          pool = basePool.filter(m => Math.abs(m-cur) <= maxJump);
-          if(!pool.length) pool = basePool;
-        }
+        const maxJump = (section === "chorus") ? (strong ? 9 : 7) : (strong ? 7 : 5);
+        let pool = basePool.filter(m => Math.abs(m-cur) <= maxJump);
+        if(!pool.length) pool = basePool;
 
         const weighted = pool.map(m => {
           const interval = m - cur;
@@ -1209,11 +1211,7 @@
           .map(m => m <= 36 ? m+12 : m)
           .sort((a,b)=>a-b);
 
-        events.push({
-          time: b*4,
-          durBeats: 4,
-          midis
-        });
+        events.push({ time: b*4, midis });
       }
       return events;
     }
@@ -1443,7 +1441,7 @@
     // -------------------------
     // Ratings + plots
     // -------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v5_harmony";
+    const RATINGS_KEY = "liam_ai_music_ratings_v6_no_bias";
 
     function loadRatings(){
       try{ return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
@@ -1478,7 +1476,7 @@
       ratingsBody.innerHTML = view.map(r => `
         <tr>
           <td>${"★".repeat(r.stars)}${"☆".repeat(5-r.stars)}</td>
-          <td>${r.key} ${r.mode.replaceAll("_"," ")} • ${r.section} • tempo ${r.bpm} • bias ${Number(r.bias).toFixed(2)} • ${r.prog}</td>
+          <td>${r.key} ${r.mode.replaceAll("_"," ")} • ${r.section} • tempo ${r.bpm} • chords ${r.chordsOn?"on":"off"} • drums ${r.drumsOn?"on":"off"} • ${r.prog}</td>
           <td>${r.length}</td>
         </tr>
       `).join("");
@@ -1501,7 +1499,6 @@
       const mode = modeEl.value;
       const section = sectionEl.value;
       const bpm = Number(tempoEl.value);
-      const bias = Number(biasEl.value);
       const length = Number(lenEl.value);
 
       const m = metrics(phrase, key, mode);
@@ -1509,7 +1506,8 @@
         ts: nowISO(),
         stars: currentStars,
         comment: (commentEl.value || "").trim(),
-        key, mode, section, bpm, bias, length,
+        key, mode, section, bpm, length,
+        drumsOn, chordsOn,
         prog: formatProg(currentProg || []),
         cadence: currentCadence,
         metrics: m
@@ -1530,7 +1528,7 @@
       const list = loadRatings();
       if(!list.length){ setWarn("No ratings to export yet."); return; }
 
-      const header = ["ts","stars","comment","key","mode","section","bpm","bias","length","progression","cadence","repetition","stepwise","range","tonal"];
+      const header = ["ts","stars","comment","key","mode","section","bpm","length","drumsOn","chordsOn","progression","cadence","repetition","stepwise","range","tonal"];
       const esc = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
 
       const rows = list.map(r => ([
@@ -1541,8 +1539,9 @@
         esc(r.mode),
         esc(r.section),
         r.bpm,
-        r.bias,
         r.length,
+        r.drumsOn ? 1 : 0,
+        r.chordsOn ? 1 : 0,
         esc(r.prog),
         esc(r.cadence),
         (r.metrics?.repetition ?? "").toFixed?.(4) ?? "",
@@ -1657,17 +1656,28 @@
         "Average rating by mode"
       );
 
+      // Tempo buckets (replacing the old bias bucket plot)
       const buckets = {};
-      const bucketOf = (b) => (Math.round(b/0.25)*0.25).toFixed(2);
+      const bucketOf = (bpm) => {
+        const v = Number(bpm);
+        if(!Number.isFinite(v)) return "—";
+        const step = 20;
+        const lo = Math.floor(v/step)*step;
+        return `${lo}-${lo+step-1}`;
+      };
       for(const r of list){
-        const k = bucketOf(Number(r.bias));
+        const k = bucketOf(r.bpm);
         if(!buckets[k]) buckets[k] = {sum:0,n:0};
         buckets[k].sum += r.stars; buckets[k].n += 1;
       }
-      const bucketKeys = ["0.00","0.25","0.50","0.75","1.00"];
-      const bucketVals = bucketKeys.map(k => buckets[k] ? (buckets[k].sum / buckets[k].n) : 0);
+      const keys = Object.keys(buckets).sort((a,b)=>{
+        const la = Number(a.split("-")[0]||0);
+        const lb = Number(b.split("-")[0]||0);
+        return la-lb;
+      }).slice(0, 6);
+      const vals = keys.map(k => buckets[k] ? (buckets[k].sum / buckets[k].n) : 0);
 
-      barChart(plot3, bucketKeys, bucketVals, "Average rating by bias bucket");
+      barChart(plot3, keys.length?keys:["—"], keys.length?vals:[0], "Average rating by tempo bucket");
     }
 
     // -------------------------
@@ -1680,11 +1690,10 @@
       const key = keyEl.value;
       const mode = modeEl.value;
       const section = sectionEl.value;
-      const bias = Number(biasEl.value);
       const length = Number(lenEl.value);
 
       try{
-        const out = generateMelodyTheory({key, mode, bias, length, section});
+        const out = generateMelodyTheory({key, mode, length, section});
         phrase = out.notes;
         currentProg = out.prog;
         currentCadence = out.cadence;
@@ -1756,9 +1765,9 @@
     renderPlots();
     renderChips(null);
     drawRoll(null);
-    biasVal.textContent = Number(biasEl.value).toFixed(2);
     tempoVal.textContent = tempoEl.value;
     renderDrumBtn();
+    renderChordBtn();
   </script>
 </body>
 </html>
