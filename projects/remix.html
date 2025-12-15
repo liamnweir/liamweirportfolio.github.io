@@ -12,40 +12,56 @@
 
   <style>
     :root{
-      --bg:#0a0a12;
-      --panel:rgba(255,255,255,.05);
-      --panel2:rgba(255,255,255,.035);
-      --border:rgba(255,255,255,.11);
+      /* Purple/black vibe */
+      --bg0:#070712;
+      --bg1:#0b0820;
+      --bg2:#120a2c;
+
+      --panel: rgba(255,255,255,.055);
+      --panel2: rgba(255,255,255,.038);
+      --border: rgba(255,255,255,.12);
+
       --text:#eef0ff;
       --muted:rgba(238,240,255,.78);
       --muted2:rgba(238,240,255,.62);
-      --accent:rgba(120,140,255,.22);
-      --accent2:rgba(120,140,255,.14);
-      --accentBorder:rgba(120,140,255,.42);
-      --ok:rgba(120,255,180,.16);
-      --okBorder:rgba(120,255,180,.26);
-      --warnBg:rgba(255,180,120,.10);
-      --warnBorder:rgba(255,180,120,.30);
-      --shadow:0 30px 65px rgba(0,0,0,.40);
-      --r:18px;
+
+      --accentA: rgba(200,120,255,.22);
+      --accentB: rgba(120,140,255,.20);
+      --accentC: rgba(120,255,200,.14);
+      --accentBorder: rgba(200,120,255,.48);
+
+      --ok: rgba(120,255,190,.14);
+      --okBorder: rgba(120,255,190,.28);
+      --warnBg: rgba(255,170,120,.10);
+      --warnBorder: rgba(255,170,120,.32);
+
+      --shadow: 0 30px 70px rgba(0,0,0,.52);
+      --r: 20px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(120,140,255,.16), transparent 55%),
-                  radial-gradient(900px 500px at 95% 0%, rgba(120,255,180,.10), transparent 60%),
-                  var(--bg);
-      color:var(--text);
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 18% -10%, rgba(200,120,255,.22), transparent 58%),
+        radial-gradient(860px 520px at 92% 0%, rgba(120,140,255,.18), transparent 62%),
+        radial-gradient(980px 640px at 50% 110%, rgba(120,255,200,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 50%, var(--bg2));
+      overflow-x:hidden;
     }
     a{color:inherit}
+
+    /* Topbar */
     .topbar{
       position:sticky; top:0; z-index:10;
-      background:rgba(10,10,25,.86);
+      background: rgba(10, 8, 26, .78);
+      border-bottom: 1px solid var(--border);
       backdrop-filter: blur(14px);
-      border-bottom:1px solid var(--border);
-      padding:14px 16px;
+      padding: 14px 16px;
       display:flex; align-items:center; justify-content:space-between; gap:12px;
     }
     .navL{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
@@ -56,40 +72,77 @@
     }
     .dot{
       width:10px; height:10px; border-radius:999px;
-      background: rgba(120,140,255,.8);
-      box-shadow: 0 0 0 4px rgba(120,140,255,.18);
+      background: linear-gradient(135deg, rgba(200,120,255,.95), rgba(120,140,255,.95));
+      box-shadow: 0 0 0 5px rgba(200,120,255,.18);
     }
     .navBtn{
       text-decoration:none;
       font-weight: 900;
       padding: 9px 12px;
       border-radius: 999px;
-      background: var(--accent2);
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
       color: rgba(238,240,255,.92);
+      transition: transform .12s ease, filter .12s ease;
     }
     .navBtn.primary{
-      background: var(--accent);
-      border: 1px solid var(--accentBorder);
+      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
+      border: 1px solid rgba(200,120,255,.42);
     }
-    .navBtn:hover{filter:brightness(1.1)}
-    .wrap{max-width:1180px; margin:0 auto; padding:18px 16px 70px}
-    h1{margin:10px 0 6px; font-size:2.25rem}
-    p{margin:6px 0; line-height:1.6; color:var(--muted)}
+    .navBtn:hover{filter:brightness(1.12); transform: translateY(-1px)}
+    .tiny{font-size:.88rem; color:var(--muted2); font-weight:800}
+
+    .wrap{max-width:1180px; margin:0 auto; padding: 18px 16px 70px}
+
+    /* Header */
+    .hero{
+      margin-top: 10px;
+      padding: 16px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(900px 340px at 20% 0%, rgba(200,120,255,.16), transparent 60%),
+        radial-gradient(900px 340px at 90% 10%, rgba(120,140,255,.14), transparent 60%),
+        rgba(255,255,255,.035);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(200,120,255,.22), transparent 40%),
+        radial-gradient(circle at 70% 35%, rgba(120,140,255,.20), transparent 45%),
+        radial-gradient(circle at 45% 80%, rgba(120,255,200,.12), transparent 45%);
+      filter: blur(12px);
+      transform: rotate(10deg);
+      opacity:.7;
+      pointer-events:none;
+    }
+    .hero > *{position:relative; z-index:1}
+
+    h1{margin: 4px 0 8px; font-size: 2.35rem; letter-spacing:-0.6px}
+    p{margin: 6px 0; line-height: 1.6; color: var(--muted)}
+
     .pills{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
     .pill{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      font-size:.86rem;
-      white-space:nowrap;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: rgba(238,240,255,.80);
+      font-size: .86rem;
+      white-space: nowrap;
+      font-weight: 850;
     }
 
-    .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap:16px; margin-top:16px}
+    /* Layout grid */
+    .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap: 16px; margin-top: 16px}
     @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
 
+    /* Cards */
     .card{
       background: var(--panel);
       border: 1px solid var(--border);
@@ -100,31 +153,38 @@
     }
     .card.soft{ background: var(--panel2); }
     .cardHeader{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      margin-bottom:10px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
+      margin-bottom: 10px;
     }
-    .cardHeader h2{margin:0; font-size:1.25rem}
-    .tiny{font-size:.88rem; color:var(--muted2)}
-    .divider{border:0; border-top:1px solid rgba(255,255,255,.10); margin:12px 0}
-    .row{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end}
+    .cardHeader h2{margin:0; font-size: 1.25rem; letter-spacing:-0.2px}
+
+    .divider{border:0; border-top:1px solid rgba(255,255,255,.10); margin: 12px 0}
+    .row{display:flex; flex-wrap:wrap; gap: 10px; align-items:flex-end}
     .field{min-width: 220px; flex:1}
     .field.sm{min-width: 170px; flex: .75}
     .field.xs{min-width: 140px; flex: .6}
-    .label{font-size:.9rem; color:var(--muted); margin:0 0 6px}
+    .label{font-size:.9rem; color: var(--muted); margin: 0 0 6px; font-weight: 850}
+
     select,input[type="text"],input[type="number"],input[type="file"],input[type="range"],textarea{
       width:100%;
       background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.15);
       border-radius: 14px;
       color: rgba(238,240,255,.92);
-      padding:10px 12px;
+      padding: 10px 12px;
       outline:none;
+      transition: filter .12s ease, border-color .12s ease;
     }
-    textarea{min-height:84px; resize:vertical}
+    select:focus,input:focus,textarea:focus{
+      border-color: rgba(200,120,255,.45);
+      filter: brightness(1.06);
+    }
+    textarea{min-height: 84px; resize: vertical}
+
     .btn{
       appearance:none;
-      border:1px solid var(--accentBorder);
-      background: var(--accent);
+      border: 1px solid rgba(200,120,255,.48);
+      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
       color: rgba(238,240,255,.96);
       padding: 10px 14px;
       border-radius: 14px;
@@ -145,101 +205,126 @@
       border-color: rgba(255,255,255,.16);
       font-weight: 900;
     }
+
     .warn{
       display:none;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--warnBorder);
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--warnBorder);
       background: var(--warnBg);
-      color:#ffe9da;
-      white-space:pre-wrap;
+      color: #ffe9da;
+      white-space: pre-wrap;
+      font-weight: 850;
     }
     .ok{
       display:none;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--okBorder);
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--okBorder);
       background: var(--ok);
-      color:rgba(220,255,235,.95);
-      white-space:pre-wrap;
+      color: rgba(220,255,235,.96);
+      white-space: pre-wrap;
+      font-weight: 850;
     }
+
     pre{
-      margin:10px 0 0;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
+      margin: 10px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.35);
       color: rgba(238,240,255,.90);
       overflow:auto;
-      min-height:140px;
+      min-height: 140px;
       font-family: var(--mono);
-      font-size:.9rem;
-      line-height:1.45;
+      font-size: .9rem;
+      line-height: 1.45;
     }
+
     .toggle{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.04);
       cursor:pointer;
       user-select:none;
-      font-size:.9rem;
+      font-size: .9rem;
       color: rgba(238,240,255,.88);
+      font-weight: 900;
+      transition: transform .12s ease, filter .12s ease;
     }
+    .toggle:hover{transform: translateY(-1px); filter: brightness(1.08)}
     .toggle input{transform: translateY(1px)}
-    .toggles{display:flex; gap:10px; flex-wrap:wrap}
+    .toggles{display:flex; gap: 10px; flex-wrap:wrap}
 
-    .kv{display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.10)}
+    .kv{display:flex; justify-content:space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.10)}
     .kv:last-child{border-bottom:none}
-    .k{color:var(--muted)}
-    .v{font-weight:950}
+    .k{color: var(--muted)}
+    .v{font-weight: 950}
 
-    .tabs{display:flex; gap:8px; flex-wrap:wrap}
+    .tabs{display:flex; gap: 8px; flex-wrap:wrap}
     .tab{
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.04);
       cursor:pointer;
-      font-weight:900;
+      font-weight: 900;
       color: rgba(238,240,255,.86);
+      transition: transform .12s ease, filter .12s ease;
     }
+    .tab:hover{transform: translateY(-1px); filter: brightness(1.08)}
     .tab.active{
-      background: var(--accent);
-      border-color: var(--accentBorder);
+      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
+      border-color: rgba(200,120,255,.42);
       color: rgba(238,240,255,.96);
     }
 
     .canvasWrap{
-      margin-top:10px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
+      margin-top: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.28);
       overflow:hidden;
     }
     canvas{display:block; width:100%; height:auto}
 
-    .stars{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+    .stars{display:flex; gap: 6px; flex-wrap:wrap; align-items:center}
     .star{
-      width:34px; height:34px; border-radius:12px;
+      width: 34px; height: 34px; border-radius: 12px;
       display:grid; place-items:center;
-      border:1px solid rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.04);
       cursor:pointer; user-select:none;
-      font-size:18px;
+      font-size: 18px;
+      transition: transform .12s ease, filter .12s ease;
     }
-    .star.on{background: var(--accent); border-color: var(--accentBorder)}
-    table{width:100%; border-collapse: collapse; margin-top:10px; font-size:.92rem}
-    th,td{padding:10px; border-bottom:1px solid rgba(255,255,255,.10); vertical-align:top}
-    th{text-align:left; color: rgba(238,240,255,.82); font-weight:950}
-    code{font-family: var(--mono); font-size:.92em}
-    details summary{cursor:pointer; font-weight:950; color: rgba(238,240,255,.90)}
-    .list{margin:8px 0 0; padding-left:18px; color:var(--muted); line-height:1.65}
-    .rightColSticky{position:sticky; top:74px}
+    .star:hover{transform: translateY(-1px); filter: brightness(1.1)}
+    .star.on{background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18)); border-color: rgba(200,120,255,.42)}
+
+    table{width:100%; border-collapse: collapse; margin-top: 10px; font-size: .92rem}
+    th,td{padding: 10px; border-bottom: 1px solid rgba(255,255,255,.10); vertical-align: top}
+    th{text-align:left; color: rgba(238,240,255,.82); font-weight: 950}
+    code{font-family: var(--mono); font-size: .92em}
+
+    details summary{cursor:pointer; font-weight: 950; color: rgba(238,240,255,.90)}
+    .list{margin: 8px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.65}
+    .rightColSticky{position:sticky; top: 74px}
     @media (max-width: 980px){ .rightColSticky{position:static} }
+
+    /* Tiny hint card styling */
+    .hint{
+      border: 1px solid rgba(200,120,255,.24);
+      background: rgba(200,120,255,.06);
+      border-radius: 14px;
+      padding: 10px 12px;
+      color: rgba(238,240,255,.86);
+      font-weight: 850;
+      line-height: 1.55;
+    }
   </style>
 </head>
 
@@ -252,23 +337,25 @@
       <a class="navBtn" href="#" id="jumpStudy">A/B Study</a>
       <a class="navBtn" href="#" id="jumpEvidence">Evidence</a>
     </div>
-    <div class="tiny">Upload MIDI → Remix → A/B compare → Download + analyze</div>
+    <div class="tiny">Upload MIDI → remix → compare → download</div>
   </div>
 
   <div class="wrap">
-    <h1>Remix Assistant (MIDI)</h1>
-    <p>
-      A practical creative tool: upload any MIDI, generate arrangement-style remixes (reharmonization, bassline, counter-melody, rhythm variation),
-      then evaluate with an embedded A/B listening study and export results for analysis.
-    </p>
+    <div class="hero">
+      <h1>Remix Assistant (MIDI)</h1>
+      <p>
+        Upload a MIDI idea and generate a remix with better harmony, bass motion, and musical phrasing.
+        Then A/B compare and export the remix as a new MIDI file.
+      </p>
 
-    <div class="pills">
-      <span class="pill">MIDI parsing + export</span>
-      <span class="pill">Reharm + bass + counter</span>
-      <span class="pill">Style presets</span>
-      <span class="pill">A/B listening study</span>
-      <span class="pill">Evidence plots</span>
-      <span class="pill">GitHub Pages friendly</span>
+      <div class="pills">
+        <span class="pill">Reharm + voicings</span>
+        <span class="pill">Broken chords</span>
+        <span class="pill">Bass movement</span>
+        <span class="pill">Counter line</span>
+        <span class="pill">A/B listening</span>
+        <span class="pill">MIDI export</span>
+      </div>
     </div>
 
     <div class="grid">
@@ -292,7 +379,7 @@
                 <div class="label">Upload MIDI (.mid)</div>
                 <input id="midiFile" type="file" accept=".mid,.midi,audio/midi" />
                 <div class="tiny" style="margin-top:6px">
-                  Tip: start with a simple melody/piano MIDI. Multi-track works too; the tool auto-picks a “melody-like” track.
+                  Tip: melody/piano MIDIs work great. Multi-track is fine too.
                 </div>
               </div>
             </div>
@@ -302,7 +389,7 @@
           <div id="panelExamples" style="display:none">
             <div class="row">
               <div class="field">
-                <div class="label">Load a built-in example (no file needed)</div>
+                <div class="label">Load a built-in example</div>
                 <select id="examplePick">
                   <option value="pop" selected>Example 1: Pop-ish melody (C major)</option>
                   <option value="minor">Example 2: Minor arpeggio hook (A minor)</option>
@@ -319,10 +406,9 @@
               </div>
               <div class="field xs">
                 <div class="label">Load</div>
-                <button class="btn" id="loadExampleBtn" type="button">Load Example as Original</button>
+                <button class="btn" id="loadExampleBtn" type="button">Load Example</button>
               </div>
             </div>
-            <div class="tiny">These examples help you record a demo video and create “before/after” portfolio assets quickly.</div>
           </div>
 
           <!-- Settings -->
@@ -331,8 +417,8 @@
               <div class="field sm">
                 <div class="label">Style preset</div>
                 <select id="style">
-                  <option value="lofi" selected>Lofi (swing + warm pad chords)</option>
-                  <option value="edm">EDM (tight quantize + stabs + driving bass)</option>
+                  <option value="lofi" selected>Lofi (swing + warm harmony)</option>
+                  <option value="edm">EDM (tight groove + punchy bass)</option>
                   <option value="baroque">Baroque-ish (broken chords + walking bass)</option>
                 </select>
               </div>
@@ -348,7 +434,7 @@
               <div class="field sm">
                 <div class="label">Remix strength</div>
                 <input id="strength" type="range" min="0" max="1" step="0.01" value="0.75" />
-                <div class="tiny">Value: <span id="strengthVal">0.75</span> (higher = denser bass/counter + more “arrangement”)</div>
+                <div class="tiny">Value: <span id="strengthVal">0.75</span> (higher = denser bass/counter/texture)</div>
               </div>
 
               <div class="field sm">
@@ -366,11 +452,11 @@
               <div class="field xs">
                 <div class="label">Seed (optional)</div>
                 <input id="seed" type="number" placeholder="e.g., 42" />
-                <div class="tiny">Same seed + settings gives repeatable outputs.</div>
+                <div class="tiny">Same seed + settings → repeatable output.</div>
               </div>
 
               <div class="field sm">
-                <div class="label">Key (optional)</div>
+                <div class="label">Key</div>
                 <select id="keyOverride">
                   <option value="auto" selected>Auto detect</option>
                   <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
@@ -380,11 +466,24 @@
               </div>
 
               <div class="field sm">
-                <div class="label">Scale</div>
-                <select id="scaleOverride">
-                  <option value="major" selected>Major</option>
-                  <option value="minor">Minor (natural)</option>
+                <div class="label">Scale / Mode</div>
+                <select id="modeOverride">
+                  <option value="major" selected>Major (Ionian)</option>
+                  <option value="minor">Minor (Aeolian)</option>
+                  <option value="dorian">Dorian</option>
+                  <option value="phrygian">Phrygian</option>
+                  <option value="lydian">Lydian</option>
+                  <option value="mixolydian">Mixolydian</option>
                 </select>
+                <div class="tiny">Modes change the vibe while keeping a “key center”.</div>
+              </div>
+
+              <div class="field sm">
+                <div class="label">Pitch clean-up</div>
+                <div class="toggles">
+                  <label class="toggle"><input id="lockToScale" type="checkbox" checked /> Gently lock notes to scale</label>
+                  <label class="toggle"><input id="preferPentatonic" type="checkbox" /> Prefer pentatonic tones (melody/counter)</label>
+                </div>
               </div>
             </div>
 
@@ -392,10 +491,18 @@
 
             <div class="label">Remix components</div>
             <div class="toggles">
-              <label class="toggle"><input id="doChords" type="checkbox" checked /> Reharm chords</label>
-              <label class="toggle"><input id="doBass" type="checkbox" checked /> Add bassline</label>
-              <label class="toggle"><input id="doCounter" type="checkbox" checked /> Add counter-melody</label>
+              <label class="toggle"><input id="doChords" type="checkbox" checked /> Harmony</label>
+              <label class="toggle"><input id="doBass" type="checkbox" checked /> Bassline</label>
+              <label class="toggle"><input id="doCounter" type="checkbox" checked /> Counter-melody</label>
               <label class="toggle"><input id="doRhythm" type="checkbox" checked /> Rhythm variation</label>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="hint">
+              Music theory tweaks built-in: the remix tends to <strong>start/end on the tonic</strong>,
+              uses <strong>broken chords</strong>, applies <strong>smooth inversions</strong>,
+              and adds <strong>bass motion</strong> that supports the harmony.
             </div>
           </div>
 
@@ -432,7 +539,7 @@
 
           <p class="tiny">
             Click “Start A/B Test” to randomize which version is A vs B. Play both, then submit ratings.
-            Results are stored locally and can be exported as CSV for your portfolio writeup.
+            Results are stored locally and can be exported as CSV.
           </p>
 
           <div class="row" style="margin-top:10px">
@@ -484,7 +591,7 @@
           <div class="row" style="margin-top:10px">
             <div class="field">
               <div class="label">Comment (optional)</div>
-              <textarea id="abComment" placeholder="e.g., 'Remix adds good motion but chords feel busy in bar 3'"></textarea>
+              <textarea id="abComment" placeholder="e.g., 'Nice bass motion, but bar 3 chords feel too dense'"></textarea>
             </div>
           </div>
 
@@ -541,13 +648,12 @@
           </div>
 
           <details style="margin-top:10px">
-            <summary>Interpretation template (paste into your portfolio writeup)</summary>
+            <summary>Quick summary</summary>
             <p class="tiny" style="margin-top:8px">
               Across <span id="nTests">0</span> A/B tests on this device, listeners preferred the Remix
               <strong><span id="remixWinPct">0%</span></strong> of the time (ties excluded).
-              Remix wins were strongest in the <strong><span id="bestStyle">—</span></strong> preset and at
-              <strong><span id="bestStrength">—</span></strong> strength. Qualitatively, comments suggest that
-              the Remix improves perceived arrangement depth (bass + harmony) but can reduce clarity when density is too high.
+              Remix wins were strongest in <strong><span id="bestStyle">—</span></strong> and at
+              <strong><span id="bestStrength">—</span></strong> strength.
             </p>
           </details>
         </section>
@@ -557,51 +663,27 @@
       <div class="rightColSticky">
         <section class="card">
           <div class="cardHeader">
-            <h2>Portfolio Writeup (Professional)</h2>
-            <div class="tiny">Use this verbatim on your project page</div>
+            <h2>Stats</h2>
+            <div class="tiny">What the tool detected / used</div>
           </div>
-
-          <div class="kv"><span class="k">Problem</span><span class="v">MIDI ideas need fast iteration</span></div>
-          <p class="tiny">
-            Creators often start with a melody but need harmonies, bass motion, and variations quickly—without a full DAW loop.
-            This project converts a raw MIDI idea into arranged alternatives in seconds.
-          </p>
-
-          <div class="kv"><span class="k">What it does</span><span class="v">Remix pipeline</span></div>
-          <ul class="list">
-            <li><strong>Analyze</strong>: melody-like track selection, tempo + key estimate, bar segmentation.</li>
-            <li><strong>Generate</strong>: bar-wise chord fitting & voicing, bassline, counter-melody, rhythm transforms.</li>
-            <li><strong>Evaluate</strong>: embedded randomized A/B tests + exportable dataset + plots.</li>
-            <li><strong>Ship</strong>: plays in browser + downloads as MIDI.</li>
-          </ul>
-
-          <div class="divider"></div>
-
-          <div class="kv"><span class="k">Architecture</span><span class="v">Browser-only</span></div>
-          <pre style="min-height:0; margin:10px 0 0; font-size:.86rem">
-UI
- ├─ MIDI parse/write (tonejs/midi)
- ├─ Remix engine (rules + style presets)
- ├─ Playback (Tone.js)
- └─ Study + evidence (localStorage + plots)</pre>
-
-          <div class="divider"></div>
-
-          <div class="kv"><span class="k">Suggested deliverables</span><span class="v">Hiring magnet</span></div>
-          <ul class="list">
-            <li>30–60s demo video (upload + remix + A/B + download)</li>
-            <li>3–5 before/after MIDI examples (and optional rendered audio)</li>
-            <li>Results screenshot: evidence plots + interpretation paragraph</li>
-            <li>Repo instructions: run locally + reproduce plots</li>
-          </ul>
-
-          <div class="divider"></div>
 
           <div class="kv"><span class="k">Detected file</span><span class="v" id="statFile">—</span></div>
           <div class="kv"><span class="k">Tempo</span><span class="v" id="statBpm">—</span></div>
-          <div class="kv"><span class="k">Key</span><span class="v" id="statKey">—</span></div>
+          <div class="kv"><span class="k">Key / mode</span><span class="v" id="statKey">—</span></div>
           <div class="kv"><span class="k">Melody track</span><span class="v" id="statTrack">—</span></div>
           <div class="kv"><span class="k">Duration</span><span class="v" id="statDur">—</span></div>
+
+          <div class="divider"></div>
+
+          <div class="hint">
+            If your input MIDI is “weird” harmonically, try:
+            <ul class="list" style="margin-top:6px">
+              <li>Set Key manually (Settings).</li>
+              <li>Try a different Mode (Mixolydian/Dorian can sound great).</li>
+              <li>Turn on “Prefer pentatonic tones”.</li>
+              <li>Lower strength if it feels too busy.</li>
+            </ul>
+          </div>
         </section>
       </div>
     </div>
@@ -615,7 +697,16 @@ UI
     const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
     const PC_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
     const NOTE_TO_PC = Object.fromEntries(PC_NAMES.map((n,i)=>[n,i]));
-    const SCALES = { major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10] };
+
+    // Modes (scale degrees)
+    const MODES = {
+      major:      [0,2,4,5,7,9,11], // Ionian
+      minor:      [0,2,3,5,7,8,10], // Aeolian
+      dorian:     [0,2,3,5,7,9,10],
+      phrygian:   [0,1,3,5,7,8,10],
+      lydian:     [0,2,4,6,7,9,11],
+      mixolydian: [0,2,4,5,7,9,10]
+    };
 
     function midiToNoteName(m){
       const name = PC_NAMES[((m % 12) + 12) % 12];
@@ -643,7 +734,6 @@ UI
     function makeRng(){
       const s = Number($("seed").value);
       if (Number.isFinite(s)) return mulberry32(s);
-      // non-deterministic fallback
       return Math.random;
     }
 
@@ -707,7 +797,7 @@ UI
 
     let bpm = 120;
     let keyPc = 0;
-    let scaleName = "major";
+    let modeName = "major";
     let beatsPerBar = 4;
 
     let melodyTrackIndex = -1;
@@ -754,7 +844,7 @@ UI
         const notes = tr.notes;
         const avgMidi = notes.reduce((a,n)=>a+(n.midi||0),0)/notes.length;
         const dur = notes.reduce((a,n)=>a+(n.duration||0),0);
-        const density = notes.length / Math.max(0.001, dur); // notes per sec-ish
+        const density = notes.length / Math.max(0.001, dur);
 
         const score = (avgMidi * 1.0) - (density * 25);
         if (score > bestScore){ bestScore = score; best = idx; }
@@ -766,28 +856,161 @@ UI
       return best;
     }
 
-    function detectKeyFromNotes(notes){
+    // Krumhansl-ish profiles (simple) to pick major vs minor + tonic
+    const KS_MAJOR = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
+    const KS_MINOR = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+
+    function rotate(arr, k){
+      const n = arr.length;
+      const out = new Array(n);
+      for(let i=0;i<n;i++) out[i] = arr[(i-k+n)%n];
+      return out;
+    }
+
+    function dot(a,b){
+      let s=0;
+      for(let i=0;i<a.length;i++) s += a[i]*b[i];
+      return s;
+    }
+
+    function detectKeyAndModeFromNotes(notes){
       const hist = new Array(12).fill(0);
       for (const n of notes){
-        const pc = (n.midi ?? 0) % 12;
+        const pc = ((n.midi ?? 0) % 12 + 12) % 12;
         const w = clamp(n.duration ?? 0.1, 0.01, 10);
         hist[pc] += w;
       }
-      let bestPc = 0, best = -1;
-      for (let pc=0; pc<12; pc++){
-        if (hist[pc] > best){ best = hist[pc]; bestPc = pc; }
+
+      // normalize
+      const sum = hist.reduce((a,b)=>a+b,0) || 1;
+      const norm = hist.map(x=>x/sum);
+
+      let best = { score:-Infinity, pc:0, mode:"major" };
+
+      for(let pc=0; pc<12; pc++){
+        const majScore = dot(norm, rotate(KS_MAJOR, pc));
+        const minScore = dot(norm, rotate(KS_MINOR, pc));
+        if (majScore > best.score) best = { score:majScore, pc, mode:"major" };
+        if (minScore > best.score) best = { score:minScore, pc, mode:"minor" };
+      }
+      return best;
+    }
+
+    // ------------------------------------------------------------
+    // Music theory helpers
+    // ------------------------------------------------------------
+    function scalePcs(tonicPc, mode){
+      const arr = MODES[mode] || MODES.major;
+      return arr.map(x => (x + tonicPc) % 12);
+    }
+
+    function pentatonicFromMode(tonicPc, mode){
+      // Major pent: 1 2 3 5 6 ; Minor pent: 1 b3 4 5 b7
+      if (mode === "minor" || mode === "phrygian"){
+        const rel = [0,3,5,7,10];
+        return rel.map(x => (x + tonicPc) % 12);
+      }
+      const rel = [0,2,4,7,9];
+      return rel.map(x => (x + tonicPc) % 12);
+    }
+
+    function nearestPcInSet(targetPc, pcs){
+      let bestPc = pcs[0];
+      let bestDist = 999;
+      for (const pc of pcs){
+        let d = Math.abs(pc - targetPc);
+        d = Math.min(d, 12 - d);
+        if (d < bestDist){ bestDist = d; bestPc = pc; }
       }
       return bestPc;
     }
 
+    function snapMidiToScale(midi, allowedPcs){
+      const pc = ((midi % 12) + 12) % 12;
+      if (allowedPcs.includes(pc)) return midi;
+
+      // try shifting by semitones within +/- 2 first (gentle)
+      for (let step=1; step<=2; step++){
+        const up = (pc + step) % 12;
+        const dn = (pc - step + 12) % 12;
+        if (allowedPcs.includes(up)) return midi + step;
+        if (allowedPcs.includes(dn)) return midi - step;
+      }
+
+      // fallback to nearest
+      const bestPc = nearestPcInSet(pc, allowedPcs);
+      // shift to nearest pc by smallest signed distance
+      let bestShift = 0;
+      let best = 999;
+      for (let s=-6; s<=6; s++){
+        if (((pc + s + 120) % 12) === bestPc){
+          const ad = Math.abs(s);
+          if (ad < best){ best = ad; bestShift = s; }
+        }
+      }
+      return midi + bestShift;
+    }
+
+    function enforceTonicCadence(notes, tonicPc, mode, beatSec, bars, beatsPerBar){
+      // Add/shape ending to land on tonic, and (lightly) starting on tonic.
+      if (!notes.length) return notes;
+
+      const barSec = beatsPerBar * beatSec;
+      const totalSec = bars * barSec;
+
+      // Start: if first note isn't tonic-ish, nudge by scale snap (handled earlier).
+      // End: add a final tonic note (or resolve last note to tonic) near the end.
+      const last = notes[notes.length-1];
+      const lastPc = ((last.midi % 12) + 12) % 12;
+
+      const allow = scalePcs(tonicPc, mode);
+      const tonicMidiNear = (m) => {
+        // keep octave similar
+        const baseOct = Math.floor(m/12);
+        let cand = baseOct*12 + tonicPc;
+        // adjust to nearest octave to m
+        while (cand - m > 6) cand -= 12;
+        while (m - cand > 6) cand += 12;
+        return clamp(cand, 36, 96);
+      };
+
+      const endTime = Math.max(0, totalSec - 1.0*beatSec);
+      const endDur = 0.9*beatSec;
+
+      // If last note is not tonic, gently resolve it.
+      if (lastPc !== tonicPc){
+        // shorten last note slightly so resolution reads
+        last.duration = Math.min(last.duration ?? endDur, 0.6*beatSec);
+        const resMidi = tonicMidiNear(last.midi);
+        notes.push({
+          midi: snapMidiToScale(resMidi, allow),
+          time: Math.max(last.time + (last.duration ?? 0.2), endTime),
+          duration: endDur,
+          velocity: clamp((last.velocity ?? 0.82) + 0.06, 0.2, 1.0)
+        });
+      } else {
+        // if already tonic, extend/anchor with a final longer tonic if needed
+        if ((last.time ?? 0) < endTime){
+          notes.push({
+            midi: last.midi,
+            time: endTime,
+            duration: endDur,
+            velocity: clamp((last.velocity ?? 0.82), 0.2, 1.0)
+          });
+        }
+      }
+
+      return notes;
+    }
+
     // ------------------------------------------------------------
-    // Remix engine (bar-wise chord fitting + style generators)
+    // Remix engine (better theory: tonic cadence + inversions + broken chords + bass motion)
     // ------------------------------------------------------------
-    function diatonicTriads(tonicPc, scaleArr){
-      const scalePcs = scaleArr.map(x => (x + tonicPc) % 12);
+    function diatonicTriads(tonicPc, mode){
+      const sc = scalePcs(tonicPc, mode);
       const chords = [];
       for (let d=0; d<7; d++){
-        const pcs = [scalePcs[d], scalePcs[(d+2)%7], scalePcs[(d+4)%7]];
+        const pcs = [sc[d], sc[(d+2)%7], sc[(d+4)%7]];
         chords.push({ degree: d+1, pcs, rootPc: pcs[0] });
       }
       return chords;
@@ -803,6 +1026,13 @@ UI
         const pc = (n.midi ?? 0) % 12;
         chords.forEach((ch, i) => { if (ch.pcs.includes(pc)) scores[i] += ov; });
       }
+
+      // small preference for tonic and dominant (to reduce random-sounding changes)
+      chords.forEach((ch,i)=>{
+        if (ch.degree === 1) scores[i] *= 1.10;
+        if (ch.degree === 5) scores[i] *= 1.06;
+      });
+
       let bestI = 0, best = -Infinity;
       for (let i=0; i<scores.length; i++){
         if (scores[i] > best){ best = scores[i]; bestI = i; }
@@ -810,26 +1040,85 @@ UI
       return chords[bestI];
     }
 
-    function voiceChord(chordPcs, style, rng){
-      const base = (style === "edm") ? 62 : 60;
+    function buildChordMidiFromPcs(pcs, centerMidi){
+      // Convert pcs to midi notes around a center, sorted
       const out = [];
-      for (const pc of chordPcs){
-        let m = base + ((pc - (base % 12) + 12) % 12);
-        if (m < 52) m += 12;
-        if (m > 76) m -= 12;
+      for (const pc of pcs){
+        let m = centerMidi + ((pc - (centerMidi % 12) + 12) % 12);
+        // shift into a pleasant range
+        while (m < centerMidi-12) m += 12;
+        while (m > centerMidi+12) m -= 12;
         out.push(m);
       }
       out.sort((a,b)=>a-b);
-
-      // lofi: optional 7th/9th
-      if (style === "lofi" && rng() < 0.55){
-        const top = out[out.length-1];
-        const add = top + (rng() < 0.5 ? 10 : 14);
-        if (add <= 84) out.push(add);
-      }
-      // baroque: keep tight triad
-      if (style === "baroque" && out.length > 3) out.splice(3);
       return out;
+    }
+
+    function chooseBestInversion(prevVoiced, chordPcs, baseMidi){
+      // Try 3 inversions by rotating chord tones +/- octaves, choose minimal movement
+      const candidates = [];
+
+      // base triad around baseMidi
+      const base = buildChordMidiFromPcs(chordPcs, baseMidi);
+
+      function score(voiced){
+        if (!prevVoiced?.length) return 0;
+        const a = [...prevVoiced].sort((x,y)=>x-y);
+        const b = [...voiced].sort((x,y)=>x-y);
+
+        // compare nearest pairs (truncate to min length)
+        const k = Math.min(a.length, b.length);
+        let s = 0;
+        for (let i=0;i<k;i++) s += Math.abs(a[i]-b[i]);
+        // penalize huge spreads
+        const spread = (b[b.length-1] - b[0]);
+        s += Math.max(0, spread - 18);
+        return s;
+      }
+
+      // generate inversions by moving bottom note up octave
+      let v = [...base];
+      for (let inv=0; inv<3; inv++){
+        candidates.push(v);
+        // next inversion
+        const next = [...v];
+        next[0] += 12;
+        next.sort((a,b)=>a-b);
+        v = next;
+      }
+
+      candidates.sort((x,y)=>score(x)-score(y));
+      return candidates[0];
+    }
+
+    function maybeAddExtensions(voiced, tonicPc, mode, rng, style, strength){
+      // tasteful 7ths/9ths; more in lofi, less in baroque; edm uses stabs so keep tight
+      if (style === "edm") return voiced;
+
+      const sc = scalePcs(tonicPc, mode);
+      const top = voiced[voiced.length-1];
+
+      const extChance =
+        style === "lofi" ? (0.45 + 0.25*strength) :
+        style === "baroque" ? (0.15 + 0.10*strength) :
+        (0.25 + 0.20*strength);
+
+      if (rng() > extChance) return voiced;
+
+      // choose 7th or 9th scale tone relative to chord root (diatonic-ish)
+      const addType = (rng() < 0.60) ? "7" : "9";
+      let add = top + (addType === "7" ? 10 : 14);
+
+      const addPc = ((add % 12) + 12) % 12;
+      // keep extension in scale
+      const snappedPc = nearestPcInSet(addPc, sc);
+      // shift add to snapped pc minimally
+      for (let s=-2; s<=2; s++){
+        const pc = ((add + s) % 12 + 12) % 12;
+        if (pc === snappedPc){ add += s; break; }
+      }
+      if (add <= 88) return [...voiced, add].sort((a,b)=>a-b);
+      return voiced;
     }
 
     function applyRhythmTransform(notes, style, beatSec, rng){
@@ -868,6 +1157,41 @@ UI
       return out;
     }
 
+    function brokenChordPattern(voiced, style, beatSec, slotT0, slotT1, strength, rng){
+      // Returns list of {midi,time,duration,velocity} for an arpeggiated chord
+      const events = [];
+      const barLen = slotT1 - slotT0;
+
+      // step: faster for baroque, medium for lofi, stabs for edm (handled elsewhere)
+      const step =
+        style === "baroque" ? 0.5*beatSec :
+        style === "lofi" ? 0.5*beatSec :
+        0.25*beatSec;
+
+      const dur = Math.max(0.03, step*0.90);
+
+      // pattern selection
+      const tri = voiced.slice(0,3);
+      const upDown = (rng() < 0.55);
+      const pat = upDown ? [0,1,2,1] : [0,1,2,0,2,1];
+
+      let t = slotT0;
+      let i = 0;
+      while (t < slotT1 - 0.02){
+        const idx = pat[i % pat.length];
+        const m0 = tri[idx] ?? voiced[idx % voiced.length];
+        events.push({
+          midi: m0,
+          time: t,
+          duration: dur,
+          velocity: 0.35 + 0.14*strength
+        });
+        t += step;
+        i++;
+      }
+      return events;
+    }
+
     function buildRemix(m){
       const rng = makeRng();
       const style = $("style").value;
@@ -878,16 +1202,28 @@ UI
       const beatSec = 60 / Math.max(1, bpm);
       const barSec = beatsPerBar * beatSec;
 
+      // key + mode
       const keyOverride = $("keyOverride").value;
-      scaleName = $("scaleOverride").value;
-      const scaleArr = SCALES[scaleName] || SCALES.major;
+      modeName = $("modeOverride").value;
 
-      keyPc = (keyOverride === "auto") ? detectKeyFromNotes(melodyNotes) : NOTE_TO_PC[keyOverride];
+      const detected = detectKeyAndModeFromNotes(melodyNotes);
+      keyPc = (keyOverride === "auto") ? detected.pc : NOTE_TO_PC[keyOverride];
+
+      // If user left key auto, keep detected major/minor as a default *unless* user picked a specific mode
+      // (user mode should win; detected mode just affects display log and scale lock behavior).
+      // We won't override modeName because user explicitly chose it in UI.
 
       const durSec = midiDurationSeconds(m);
       const bars = Math.max(1, Math.ceil(durSec / barSec));
 
-      const chords = diatonicTriads(keyPc, scaleArr);
+      // Allowed pitch sets for melody/counter
+      const diatonic = scalePcs(keyPc, modeName);
+      const penta = pentatonicFromMode(keyPc, modeName);
+      const preferPenta = $("preferPentatonic").checked;
+      const melodicAllowed = preferPenta ? penta : diatonic;
+
+      // Build chord plan from melody, then force tonic at start/end
+      const chords = diatonicTriads(keyPc, modeName);
       const chordPlan = [];
       for (let b=0; b<bars; b++){
         const t0 = b * barSec;
@@ -896,19 +1232,32 @@ UI
         chordPlan.push({ bar: b, t0, t1, chord: ch });
       }
 
-      const out = new Midi();
-      // best-effort header copy
-      try{ out.header.fromJSON(m.header.toJSON()); }
-      catch(e){
-        try{ out.header.setTempo(bpm / 60); }catch(_){}
-      }
+      // enforce tonic at start/end (start/end on tonic)
+      const tonicChord = chords.find(c=>c.degree===1) || chords[0];
+      chordPlan[0].chord = tonicChord;
+      chordPlan[chordPlan.length-1].chord = tonicChord;
 
-      // Track: Melody (copy chosen track only — cleaner for A/B)
+      const out = new Midi();
+      try{ out.header.fromJSON(m.header.toJSON()); }
+      catch(e){ try{ out.header.setTempo(bpm / 60); }catch(_){} }
+
+      // Track: Melody (copy selected track only, with optional scale lock + cadence)
       const tMel = out.addTrack(); tMel.name = "Melody";
+
       let melCopy = melodyNotes.map(n => ({
         midi: n.midi, time: n.time, duration: n.duration, velocity: n.velocity ?? 0.85
       }));
+
+      // Gentle scale lock (fix “sounds like shit” when input has stray notes)
+      if ($("lockToScale").checked){
+        melCopy = melCopy.map(n => ({
+          ...n,
+          midi: snapMidiToScale(n.midi, diatonic) // always use full diatonic for melody lock
+        }));
+      }
+
       melCopy = applyRhythmTransform(melCopy, style, beatSec, rng);
+      melCopy = enforceTonicCadence(melCopy, keyPc, modeName, beatSec, bars, beatsPerBar);
 
       for (const n of melCopy){
         tMel.addNote({
@@ -919,101 +1268,182 @@ UI
         });
       }
 
-      // Chords
+      // Harmony: use inversions (voice leading) + broken chords option by style/strength
       if ($("doChords").checked){
         const tCh = out.addTrack(); tCh.name = "Chords";
-        for (const slot of chordPlan){
-          const voiced = voiceChord(slot.chord.pcs, style, rng);
 
+        let prevVoiced = null;
+        for (const slot of chordPlan){
+          const baseMidi =
+            style === "edm" ? 60 :
+            style === "baroque" ? 58 :
+            60;
+
+          let voiced = chooseBestInversion(prevVoiced, slot.chord.pcs, baseMidi);
+          voiced = maybeAddExtensions(voiced, keyPc, modeName, rng, style, strength);
+
+          // EDM: stabs (keep tight)
           if (style === "edm"){
             const stabDur = 0.42 * beatSec;
-            for (const tt of [slot.t0, slot.t0 + 2*beatSec]){
+            const times = beatsPerBar === 3 ? [slot.t0, slot.t0 + 1.5*beatSec] : [slot.t0, slot.t0 + 2*beatSec];
+            for (const tt of times){
               if (rng() < 0.08 * (1-strength)) continue;
-              for (const m0 of voiced){
+              for (const m0 of voiced.slice(0,3)){
                 tCh.addNote({ midi: m0, time: tt, duration: stabDur, velocity: 0.55 + 0.15*strength });
               }
             }
-          } else if (style === "baroque"){
-            const step = 0.5 * beatSec;
-            const tri = voiced.slice(0,3);
-            const seq = tri.length === 3 ? [tri[0], tri[1], tri[2], tri[1]] : tri;
-            let t = slot.t0;
-            let i=0;
-            while (t < slot.t1 - 0.02){
-              if (rng() < 0.10*(1-strength)) { t += step; i++; continue; }
-              tCh.addNote({ midi: seq[i % seq.length], time: t, duration: step * 0.92, velocity: 0.42 + 0.12*strength });
-              t += step; i++;
-            }
           } else {
-            const dur = Math.max(0.1, (slot.t1 - slot.t0) * 0.985);
-            for (const m0 of voiced){
-              tCh.addNote({ midi: m0, time: slot.t0, duration: dur, velocity: 0.34 + 0.16*strength });
+            // Broken chords technique (always for baroque; often for lofi when strength higher)
+            const useBroken =
+              (style === "baroque") ||
+              (style === "lofi" && strength > 0.35 && rng() < 0.75) ||
+              (style === "lofi" && rng() < 0.45);
+
+            if (useBroken){
+              const ev = brokenChordPattern(voiced, style, beatSec, slot.t0, slot.t1, strength, rng);
+              for (const e of ev){
+                tCh.addNote({ midi: e.midi, time: e.time, duration: e.duration, velocity: e.velocity });
+              }
+            } else {
+              const dur = Math.max(0.1, (slot.t1 - slot.t0) * 0.985);
+              for (const m0 of voiced){
+                tCh.addNote({ midi: m0, time: slot.t0, duration: dur, velocity: 0.34 + 0.16*strength });
+              }
             }
           }
+
+          prevVoiced = voiced.slice(0,3);
         }
       }
 
-      // Bass
+      // Bass: use inversion-aware bass + motion (approach tones / fifths / scale tones)
       if ($("doBass").checked){
         const tBa = out.addTrack(); tBa.name = "Bass";
-        for (const slot of chordPlan){
+        const diatonicSet = scalePcs(keyPc, modeName);
+
+        let prevBass = null;
+
+        for (let i=0;i<chordPlan.length;i++){
+          const slot = chordPlan[i];
           const rootPc = slot.chord.rootPc;
-          let rootMidi = 36 + ((rootPc - (36 % 12) + 12) % 12);
-          rootMidi = clamp(rootMidi, 28, 52);
+
+          // pick a bass target: mostly root, sometimes fifth/third (inversion feel)
+          const pickRoll = rng();
+          let bassPc = rootPc;
+          if (style !== "edm"){
+            if (pickRoll < 0.18*strength) bassPc = slot.chord.pcs[1]; // 3rd
+            else if (pickRoll < 0.40*strength) bassPc = (rootPc + 7) % 12; // 5th
+          }
+
+          // choose bass midi in a musical range
+          let bassMidi = 36 + ((bassPc - (36 % 12) + 12) % 12);
+          while (bassMidi < 30) bassMidi += 12;
+          while (bassMidi > 50) bassMidi -= 12;
+
+          bassMidi = clamp(bassMidi, 28, 55);
 
           if (style === "edm"){
             const step = 0.5 * beatSec; // 8ths
             let t = slot.t0;
             let k = 0;
             while (t < slot.t1 - 0.02){
-              if (rng() < 0.12*(1-strength)) { t += step; k++; continue; }
+              if (rng() < 0.10*(1-strength)) { t += step; k++; continue; }
               const isOff = (k % 2 === 1);
-              const m0 = (isOff && rng() < (0.25*strength)) ? rootMidi + 12 : rootMidi;
-              tBa.addNote({ midi: m0, time: t, duration: step*0.92, velocity: 0.65 + 0.20*strength });
+              const m0 = (isOff && rng() < (0.25*strength)) ? bassMidi + 12 : bassMidi;
+              tBa.addNote({ midi: m0, time: t, duration: step*0.92, velocity: 0.68 + 0.20*strength });
               t += step; k++;
             }
           } else if (style === "baroque"){
+            // walking bass with chord tones + passing scale tones
             const step = 0.5 * beatSec;
             const chordTones = slot.chord.pcs.map(pc => {
               let m0 = 36 + ((pc - 0 + 12) % 12);
-              while (m0 < 32) m0 += 12;
+              while (m0 < 30) m0 += 12;
               while (m0 > 52) m0 -= 12;
               return m0;
             }).sort((a,b)=>a-b);
 
             let t = slot.t0;
-            let i = 0;
+            let k = 0;
             while (t < slot.t1 - 0.02){
-              if (rng() < 0.10*(1-strength)) { t += step; i++; continue; }
-              tBa.addNote({ midi: chordTones[i % chordTones.length], time: t, duration: step*0.92, velocity: 0.55 + 0.15*strength });
-              t += step; i++;
+              let m0 = chordTones[k % chordTones.length];
+              // occasional passing tone
+              if (rng() < 0.35*strength){
+                const pc = ((m0 % 12) + 12) % 12;
+                const passPc = diatonicSet[(diatonicSet.indexOf(pc)+1+7)%7] ?? pc;
+                let pass = m0 + (((passPc - pc + 12) % 12) <= 6 ? ((passPc - pc + 12)%12) : -((pc - passPc + 12)%12));
+                pass = clamp(pass, 28, 55);
+                m0 = pass;
+              }
+              tBa.addNote({ midi: clamp(m0, 28, 55), time: t, duration: step*0.92, velocity: 0.58 + 0.15*strength });
+              t += step; k++;
             }
           } else {
+            // Lofi: root + fifth + approach to next bar’s bass
             const half = (beatsPerBar/2) * beatSec;
+
             const fifthPc = (rootPc + 7) % 12;
             let fifthMidi = 36 + ((fifthPc - (36 % 12) + 12) % 12);
             fifthMidi = clamp(fifthMidi, 28, 55);
 
-            tBa.addNote({ midi: rootMidi, time: slot.t0, duration: half*0.98, velocity: 0.50 + 0.12*strength });
-            if (strength > 0.25) {
-              tBa.addNote({ midi: fifthMidi, time: slot.t0 + half, duration: half*0.98, velocity: 0.48 + 0.10*strength });
+            tBa.addNote({ midi: bassMidi, time: slot.t0, duration: half*0.98, velocity: 0.52 + 0.12*strength });
+
+            if (strength > 0.18){
+              tBa.addNote({ midi: fifthMidi, time: slot.t0 + half, duration: (half*0.80), velocity: 0.50 + 0.10*strength });
+            }
+
+            // approach tone into next bar (smooth movement)
+            if (strength > 0.30 && i < chordPlan.length-1){
+              const nextRootPc = chordPlan[i+1].chord.rootPc;
+              let nextMidi = 36 + ((nextRootPc - (36 % 12) + 12) % 12);
+              nextMidi = clamp(nextMidi, 28, 55);
+
+              // approach by a diatonic step if possible
+              let approach = nextMidi;
+              if (prevBass != null){
+                // step toward next
+                const dir = (nextMidi >= bassMidi) ? +1 : -1;
+                approach = nextMidi - dir*1; // chromatic approach
+                // keep approach within diatonic if possible
+                const apPc = ((approach%12)+12)%12;
+                if (!diatonicSet.includes(apPc)){
+                  // try +/-1
+                  if (diatonicSet.includes((apPc+1)%12)) approach += 1;
+                  else if (diatonicSet.includes((apPc+11)%12)) approach -= 1;
+                }
+                approach = clamp(approach, 28, 55);
+              }
+
+              tBa.addNote({
+                midi: approach,
+                time: slot.t1 - 0.5*beatSec,
+                duration: 0.45*beatSec,
+                velocity: 0.46 + 0.10*strength
+              });
             }
           }
+
+          prevBass = bassMidi;
         }
       }
 
-      // Counter-melody
+      // Counter-melody: prefer consonant intervals + (optionally) pentatonic tones
       if ($("doCounter").checked){
         const tCo = out.addTrack(); tCo.name = "Counter";
-        const scalePcs = new Set((SCALES[scaleName] || SCALES.major).map(x => (x + keyPc) % 12));
-        const consonant = [3,4,8,9]; // 3rds/6ths
+
+        const diatonic = scalePcs(keyPc, modeName);
+        const allow = ($("preferPentatonic").checked) ? pentatonicFromMode(keyPc, modeName) : diatonic;
+        const allowSet = new Set(allow);
+
+        const consonant = [3,4,7,8,9]; // 3rds/5ths/6ths
 
         const durGrid = (style === "edm") ? 0.25 * beatSec : 0.5 * beatSec;
         const durNote = durGrid * 0.92;
 
-        const total = durSec;
+        const total = bars * barSec;
+
         for (let t=0; t<total; t += durGrid){
-          // find active melody
+          // find active melody at time t
           let mel = null;
           for (const n of melCopy){
             const t0 = n.time ?? 0;
@@ -1022,23 +1452,38 @@ UI
           }
           if (!mel) continue;
 
-          const density = (style === "baroque") ? (0.45*strength) : (0.55*strength);
+          const density = (style === "baroque") ? (0.42*strength) : (0.55*strength);
           if (rng() < (1 - density)) continue;
 
           const base = clamp(Math.round(mel.midi), 48, 84);
           let choices = [];
+
           for (const iv of consonant){
             for (const dir of [-1, +1]){
               const m0 = base + dir*iv;
               const pc = ((m0 % 12) + 12) % 12;
-              if (scalePcs.has(pc)) choices.push(m0);
+              if (allowSet.has(pc)) choices.push(m0);
             }
           }
+
+          // also allow a “single note melody” trick sometimes (monotony over moving harmony)
+          if (rng() < 0.10 + 0.20*strength){
+            const pc = ((base % 12) + 12) % 12;
+            if (allowSet.has(pc)) choices.push(base);
+          }
+
           if (!choices.length) continue;
 
           // generally above melody, avoid extreme highs
           choices = choices.filter(x => x >= base && x <= 88);
           if (!choices.length) continue;
+
+          // “big leap” occasionally (major 6th-ish) but still in allowed
+          if (rng() < 0.06*strength){
+            const leap = base + 9;
+            const pc = ((leap % 12) + 12) % 12;
+            if (allowSet.has(pc)) choices.push(leap);
+          }
 
           const m0 = clamp(choices[Math.floor(rng()*choices.length)], 52, 90);
           tCo.addNote({ midi: m0, time: t, duration: durNote, velocity: 0.32 + 0.18*strength });
@@ -1058,59 +1503,77 @@ UI
         }
       }
 
-      return { out, info: { bpm, key: `${PC_NAMES[keyPc]} ${scaleName}`, bars, style, duration: durSec, strength } };
+      return { out, info: { bpm, key: `${PC_NAMES[keyPc]} ${modeName}`, bars, style, duration: durSec, strength } };
     }
 
     // ------------------------------------------------------------
-    // Tone.js playback (multi-synth for nicer preview)
+    // Tone.js playback (nicer sound)
     // ------------------------------------------------------------
     let audioReady = false;
     let lead, pad, bassSynth, counter;
-    let master;
+    let master, comp, reverb, chorus, limiter;
     let part = null;
 
     async function ensureAudio(){
       if (Tone.context.state !== "running") await Tone.start();
       if (audioReady) return;
 
-      master = new Tone.Gain(0.9).toDestination();
+      master = new Tone.Gain(0.95).toDestination();
 
-      const reverb = new Tone.Reverb({ decay: 2.4, preDelay: 0.01, wet: 0.18 });
-      reverb.connect(master);
+      comp = new Tone.Compressor({ threshold: -20, ratio: 3, attack: 0.01, release: 0.15 });
+      limiter = new Tone.Limiter(-1);
 
-      const limiter = new Tone.Limiter(-1).connect(master);
+      chorus = new Tone.Chorus({ frequency: 1.2, delayTime: 3.5, depth: 0.3, wet: 0.18 }).start();
+      reverb = new Tone.Reverb({ decay: 2.8, preDelay: 0.01, wet: 0.16 });
 
-      // route: synths -> limiter + reverb -> master
-      function send(s, wet=0.25){
-        s.connect(limiter);
-        s.connect(reverb);
-        s.volume.value -= 2;
+      // routing
+      chorus.connect(reverb);
+      reverb.connect(comp);
+      comp.connect(limiter);
+      limiter.connect(master);
+
+      function toFX(node){
+        node.connect(chorus);
+        node.connect(comp);
       }
 
-      lead = new Tone.PolySynth(Tone.Synth, {
-        oscillator:{type:"triangle"},
-        envelope:{attack:0.01, decay:0.12, sustain:0.22, release:0.9},
-        volume:-8
-      });
-      pad = new Tone.PolySynth(Tone.Synth, {
-        oscillator:{type:"sawtooth"},
-        envelope:{attack:0.10, decay:0.2, sustain:0.75, release:1.4},
-        volume:-12
-      });
-      bassSynth = new Tone.MonoSynth({
-        oscillator:{type:"sine"},
-        filter:{Q:1, type:"lowpass", rolloff:-24, frequency:900},
-        envelope:{attack:0.01, decay:0.1, sustain:0.6, release:0.2},
-        filterEnvelope:{attack:0.01, decay:0.1, sustain:0.0, release:0.1, baseFrequency:90, octaves:2.2},
-        volume:-10
-      });
-      counter = new Tone.PolySynth(Tone.Synth, {
-        oscillator:{type:"sine"},
-        envelope:{attack:0.01, decay:0.06, sustain:0.18, release:0.35},
-        volume:-14
+      lead = new Tone.PolySynth(Tone.FMSynth, {
+        volume: -12,
+        options: {
+          harmonicity: 1.8,
+          modulationIndex: 8,
+          envelope: { attack: 0.01, decay: 0.12, sustain: 0.20, release: 0.9 },
+          modulationEnvelope: { attack: 0.02, decay: 0.2, sustain: 0.0, release: 0.2 }
+        }
       });
 
-      send(lead); send(pad); bassSynth.connect(limiter); bassSynth.connect(reverb); send(counter);
+      pad = new Tone.PolySynth(Tone.AMSynth, {
+        volume: -16,
+        options: {
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.12, decay: 0.25, sustain: 0.75, release: 1.6 }
+        }
+      });
+
+      bassSynth = new Tone.MonoSynth({
+        volume: -10,
+        oscillator: { type: "sine" },
+        filter: { Q: 1, type: "lowpass", rolloff: -24, frequency: 900 },
+        envelope: { attack: 0.01, decay: 0.12, sustain: 0.6, release: 0.18 },
+        filterEnvelope: { attack: 0.01, decay: 0.12, sustain: 0.0, release: 0.1, baseFrequency: 70, octaves: 2.3 }
+      });
+
+      counter = new Tone.PolySynth(Tone.Synth, {
+        volume: -18,
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.01, decay: 0.06, sustain: 0.16, release: 0.35 }
+      });
+
+      toFX(lead);
+      toFX(pad);
+      toFX(counter);
+      bassSynth.connect(comp);
+      bassSynth.connect(reverb);
 
       audioReady = true;
     }
@@ -1220,20 +1683,21 @@ UI
       }));
 
       const dur = midiDurationSeconds(midiIn);
-      const tonicGuess = detectKeyFromNotes(melodyNotes);
+      const det = detectKeyAndModeFromNotes(melodyNotes);
 
       logLine(`Loaded: ${fileName || "MIDI"}`);
       logLine(`Tempo: ~${Math.round(bpm)} BPM`);
       logLine(`Picked melody track: ${melodyTrackIndex+1} (${tr?.name || "unnamed"})`);
       logLine(`Melody notes: ${melodyNotes.length}`);
       logLine(`Duration: ${dur.toFixed(2)} seconds`);
-      logLine(`Key guess: ${PC_NAMES[tonicGuess]} (override in Settings if needed)`);
-      logLine(`Next: Click “Create Remix”, then run A/B test.`);
+      logLine(`Key guess: ${PC_NAMES[det.pc]} (${det.mode} leaning)`);
+      logLine(`Tip: you can override Key/Mode in Settings.`);
+      logLine(`Next: Click “Create Remix”.`);
 
       setStats({
         fileName: fileName || "MIDI",
         bpm,
-        key: `${PC_NAMES[tonicGuess]} (guess)`,
+        key: `${PC_NAMES[det.pc]} (guess)`,
         trackName: tr?.name,
         trackIndex: melodyTrackIndex,
         durSec: dur
@@ -1265,15 +1729,8 @@ UI
     }
     function makeExampleMidi(which, tempoBpm, bars){
       const m = new Midi();
-      // header tempo: best-effort
-      try{
-        // some builds accept beats/sec; bpm/60
-        m.header.setTempo(tempoBpm / 60);
-      }catch(e){
-        try{
-          m.header.tempos = [{ bpm: tempoBpm, time: 0 }];
-        }catch(_){}
-      }
+      try{ m.header.setTempo(tempoBpm / 60); }
+      catch(e){ try{ m.header.tempos = [{ bpm: tempoBpm, time: 0 }]; }catch(_){ } }
 
       const t = m.addTrack();
       t.name = "Example Melody";
@@ -1282,28 +1739,22 @@ UI
       const bar = 4 * beat;
       const totalBars = clamp(Number(bars)||8, 2, 16);
 
-      // build a phrase loop
       let seq = [];
       if (which === "minor"){
-        // A minor: A C E G E D C A
-        seq = [69,72,76,79,76,74,72,69];
+        seq = [69,72,76,79,76,74,72,69]; // A minor-ish
       } else if (which === "riff"){
-        // D mixo-ish: D E F# A G F# E D with rests
-        seq = [62,64,66,69,67,66,64,62];
+        seq = [62,64,66,69,67,66,64,62]; // D mixo-ish
       } else {
-        // pop C major: C E G A G E D C
-        seq = [60,64,67,69,67,64,62,60];
+        seq = [60,64,67,69,67,64,62,60]; // C major-ish
       }
 
       for (let b=0; b<totalBars; b++){
         const t0 = b * bar;
-        // 8th notes across bar
         for (let i=0; i<8; i++){
           const n = seq[i % seq.length];
           const time = t0 + i*(0.5*beat);
           const dur = 0.45*beat;
           const vel = 0.8 + 0.1*Math.sin((b+i)*0.7);
-          // riff example: add some rests
           if (which==="riff" && (i===2 || i===6) && (b%2===1)) continue;
           addNote(t, n, time, dur, vel);
         }
@@ -1320,7 +1771,7 @@ UI
         const m = makeExampleMidi(pick, tempo, bars);
         const bytes = m.toArray();
         parseMidiArrayBuffer(new Uint8Array(bytes).buffer, `Built-in: ${pick} (${tempo}bpm)`);
-        setOk("Loaded built-in example. Create a remix, then run an A/B test.");
+        setOk("Loaded built-in example. Now create a remix.");
       }catch(e){
         console.error(e);
         setWarn("Failed to load example (unexpected).");
@@ -1343,19 +1794,18 @@ UI
         midiOut = out;
 
         logLine(`Style: ${info.style}`);
-        logLine(`Key: ${info.key}`);
+        logLine(`Key/Mode: ${info.key}`);
         logLine(`Bars: ${info.bars}`);
         logLine(`Strength: ${info.strength.toFixed(2)}`);
         logLine(`Tracks out: ${midiOut.tracks.length}`);
-        logLine("Done. Preview and download the remix. Then run A/B test.");
+        logLine("Done. Preview and download the remix (and A/B test if you want).");
 
-        // update stats
         statBpm.textContent = `${Math.round(info.bpm)} BPM`;
         statKey.textContent = info.key;
         statDur.textContent = `${info.duration.toFixed(2)}s`;
 
         updateReadyState();
-        setOk("Remix created. You can now A/B test it and export results.");
+        setOk("Remix created.");
 
       }catch(e){
         console.error(e);
@@ -1489,7 +1939,6 @@ UI
       abActive = true;
       abId = newABId();
 
-      // randomize mapping
       if (Math.random() < 0.5){
         mapA = "orig"; mapB = "remix";
       } else {
@@ -1546,8 +1995,10 @@ UI
         swing: Number($("swing").value),
         humanize: Number($("humanize").value),
         keyOverride: $("keyOverride").value,
-        scale: $("scaleOverride").value,
-        barsize: $("barsize").value
+        mode: $("modeOverride").value,
+        barsize: $("barsize").value,
+        lockToScale: $("lockToScale").checked,
+        preferPentatonic: $("preferPentatonic").checked
       };
     }
 
@@ -1562,7 +2013,7 @@ UI
         abId,
         mapping: { A: mapA, B: mapB },
         pref,
-        chosen, // "orig" | "remix" | "tie"
+        chosen,
         ratings: { quality: qStars, creativity: cStars, coherence: coStars },
         comment: ($("abComment").value || "").trim(),
         file: statFile.textContent || "",
@@ -1576,7 +2027,7 @@ UI
       saveAB(list);
 
       setOk("Saved A/B result. Evidence plots updated.");
-      abActive = false; // end test
+      abActive = false;
       abId = null; mapA=null; mapB=null;
       refreshABUI();
       renderABTable();
@@ -1607,7 +2058,8 @@ UI
       const header = [
         "ts","abId","pref","chosen","mapA","mapB",
         "quality","creativity","coherence",
-        "style","strength","swing","humanize","scale","keyOverride","barsize",
+        "style","strength","swing","humanize","mode","keyOverride","barsize",
+        "lockToScale","preferPentatonic",
         "file","bpm","keyGuess","comment"
       ];
 
@@ -1617,7 +2069,8 @@ UI
           r.ts, r.abId, r.pref, r.chosen, r.mapping?.A, r.mapping?.B,
           r.ratings?.quality, r.ratings?.creativity, r.ratings?.coherence,
           r.condition?.style, r.condition?.strength, r.condition?.swing, r.condition?.humanize,
-          r.condition?.scale, r.condition?.keyOverride, r.condition?.barsize,
+          r.condition?.mode, r.condition?.keyOverride, r.condition?.barsize,
+          r.condition?.lockToScale, r.condition?.preferPentatonic,
           r.file, r.bpm, r.keyGuess, r.comment
         ]);
       }
@@ -1635,7 +2088,7 @@ UI
       const view = list.slice(-10).reverse();
       body.innerHTML = view.map(r => {
         const winner = r.chosen === "tie" ? "Tie" : (r.chosen === "remix" ? "Remix" : "Original");
-        const cond = `${r.condition?.style || "—"} • strength ${Number(r.condition?.strength ?? 0).toFixed(2)} • bpm ${Math.round(r.bpm || 0)}`;
+        const cond = `${r.condition?.style || "—"} • ${r.condition?.mode || "—"} • strength ${Number(r.condition?.strength ?? 0).toFixed(2)} • bpm ${Math.round(r.bpm || 0)}`;
         return `
           <tr>
             <td class="tiny">${fmtWhen(r.ts)}</td>
@@ -1673,7 +2126,7 @@ UI
     function barChart(canvas, title, labels, values, options={}){
       const { ctx, w, h } = fitCanvas(canvas, 220);
       ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "rgba(5,5,12,0.82)";
+      ctx.fillStyle = "rgba(6,6,16,0.82)";
       ctx.fillRect(0,0,w,h);
 
       const padL = 46, padR = 12, padT = 30, padB = 44;
@@ -1689,7 +2142,6 @@ UI
       const gap = 10;
       const barW = Math.max(10, (innerW - gap*(n-1)) / n);
 
-      // axes
       ctx.strokeStyle = "rgba(255,255,255,0.10)";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1698,7 +2150,6 @@ UI
       ctx.lineTo(padL + innerW, padT + innerH);
       ctx.stroke();
 
-      // y ticks (0..max)
       ctx.fillStyle = "rgba(238,240,255,0.60)";
       ctx.font = "11px system-ui, -apple-system, Segoe UI, Roboto";
       for(let t=0; t<=2; t++){
@@ -1712,19 +2163,17 @@ UI
         ctx.stroke();
       }
 
-      // bars
       for(let i=0;i<n;i++){
         const v = values[i];
         const bh = (v/maxV)*innerH;
         const x = padL + i*(barW+gap);
         const y = padT + innerH - bh;
 
-        ctx.fillStyle = options.alt && options.alt[i] ? "rgba(120,255,180,0.30)" : "rgba(120,140,255,0.42)";
-        ctx.strokeStyle = options.alt && options.alt[i] ? "rgba(120,255,180,0.70)" : "rgba(120,140,255,0.85)";
+        ctx.fillStyle = options.alt && options.alt[i] ? "rgba(120,255,200,0.26)" : "rgba(200,120,255,0.30)";
+        ctx.strokeStyle = options.alt && options.alt[i] ? "rgba(120,255,200,0.70)" : "rgba(200,120,255,0.78)";
         roundRect(ctx, x, y, barW, bh, 10);
         ctx.fill(); ctx.stroke();
 
-        // x labels
         ctx.save();
         ctx.translate(x + barW/2, padT + innerH + 18);
         ctx.rotate(-0.25);
@@ -1740,7 +2189,6 @@ UI
       const list = loadAB();
       $("nTests").textContent = String(list.length);
 
-      // preference counts (exclude ties for win rate)
       const remixWins = list.filter(r => r.chosen === "remix").length;
       const origWins  = list.filter(r => r.chosen === "orig").length;
       const ties      = list.filter(r => r.chosen === "tie").length;
@@ -1757,7 +2205,6 @@ UI
         { alt: [true,false,false] }
       );
 
-      // averages by winner
       function avgFor(winner, key){
         const rows = list.filter(r => r.chosen === winner);
         if (!rows.length) return 0;
@@ -1778,7 +2225,6 @@ UI
         { alt: [true,false,true,false,true,false] }
       );
 
-      // style win-rate (remix wins / (wins))
       const styles = ["lofi","edm","baroque"];
       const styleLabels = ["Lofi","EDM","Baroque"];
       const styleRates = styles.map(s => {
@@ -1789,7 +2235,6 @@ UI
       });
       barChart($("plotStyle"), "Remix win-rate by style", styleLabels, styleRates, { percent:true, alt:[true,true,true] });
 
-      // strength buckets
       const buckets = ["0.0–0.25","0.25–0.5","0.5–0.75","0.75–1.0"];
       const bucketRates = buckets.map((_,i)=>{
         const lo = i*0.25;
@@ -1804,7 +2249,6 @@ UI
       });
       barChart($("plotStrength"), "Remix win-rate by strength bucket", buckets, bucketRates, { percent:true, alt:[true,true,true,true] });
 
-      // best style/strength for template
       const stylePairs = styleLabels.map((lab,i)=>({lab, rate: styleRates[i]})).sort((a,b)=>b.rate-a.rate);
       $("bestStyle").textContent = stylePairs[0]?.lab || "—";
       const bestBucketIdx = bucketRates.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v)[0]?.i ?? null;
@@ -1824,47 +2268,15 @@ UI
     }
     updateAll();
 
-    // A/B availability changes after remix
-    const oldUpdateReady = updateReadyState;
-    updateReadyState = function(){
-      oldUpdateReady();
-      $("abStartBtn").disabled = !(midiIn && midiOut);
-    };
+    // Ensure AB enabled after remix
+    $("remixBtn").addEventListener("click", ()=>{ setTimeout(()=>{ updateReadyState(); refreshABUI(); }, 0); });
 
-    // ------------------------------------------------------------
-    // Wire play buttons and update A/B button availability
-    // ------------------------------------------------------------
-    const origPlay = $("playOrigBtn");
-    const remixPlay = $("playRemixBtn");
-    const remixBtn = $("remixBtn");
-
-    // After remix created, enable A/B start
-    const origRemixBtnHandler = remixBtn.onclick;
-    // (We already set remixBtn handler above; just ensure state refresh)
-    remixBtn.addEventListener("click", ()=>{ setTimeout(()=>{ updateReadyState(); refreshABUI(); }, 0); });
-
-    // ensure AB UI always up to date
-    function postChange(){
-      updateReadyState();
-      refreshABUI();
-      renderABTable();
-      renderEvidence();
-    }
-
-    // Monitor settings changes that affect evidence grouping
-    ["style","barsize","strength","swing","humanize","keyOverride","scaleOverride"].forEach(id=>{
+    // Monitor slider labels
+    ["style","barsize","strength","swing","humanize","keyOverride","modeOverride","lockToScale","preferPentatonic"].forEach(id=>{
       $(id).addEventListener("change", ()=>{ syncSliders(); });
       $(id).addEventListener("input", ()=>{ syncSliders(); });
-    });
-
-    // ------------------------------------------------------------
-    // Small polish: prompt to run A/B after remix
-    // ------------------------------------------------------------
-    $("remixBtn").addEventListener("click", ()=>{
-      if (midiIn && midiOut){
-        $("abStartBtn").disabled = false;
-      }
     });
   </script>
 </body>
 </html>
+
