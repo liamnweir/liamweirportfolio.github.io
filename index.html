@@ -571,12 +571,46 @@
       background: rgba(15,16,35,0.62);
       backdrop-filter: blur(12px);
       box-shadow: 0 18px 55px rgba(0,0,0,0.35);
-      overflow: hidden;
-      opacity: 0.90;          /* “a little faded” */
+      overflow: visible;       /* allow toggle button to sit outside */
+      opacity: 0.90;           /* “a little faded” */
+      transition: transform .22s ease, opacity .22s ease;
+      will-change: transform;
     }
     body.light .sc-sticky{
       background: rgba(255,255,255,0.66);
       opacity: 0.94;
+    }
+
+    /* Slide-off state: hide the widget but keep toggle visible */
+    .sc-sticky.is-hidden{
+      transform: translateX(calc(100% + 18px));
+    }
+
+    /* NEW: toggle arrow button */
+    .sc-toggle{
+      position:absolute;
+      top: 14px;
+      left: -44px; /* sits to the left so it's still visible when panel slides right */
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      font-weight: 950;
+      user-select:none;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      backdrop-filter: blur(10px);
+    }
+    body.light .sc-toggle{ background: rgba(10,10,20,0.04); }
+    .sc-toggle:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+
+    /* In hidden mode, flip arrow to indicate "open" */
+    .sc-sticky.is-hidden .sc-toggle{
+      left: -44px;
     }
 
     /* NEW: small widget title */
@@ -586,6 +620,9 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      overflow:hidden;
     }
     .sc-head-title{
       font-weight: 950;
@@ -607,6 +644,8 @@
       align-items:center;
       gap:10px;
       padding: 10px 10px 8px;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
     }
 
     .sc-title{
@@ -738,6 +777,8 @@
     @media (max-width: 520px){
       .sc-sticky{ top: 78px; right: 10px; }
       .sc-btn{ width: 36px; height: 36px; border-radius: 12px; }
+      .sc-toggle{ left: -42px; }
+      .sc-sticky.is-hidden{ transform: translateX(calc(100% + 12px)); }
     }
   </style>
 </head>
@@ -770,7 +811,10 @@
        This code tries to autoplay immediately; if blocked, it shows a “Tap to start” hint.
        ========================== -->
   <div class="sc-sticky" id="scSticky" aria-label="SoundCloud player">
-    <!-- NEW: Widget title -->
+    <!-- NEW: hide/show arrow -->
+    <button class="sc-toggle" id="scToggle" type="button" aria-label="Hide music player">›</button>
+
+    <!-- Widget title -->
     <div class="sc-head" aria-hidden="true">
       <div class="sc-head-title">My Production</div>
       <div class="sc-head-line"></div>
@@ -1078,6 +1122,9 @@
     // ==========================
     // Sticky SoundCloud Player
     // ==========================
+    const scSticky = document.getElementById('scSticky');
+    const scToggle = document.getElementById('scToggle');
+
     const scWidgetEl = document.getElementById('scWidget');
     const scTrackLink = document.getElementById('scTrackLink');
     const scStatus = document.getElementById('scStatus');
@@ -1090,6 +1137,8 @@
     const scHintBtn = document.getElementById('scHintBtn');
 
     const VOL_KEY = "liam_sc_vol_v1";
+    const SC_HIDDEN_KEY = "liam_sc_hidden_v1";
+
     let scIsPlaying = false;
     let scReady = false;
 
@@ -1119,11 +1168,25 @@
       scVol.value = String(lead);
       scVolVal.textContent = `${lead}%`;
       if(scReady){
-        // SoundCloud widget volume is 0..100
-        widget.setVolume(lead);
+        widget.setVolume(lead); // SoundCloud volume is 0..100
       }
       localStorage.setItem(VOL_KEY, String(lead));
     }
+
+    // Hide/show toggle
+    function setHidden(hidden){
+      scSticky.classList.toggle('is-hidden', hidden);
+      scToggle.textContent = hidden ? '‹' : '›';
+      scToggle.setAttribute('aria-label', hidden ? 'Show music player' : 'Hide music player');
+      localStorage.setItem(SC_HIDDEN_KEY, hidden ? '1' : '0');
+    }
+    // restore last state
+    setHidden(localStorage.getItem(SC_HIDDEN_KEY) === '1');
+
+    scToggle.addEventListener('click', () => {
+      const hiddenNow = scSticky.classList.contains('is-hidden');
+      setHidden(!hiddenNow);
+    });
 
     // Initialize SoundCloud widget
     const widget = SC.Widget(scWidgetEl);
@@ -1169,13 +1232,8 @@
     function tryAutoplay(){
       if(!scReady) return;
 
-      // Strategy:
-      // 1) Attempt to play.
-      // 2) If still not playing shortly after, show hint.
       widget.play();
 
-      // If autoplay is blocked, PLAY event won't fire.
-      // Check shortly after and show the “tap to start” hint.
       setTimeout(() => {
         widget.isPaused((paused) => {
           if(paused){
