@@ -579,6 +579,29 @@
       opacity: 0.94;
     }
 
+    /* NEW: small widget title */
+    .sc-head{
+      padding: 10px 12px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .sc-head-title{
+      font-weight: 950;
+      letter-spacing: 0.2px;
+      font-size: 0.92rem;
+      color: var(--text);
+      opacity: 0.95;
+      user-select:none;
+    }
+    .sc-head-line{
+      flex: 1 1 auto;
+      height: 1px;
+      background: var(--line);
+      opacity: 0.9;
+    }
+
     .sc-row{
       display:flex;
       align-items:center;
@@ -747,6 +770,12 @@
        This code tries to autoplay immediately; if blocked, it shows a “Tap to start” hint.
        ========================== -->
   <div class="sc-sticky" id="scSticky" aria-label="SoundCloud player">
+    <!-- NEW: Widget title -->
+    <div class="sc-head" aria-hidden="true">
+      <div class="sc-head-title">My Production</div>
+      <div class="sc-head-line"></div>
+    </div>
+
     <div class="sc-row">
       <div class="sc-title">
         <a id="scTrackLink" href="https://soundcloud.com/liam-sc-weir" target="_blank" rel="noopener">Loading track…</a>
