@@ -390,6 +390,13 @@
               </select>
             </div>
 
+            <!-- ✅ Stepwise Bias control (re-added) -->
+            <div class="field" style="min-width:220px">
+              <div class="label">Stepwise bias: <span id="stepBiasVal">65</span>%</div>
+              <input id="stepBias" type="range" min="0" max="100" value="65" />
+              <div class="tiny" style="margin-top:6px">Higher = more 1–2 semitone steps, fewer big leaps (affects generation only)</div>
+            </div>
+
             <div class="field" style="min-width:220px">
               <div class="label">Drum track</div>
               <button class="btn" id="drumBtn" type="button" aria-pressed="false">Drums: Off</button>
@@ -612,6 +619,8 @@
     const tempoEl = $("tempo"), tempoVal = $("tempoVal");
     const tempoHint = $("tempoHint");
     const lenEl = $("length"), instEl = $("inst");
+    const stepBiasEl = $("stepBias"), stepBiasVal = $("stepBiasVal");
+
     const drumBtn = $("drumBtn");
     const chordBtn = $("chordBtn");
 
@@ -628,6 +637,11 @@
 
     const starsWrap = $("stars"), commentEl = $("comment"), saveBtn = $("saveBtn"), csvBtn = $("csvBtn"), clearBtn = $("clearBtn"), ratingsBody = $("ratingsBody");
     const plot1 = $("plot1"), plot2 = $("plot2"), plot3 = $("plot3");
+
+    // Stepwise bias UI (updates label live; affects generation only)
+    stepBiasEl.addEventListener("input", () => {
+      stepBiasVal.textContent = stepBiasEl.value;
+    });
 
     // -------------------------
     // Tempo gating (ONLY editable when stopped)
@@ -896,6 +910,7 @@
       }, events);
 
       drumPart.start(0);
+      drumPart.loop = false;
     }
 
     // -------------------------
@@ -1039,7 +1054,7 @@
     }
 
     // -------------------------
-    // Musical melody generation (theory-based) WITHOUT bias
+    // Musical melody generation (theory-based) WITH stepwise bias
     // -------------------------
     function nearestMidiForPC(pc, aroundMidi){
       const base = aroundMidi - (aroundMidi % 12) + pc;
@@ -1122,7 +1137,7 @@
       return out;
     }
 
-    function generateMelodyTheory({key, mode, length, section}){
+    function generateMelodyTheory({key, mode, length, section, stepBiasPct}){
       const rootPC = NOTE[key];
       const pcsArr = scalePCs(rootPC, mode);
       const scaleSet = new Set(pcsArr);
@@ -1150,13 +1165,33 @@
       let t = 0;
       let lastInterval = 0;
 
+      const stepBias = clamp(Number(stepBiasPct) / 100, 0, 1);
+
       function chordAtTime(tBeats){
         const deg = degreeAtTime(prog, tBeats, totalBeats);
         const triad = triadForDegree(rootPC, mode, deg);
         return chordTonesMidi(triad, cur);
       }
 
-      // NO stepwise-bias: just musical weighting
+      // ✅ Stepwise bias that ACTUALLY changes selection probabilities:
+      // - boosts 1–2 semitone moves
+      // - lightly boosts 3–5 semitone moves
+      // - penalizes larger leaps as bias increases
+      function stepwiseMultiplier(dist){
+        if(stepBias <= 0) return 1;
+
+        // Strong boost for 1–2 semitone steps
+        if(dist <= 2) return 1 + stepBias * 2.6;
+
+        // Medium boost for 3–5 semitone moves (keeps some contour variety)
+        if(dist <= 5) return 1 + stepBias * 0.9;
+
+        // For bigger leaps: progressively penalize with bias
+        // (keeps occasional leaps when bias isn't maxed)
+        const penalty = 1 + stepBias * (dist / 2.8);
+        return 1 / penalty;
+      }
+
       function chooseNext(chordMidis, strong){
         const scalePool = scaleMidis;
         const chordPool = chordMidis;
@@ -1170,18 +1205,27 @@
         const weighted = pool.map(m => {
           const interval = m - cur;
           const dist = Math.abs(interval);
+
+          // Base proximity weight
           let w = 1 / (1 + dist);
 
+          // ✅ Apply stepwise bias multiplier
+          w *= stepwiseMultiplier(dist);
+
+          // If we just jumped big, prefer rebound by step (still compatible with bias)
           if(Math.abs(lastInterval) >= 6){
             const opposite = (lastInterval > 0 && interval < 0) || (lastInterval < 0 && interval > 0);
             if(opposite && dist <= 2) w *= 2.2;
           }
 
+          // keep register centered-ish
           const center = (section === "chorus") ? (tonicMidi + 7) : (tonicMidi + 3);
           const drift = Math.abs(m - center);
           w *= 1 / (1 + drift/10);
 
+          // chord-tone emphasis on strong beats
           if(strong && chordPool.includes(m)) w *= 2.2;
+
           return {item: boundedRange(m, section), w};
         });
 
@@ -1241,7 +1285,13 @@
       notes.push({midi: penult, durBeats: durs[length-2]});
       notes.push({midi: boundedRange(nearestMidiForPC(rootPC, endMidi), section), durBeats: durs[length-1]});
 
-      return { notes, prog, cadence: useLead ? "Leading tone → Tonic" : "Dominant → Tonic", totalBeats };
+      return {
+        notes,
+        prog,
+        cadence: useLead ? "Leading tone → Tonic" : "Dominant → Tonic",
+        totalBeats,
+        stepBiasPct: clamp(Number(stepBiasPct)||0, 0, 100)
+      };
     }
 
     function buildChordEvents({key, mode, prog, totalBeats}){
@@ -1487,7 +1537,7 @@
     // -------------------------
     // Ratings + plots
     // -------------------------
-    const RATINGS_KEY = "liam_ai_music_ratings_v6_no_bias";
+    const RATINGS_KEY = "liam_ai_music_ratings_v7_step_bias";
 
     function loadRatings(){
       try{ return JSON.parse(localStorage.getItem(RATINGS_KEY) || "[]"); }
@@ -1522,7 +1572,7 @@
       ratingsBody.innerHTML = view.map(r => `
         <tr>
           <td>${"★".repeat(r.stars)}${"☆".repeat(5-r.stars)}</td>
-          <td>${r.key} ${r.mode.replaceAll("_"," ")} • ${r.section} • tempo ${r.bpm} • chords ${r.chordsOn?"on":"off"} • drums ${r.drumsOn?"on":"off"} • ${r.prog}</td>
+          <td>${r.key} ${r.mode.replaceAll("_"," ")} • ${r.section} • tempo ${r.bpm} • stepBias ${r.stepBiasPct}% • chords ${r.chordsOn?"on":"off"} • drums ${r.drumsOn?"on":"off"} • ${r.prog}</td>
           <td>${r.length}</td>
         </tr>
       `).join("");
@@ -1546,6 +1596,7 @@
       const section = sectionEl.value;
       const bpm = Number(tempoEl.value);
       const length = Number(lenEl.value);
+      const stepBiasPct = Number(stepBiasEl.value);
 
       const m = metrics(phrase, key, mode);
       const entry = {
@@ -1553,6 +1604,7 @@
         stars: currentStars,
         comment: (commentEl.value || "").trim(),
         key, mode, section, bpm, length,
+        stepBiasPct,
         drumsOn, chordsOn,
         prog: formatProg(currentProg || []),
         cadence: currentCadence,
@@ -1574,7 +1626,7 @@
       const list = loadRatings();
       if(!list.length){ setWarn("No ratings to export yet."); return; }
 
-      const header = ["ts","stars","comment","key","mode","section","bpm","length","drumsOn","chordsOn","progression","cadence","repetition","stepwise","range","tonal"];
+      const header = ["ts","stars","comment","key","mode","section","bpm","length","stepBiasPct","drumsOn","chordsOn","progression","cadence","repetition","stepwise","range","tonal"];
       const esc = (s) => `"${String(s ?? "").replaceAll('"','""')}"`;
 
       const rows = list.map(r => ([
@@ -1586,6 +1638,7 @@
         esc(r.section),
         r.bpm,
         r.length,
+        r.stepBiasPct ?? "",
         r.drumsOn ? 1 : 0,
         r.chordsOn ? 1 : 0,
         esc(r.prog),
@@ -1736,9 +1789,10 @@
       const mode = modeEl.value;
       const section = sectionEl.value;
       const length = Number(lenEl.value);
+      const stepBiasPct = Number(stepBiasEl.value);
 
       try{
-        const out = generateMelodyTheory({key, mode, length, section});
+        const out = generateMelodyTheory({key, mode, length, section, stepBiasPct});
         phrase = out.notes;
         currentProg = out.prog;
         currentCadence = out.cadence;
@@ -1816,6 +1870,10 @@
     renderChips(null);
     drawRoll(null);
     tempoVal.textContent = tempoEl.value;
+    stepBiasVal.textContent = stepBiasEl.value;
+
+    function renderDrumBtn(){ renderToggleBtn(drumBtn, drumsOn, "Drums: On", "Drums: Off"); }
+    function renderChordBtn(){ renderToggleBtn(chordBtn, chordsOn, "Chords: On", "Chords: Off"); }
     renderDrumBtn();
     renderChordBtn();
 
@@ -1824,6 +1882,7 @@
   </script>
 </body>
 </html>
+
 
 
 
