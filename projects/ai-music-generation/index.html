@@ -539,6 +539,15 @@
       return "8n";
     }
 
+    // IMPORTANT: schedule event START TIMES in ticks so BPM actually changes playback speed.
+    function beatsToTicks(beats){
+      const ppq = Tone.Transport.PPQ || 192; // default is 192
+      return Math.round(Number(beats) * ppq);
+    }
+    function ticksTime(ticks){
+      return `${Math.max(0, Math.round(ticks))}i`; // "i" = ticks in Tone.js
+    }
+
     // -------------------------
     // Theory
     // -------------------------
@@ -634,10 +643,10 @@
     function applyTempo(bpm){
       const v = Number(bpm);
       if(!Number.isFinite(v)) return;
-      Tone.Transport.bpm.value = v;
+      Tone.Transport.bpm.value = v; // apply immediately
     }
 
-    // Only update the displayed value while dragging; only APPLY to Tone when not playing
+    // Update display while dragging; apply only when NOT playing.
     tempoEl.addEventListener("input", () => {
       tempoVal.textContent = tempoEl.value;
       if(Tone.Transport.state !== "started"){
@@ -845,32 +854,34 @@
       stopBtn.disabled = true;
     }
 
-    // Drums scheduled on Transport grid using musical durations
+    // -------------------------
+    // Drums scheduled in TICKS (so BPM changes actually change spacing)
+    // -------------------------
     function scheduleDrums(totalBeats){
       if(!drumsOn) return;
 
       if(drumPart){ try{drumPart.stop(); drumPart.dispose();}catch(e){} drumPart=null; }
 
-      const step = 0.25; // 16th note in beats
-      const stepsTotal = Math.max(1, Math.round(totalBeats / step));
+      const stepBeats = 0.25; // 16th note in beats
+      const stepsTotal = Math.max(1, Math.round(totalBeats / stepBeats));
       const events = [];
 
       for(let s=0; s<stepsTotal; s++){
-        const tBeats = s * step;
+        const tBeats = s * stepBeats;
         const stepInBar = s % 16;
 
         if(stepInBar === 0 || stepInBar === 8){
-          events.push({ time: tBeats, type:"kick", vel: 0.95 });
+          events.push({ time: ticksTime(beatsToTicks(tBeats)), type:"kick", vel: 0.95 });
         }
         if(stepInBar === 4 || stepInBar === 12){
-          events.push({ time: tBeats, type:"snare", vel: 0.75 });
+          events.push({ time: ticksTime(beatsToTicks(tBeats)), type:"snare", vel: 0.75 });
         }
         if(stepInBar % 2 === 0){
           const vel = (stepInBar === 0 || stepInBar === 8) ? 0.35 : 0.28;
-          events.push({ time: tBeats, type:"hat", vel });
+          events.push({ time: ticksTime(beatsToTicks(tBeats)), type:"hat", vel });
         }
         if(stepInBar === 10 && Math.random() < 0.35){
-          events.push({ time: tBeats, type:"kick", vel: 0.65 });
+          events.push({ time: ticksTime(beatsToTicks(tBeats)), type:"kick", vel: 0.65 });
         }
       }
 
@@ -887,6 +898,11 @@
       drumPart.start(0);
     }
 
+    // -------------------------
+    // Playback scheduling (ALL event times in TICKS)
+    // -------------------------
+    function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
+
     function schedulePlayback(notes){
       Tone.Transport.stop();
       Tone.Transport.cancel();
@@ -896,11 +912,18 @@
       setTempoUIEnabled(false);
       applyTempo(tempoEl.value);
 
-      // Melody events in beats, durations as musical note values
-      let t = 0;
+      const totalBeats = currentTotalBeats || sumBeats(notes);
+      const totalTicks = beatsToTicks(totalBeats);
+
+      // Melody events (tick-based start times so tempo changes actually change spacing)
+      let tBeats = 0;
       const melEvents = notes.map(n => {
-        const evt = { time: t, midi: clamp(n.midi, 24, 108), durBeats: Number(n.durBeats) };
-        t += evt.durBeats;
+        const evt = {
+          time: ticksTime(beatsToTicks(tBeats)),
+          midi: clamp(n.midi, 24, 108),
+          durBeats: Number(n.durBeats)
+        };
+        tBeats += evt.durBeats;
         return evt;
       });
 
@@ -911,20 +934,29 @@
       }, melEvents);
       melodyPart.start(0);
 
-      // Chords each bar (optional)
+      // Chords each bar (optional) — also tick-based times
       if(chordsOn){
-        const chordEvents = currentChordEvents || [];
+        const chordEvents = (currentChordEvents || []).map(ev => ({
+          time: ticksTime(beatsToTicks(ev.time)), // ev.time is in beats
+          midis: ev.midis
+        }));
+
         chordPart = new Tone.Part((time, v) => {
           const freqs = v.midis.map(m => Tone.Frequency(clamp(m, 24, 108), "midi"));
           chordSynth.triggerAttackRelease(freqs, "1m", time, 0.55);
-        }, chordEvents.map(ev => ({ time: ev.time, midis: ev.midis })));
+        }, chordEvents);
         chordPart.start(0);
       } else {
         chordPart = null;
       }
 
       // Drums (optional)
-      scheduleDrums(currentTotalBeats || sumBeats(notes));
+      scheduleDrums(totalBeats);
+
+      // Auto-stop at end so tempo unlocks even if user doesn't press Stop
+      Tone.Transport.scheduleOnce(() => {
+        stopPlayback();
+      }, ticksTime(totalTicks));
 
       Tone.Transport.start("+0.02");
     }
@@ -1227,7 +1259,7 @@
           .map(m => m <= 36 ? m+12 : m)
           .sort((a,b)=>a-b);
 
-        events.push({ time: b*4, midis });
+        events.push({ time: b*4, midis }); // time in beats (converted to ticks later)
       }
       return events;
     }
@@ -1268,8 +1300,6 @@
     // -------------------------
     // Melody chips
     // -------------------------
-    function sumBeats(notes){ return notes.reduce((a,n)=>a+n.durBeats, 0); }
-
     function renderChips(notes){
       if(!notes || !notes.length){
         chipsEl.innerHTML = `<div class="tiny">Click Generate to create a melody.</div>`;
@@ -1749,7 +1779,11 @@
       setWarn(null);
       try{
         await ensureAudio();
-        stopPlayback(); // ensures transport is reset + tempo enabled
+
+        // Reset transport (also re-enables tempo), then immediately lock + schedule with current BPM
+        stopPlayback();
+        applyTempo(tempoEl.value);
+
         schedulePlayback(phrase);
         playBtn.disabled = true;
         stopBtn.disabled = false;
@@ -1785,11 +1819,12 @@
     renderDrumBtn();
     renderChordBtn();
 
-    // ensure tempo can be edited on load
     setTempoUIEnabled(true);
+    applyTempo(tempoEl.value);
   </script>
 </body>
 </html>
+
 
 
 
