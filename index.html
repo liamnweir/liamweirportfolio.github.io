@@ -556,6 +556,166 @@
       color: var(--muted2);
       font-weight:800;
     }
+
+    /* ==========================
+       SoundCloud Sticky Player
+       ========================== */
+    .sc-sticky{
+      position: fixed;
+      top: 84px;              /* below nav */
+      right: 16px;
+      z-index: 70;
+      width: min(380px, calc(100vw - 32px));
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(15,16,35,0.62);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+      overflow: hidden;
+      opacity: 0.90;          /* “a little faded” */
+    }
+    body.light .sc-sticky{
+      background: rgba(255,255,255,0.66);
+      opacity: 0.94;
+    }
+
+    .sc-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 10px 8px;
+    }
+
+    .sc-title{
+      flex: 1 1 auto;
+      min-width: 0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .sc-title a{
+      text-decoration:none;
+      font-weight: 900;
+      font-size: 0.92rem;
+      line-height: 1.15;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sc-sub{
+      font-size: 0.78rem;
+      color: var(--muted2);
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.9;
+    }
+
+    .sc-controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex: 0 0 auto;
+    }
+
+    .sc-btn{
+      appearance:none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 900;
+      display:grid;
+      place-items:center;
+      user-select:none;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+    }
+    body.light .sc-btn{ background: rgba(10,10,20,0.04); }
+    .sc-btn:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+
+    .sc-open{
+      flex: 0 0 auto;
+      text-decoration:none;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(124,140,255,0.22), rgba(125,255,207,0.10));
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .sc-open:hover{ transform: translateY(-1px); filter: brightness(1.08); }
+
+    /* Volume row */
+    .sc-vol{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 0 12px 12px;
+    }
+    .sc-vol label{
+      font-size: 0.78rem;
+      font-weight: 900;
+      color: var(--muted2);
+      letter-spacing: 0.2px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .sc-vol input[type="range"]{
+      width:100%;
+      accent-color: var(--accent2);
+    }
+    .sc-vol .sc-volval{
+      width: 42px;
+      text-align:right;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.78rem;
+      font-weight: 900;
+      color: var(--muted2);
+    }
+
+    /* keep the actual widget “present” but visually hidden */
+    .sc-iframe{
+      height: 1px;
+      width: 1px;
+      opacity: 0.01;
+      pointer-events: none;
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    /* Autoplay hint banner (only shown if autoplay blocked) */
+    .sc-autoplayHint{
+      display:none;
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted2);
+      font-weight: 900;
+      font-size: 0.86rem;
+    }
+    .sc-autoplayHint button{
+      margin-left: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight: 900;
+    }
+
+    @media (max-width: 520px){
+      .sc-sticky{ top: 78px; right: 10px; }
+      .sc-btn{ width: 36px; height: 36px; border-radius: 12px; }
+    }
   </style>
 </head>
 
@@ -580,6 +740,52 @@
       </button>
     </div>
   </nav>
+
+  <!-- ==========================
+       Sticky SoundCloud Player
+       NOTE: True autoplay with sound is often blocked by browsers.
+       This code tries to autoplay immediately; if blocked, it shows a “Tap to start” hint.
+       ========================== -->
+  <div class="sc-sticky" id="scSticky" aria-label="SoundCloud player">
+    <div class="sc-row">
+      <div class="sc-title">
+        <a id="scTrackLink" href="https://soundcloud.com/liam-sc-weir" target="_blank" rel="noopener">Loading track…</a>
+        <div class="sc-sub" id="scStatus">SoundCloud • loading…</div>
+      </div>
+
+      <div class="sc-controls" aria-label="Playback controls">
+        <button class="sc-btn" id="scPrev" type="button" aria-label="Rewind / Previous">⏮</button>
+        <button class="sc-btn" id="scPlay" type="button" aria-label="Play / Pause">▶</button>
+        <button class="sc-btn" id="scNext" type="button" aria-label="Skip / Next">⏭</button>
+      </div>
+
+      <a class="sc-open" href="https://soundcloud.com/liam-sc-weir" target="_blank" rel="noopener" aria-label="Open my SoundCloud">
+        SoundCloud ↗
+      </a>
+    </div>
+
+    <div class="sc-vol" aria-label="Volume control">
+      <label for="scVol">VOL</label>
+      <input id="scVol" type="range" min="0" max="100" value="65" />
+      <div class="sc-volval" id="scVolVal">65%</div>
+    </div>
+
+    <div class="sc-autoplayHint" id="scHint">
+      Autoplay was blocked. Tap play to start.
+      <button id="scHintBtn" type="button">Play</button>
+    </div>
+
+    <!-- SoundCloud Widget (hidden) -->
+    <iframe
+      id="scWidget"
+      class="sc-iframe"
+      title="SoundCloud widget"
+      allow="autoplay"
+      scrolling="no"
+      frameborder="no"
+      src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fliam-sc-weir&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false">
+    </iframe>
+  </div>
 
   <header>
     <div class="hero-wrap">
@@ -789,7 +995,11 @@
 
   <a class="sticky-cta" href="resume.html" aria-label="View my resume">View Resume</a>
 
+  <!-- SoundCloud Widget API -->
+  <script src="https://w.soundcloud.com/player/api.js"></script>
+
   <script>
+    // Theme toggle
     const themeBtn = document.getElementById('themeBtn');
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'light') document.body.classList.add('light');
@@ -799,12 +1009,14 @@
       localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
     });
 
+    // Reveal animation
     const revealEls = Array.from(document.querySelectorAll('.reveal'));
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
     }, { threshold: 0.12 });
     revealEls.forEach(el => io.observe(el));
 
+    // Project filters
     const search = document.getElementById('search');
     const chips = Array.from(document.querySelectorAll('.chip'));
     const cards = Array.from(document.querySelectorAll('#projectGrid .card'));
@@ -834,6 +1046,162 @@
 
     search.addEventListener('input', applyFilters);
 
+    // ==========================
+    // Sticky SoundCloud Player
+    // ==========================
+    const scWidgetEl = document.getElementById('scWidget');
+    const scTrackLink = document.getElementById('scTrackLink');
+    const scStatus = document.getElementById('scStatus');
+    const scPrev = document.getElementById('scPrev');
+    const scPlay = document.getElementById('scPlay');
+    const scNext = document.getElementById('scNext');
+    const scVol = document.getElementById('scVol');
+    const scVolVal = document.getElementById('scVolVal');
+    const scHint = document.getElementById('scHint');
+    const scHintBtn = document.getElementById('scHintBtn');
+
+    const VOL_KEY = "liam_sc_vol_v1";
+    let scIsPlaying = false;
+    let scReady = false;
+
+    function setPlayIcon(){
+      scPlay.textContent = scIsPlaying ? '⏸' : '▶';
+      scStatus.textContent = scIsPlaying ? 'Now playing' : 'Paused';
+    }
+
+    function setTrackTitle(title, permalink){
+      scTrackLink.textContent = title || 'Liam Weir on SoundCloud';
+      scTrackLink.href = permalink || 'https://soundcloud.com/liam-sc-weir';
+    }
+
+    function setHint(show){
+      scHint.style.display = show ? 'block' : 'none';
+      if(show){
+        scStatus.textContent = 'Autoplay blocked • tap ▶';
+      }
+    }
+
+    function loadVolume(){
+      const v = Number(localStorage.getItem(VOL_KEY));
+      return Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : 65;
+    }
+    function applyVolume(v){
+      const lead = Math.max(0, Math.min(100, Math.round(v)));
+      scVol.value = String(lead);
+      scVolVal.textContent = `${lead}%`;
+      if(scReady){
+        // SoundCloud widget volume is 0..100
+        widget.setVolume(lead);
+      }
+      localStorage.setItem(VOL_KEY, String(lead));
+    }
+
+    // Initialize SoundCloud widget
+    const widget = SC.Widget(scWidgetEl);
+
+    widget.bind(SC.Widget.Events.READY, () => {
+      scReady = true;
+
+      // Persisted volume
+      applyVolume(loadVolume());
+
+      // Track name
+      widget.getCurrentSound((s) => {
+        if (s && s.title) setTrackTitle(s.title, s.permalink_url);
+        else setTrackTitle('Liam Weir on SoundCloud', 'https://soundcloud.com/liam-sc-weir');
+      });
+
+      // Try autoplay immediately
+      // NOTE: Many browsers block autoplay with sound unless user interacted.
+      tryAutoplay();
+
+      setPlayIcon();
+    });
+
+    widget.bind(SC.Widget.Events.PLAY, () => {
+      scIsPlaying = true;
+      setPlayIcon();
+      setHint(false);
+      widget.getCurrentSound((s) => {
+        if (s && s.title) setTrackTitle(s.title, s.permalink_url);
+      });
+    });
+
+    widget.bind(SC.Widget.Events.PAUSE, () => {
+      scIsPlaying = false;
+      setPlayIcon();
+    });
+
+    widget.bind(SC.Widget.Events.FINISH, () => {
+      scIsPlaying = false;
+      setPlayIcon();
+    });
+
+    function tryAutoplay(){
+      if(!scReady) return;
+
+      // Strategy:
+      // 1) Attempt to play.
+      // 2) If still not playing shortly after, show hint.
+      widget.play();
+
+      // If autoplay is blocked, PLAY event won't fire.
+      // Check shortly after and show the “tap to start” hint.
+      setTimeout(() => {
+        widget.isPaused((paused) => {
+          if(paused){
+            setHint(true);
+            scIsPlaying = false;
+            setPlayIcon();
+          }else{
+            setHint(false);
+          }
+        });
+      }, 700);
+    }
+
+    // Controls
+    scPrev.addEventListener('click', () => {
+      if (!scReady) return;
+      widget.prev();
+    });
+
+    scNext.addEventListener('click', () => {
+      if (!scReady) return;
+      widget.next();
+    });
+
+    scPlay.addEventListener('click', () => {
+      if (!scReady) return;
+      if (scIsPlaying) widget.pause();
+      else widget.play();
+    });
+
+    scHintBtn.addEventListener('click', () => {
+      if (!scReady) return;
+      widget.play();
+    });
+
+    // Volume automation (slider)
+    scVol.addEventListener('input', () => {
+      applyVolume(Number(scVol.value));
+    });
+
+    // Try autoplay again on first user gesture anywhere (helps iOS/Safari/Chrome policies)
+    let unlocked = false;
+    function unlockOnce(){
+      if(unlocked) return;
+      unlocked = true;
+      tryAutoplay();
+      window.removeEventListener('pointerdown', unlockOnce);
+      window.removeEventListener('keydown', unlockOnce);
+      window.removeEventListener('touchstart', unlockOnce);
+    }
+    window.addEventListener('pointerdown', unlockOnce, {passive:true});
+    window.addEventListener('touchstart', unlockOnce, {passive:true});
+    window.addEventListener('keydown', unlockOnce);
+
+    // Debug click logging (your existing behavior)
     document.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', () => {
         console.log('[click]', a.getAttribute('href'));
@@ -844,7 +1212,4 @@
 </body>
 </html>
 
-
-</body>
-</html>
 
