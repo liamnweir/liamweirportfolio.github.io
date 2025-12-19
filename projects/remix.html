@@ -12,7 +12,7 @@
 
   <style>
     :root{
-      /* Purple/black vibe */
+      /* Base */
       --bg0:#070712;
       --bg1:#0b0820;
       --bg2:#120a2c;
@@ -25,19 +25,23 @@
       --muted:rgba(238,240,255,.78);
       --muted2:rgba(238,240,255,.62);
 
-      --accentA: rgba(200,120,255,.22);
-      --accentB: rgba(120,140,255,.20);
-      --accentC: rgba(120,255,200,.14);
-      --accentBorder: rgba(200,120,255,.48);
+      --shadow: 0 30px 70px rgba(0,0,0,.52);
+      --r: 20px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* NEW color accents */
+      --redA: rgba(255, 90, 120, .24);
+      --redB: rgba(255, 140, 80, .18);
+      --redBorder: rgba(255, 90, 120, .55);
+
+      --greenA: rgba(80, 255, 170, .18);
+      --greenB: rgba(60, 220, 140, .12);
+      --greenBorder: rgba(80, 255, 170, .48);
 
       --ok: rgba(120,255,190,.14);
       --okBorder: rgba(120,255,190,.28);
       --warnBg: rgba(255,170,120,.10);
       --warnBorder: rgba(255,170,120,.32);
-
-      --shadow: 0 30px 70px rgba(0,0,0,.52);
-      --r: 20px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     *{box-sizing:border-box}
@@ -47,9 +51,9 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 18% -10%, rgba(200,120,255,.22), transparent 58%),
-        radial-gradient(860px 520px at 92% 0%, rgba(120,140,255,.18), transparent 62%),
-        radial-gradient(980px 640px at 50% 110%, rgba(120,255,200,.10), transparent 60%),
+        radial-gradient(900px 520px at 18% -10%, rgba(255, 90, 120, .20), transparent 58%),
+        radial-gradient(860px 520px at 92% 0%, rgba(80, 255, 170, .14), transparent 62%),
+        radial-gradient(980px 640px at 50% 110%, rgba(255, 140, 80, .10), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1) 50%, var(--bg2));
       overflow-x:hidden;
     }
@@ -72,8 +76,8 @@
     }
     .dot{
       width:10px; height:10px; border-radius:999px;
-      background: linear-gradient(135deg, rgba(200,120,255,.95), rgba(120,140,255,.95));
-      box-shadow: 0 0 0 5px rgba(200,120,255,.18);
+      background: linear-gradient(135deg, rgba(255, 90, 120,.95), rgba(80,255,170,.95));
+      box-shadow: 0 0 0 5px rgba(255, 90, 120,.14);
     }
     .navBtn{
       text-decoration:none;
@@ -86,8 +90,8 @@
       transition: transform .12s ease, filter .12s ease;
     }
     .navBtn.primary{
-      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
-      border: 1px solid rgba(200,120,255,.42);
+      background: linear-gradient(135deg, var(--redA), var(--redB));
+      border: 1px solid var(--redBorder);
     }
     .navBtn:hover{filter:brightness(1.12); transform: translateY(-1px)}
     .tiny{font-size:.88rem; color:var(--muted2); font-weight:800}
@@ -101,8 +105,8 @@
       border-radius: var(--r);
       border: 1px solid var(--border);
       background:
-        radial-gradient(900px 340px at 20% 0%, rgba(200,120,255,.16), transparent 60%),
-        radial-gradient(900px 340px at 90% 10%, rgba(120,140,255,.14), transparent 60%),
+        radial-gradient(900px 340px at 18% 0%, rgba(255, 90, 120,.16), transparent 60%),
+        radial-gradient(900px 340px at 88% 10%, rgba(80,255,170,.12), transparent 60%),
         rgba(255,255,255,.035);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -113,12 +117,12 @@
       position:absolute;
       inset:-40%;
       background:
-        radial-gradient(circle at 20% 20%, rgba(200,120,255,.22), transparent 40%),
-        radial-gradient(circle at 70% 35%, rgba(120,140,255,.20), transparent 45%),
-        radial-gradient(circle at 45% 80%, rgba(120,255,200,.12), transparent 45%);
+        radial-gradient(circle at 18% 26%, rgba(255, 90, 120,.20), transparent 40%),
+        radial-gradient(circle at 70% 35%, rgba(80,255,170,.16), transparent 45%),
+        radial-gradient(circle at 48% 80%, rgba(255, 140, 80,.10), transparent 45%);
       filter: blur(12px);
       transform: rotate(10deg);
-      opacity:.7;
+      opacity:.75;
       pointer-events:none;
     }
     .hero > *{position:relative; z-index:1}
@@ -152,6 +156,23 @@
       overflow:hidden;
     }
     .card.soft{ background: var(--panel2); }
+
+    /* NEW: colored widgets */
+    .card.remix{
+      background:
+        radial-gradient(900px 420px at 20% 0%, var(--redA), transparent 60%),
+        radial-gradient(880px 420px at 90% 12%, rgba(255, 140, 80,.12), transparent 62%),
+        rgba(255,255,255,.035);
+      border-color: rgba(255, 90, 120,.38);
+    }
+    .card.stats{
+      background:
+        radial-gradient(900px 420px at 18% 0%, var(--greenA), transparent 60%),
+        radial-gradient(880px 420px at 92% 12%, var(--greenB), transparent 62%),
+        rgba(255,255,255,.035);
+      border-color: rgba(80,255,170,.34);
+    }
+
     .cardHeader{
       display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
       margin-bottom: 10px;
@@ -175,16 +196,25 @@
       outline:none;
       transition: filter .12s ease, border-color .12s ease;
     }
-    select:focus,input:focus,textarea:focus{
-      border-color: rgba(200,120,255,.45);
+    .card.remix select:focus,
+    .card.remix input:focus,
+    .card.remix textarea:focus{
+      border-color: rgba(255, 90, 120,.50);
       filter: brightness(1.06);
     }
+    .card.stats select:focus,
+    .card.stats input:focus,
+    .card.stats textarea:focus{
+      border-color: rgba(80,255,170,.46);
+      filter: brightness(1.06);
+    }
+
     textarea{min-height: 84px; resize: vertical}
 
     .btn{
       appearance:none;
-      border: 1px solid rgba(200,120,255,.48);
-      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
+      border: 1px solid var(--redBorder);
+      background: linear-gradient(135deg, var(--redA), var(--redB));
       color: rgba(238,240,255,.96);
       padding: 10px 14px;
       border-radius: 14px;
@@ -204,6 +234,10 @@
       background: transparent;
       border-color: rgba(255,255,255,.16);
       font-weight: 900;
+    }
+    .btn.green{
+      border-color: var(--greenBorder);
+      background: linear-gradient(135deg, var(--greenA), var(--greenB));
     }
 
     .warn{
@@ -278,32 +312,10 @@
     }
     .tab:hover{transform: translateY(-1px); filter: brightness(1.08)}
     .tab.active{
-      background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18));
-      border-color: rgba(200,120,255,.42);
+      background: linear-gradient(135deg, var(--redA), var(--redB));
+      border-color: var(--redBorder);
       color: rgba(238,240,255,.96);
     }
-
-    .canvasWrap{
-      margin-top: 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.28);
-      overflow:hidden;
-    }
-    canvas{display:block; width:100%; height:auto}
-
-    .stars{display:flex; gap: 6px; flex-wrap:wrap; align-items:center}
-    .star{
-      width: 34px; height: 34px; border-radius: 12px;
-      display:grid; place-items:center;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      cursor:pointer; user-select:none;
-      font-size: 18px;
-      transition: transform .12s ease, filter .12s ease;
-    }
-    .star:hover{transform: translateY(-1px); filter: brightness(1.1)}
-    .star.on{background: linear-gradient(135deg, rgba(200,120,255,.22), rgba(120,140,255,.18)); border-color: rgba(200,120,255,.42)}
 
     table{width:100%; border-collapse: collapse; margin-top: 10px; font-size: .92rem}
     th,td{padding: 10px; border-bottom: 1px solid rgba(255,255,255,.10); vertical-align: top}
@@ -317,14 +329,83 @@
 
     /* Tiny hint card styling */
     .hint{
-      border: 1px solid rgba(200,120,255,.24);
-      background: rgba(200,120,255,.06);
+      border: 1px solid rgba(255, 255, 255,.14);
+      background: rgba(255,255,255,.04);
       border-radius: 14px;
       padding: 10px 12px;
       color: rgba(238,240,255,.86);
       font-weight: 850;
       line-height: 1.55;
     }
+    .hint.red{
+      border-color: rgba(255, 90, 120,.26);
+      background: rgba(255, 90, 120,.06);
+    }
+    .hint.green{
+      border-color: rgba(80,255,170,.22);
+      background: rgba(80,255,170,.06);
+    }
+
+    /* Bank layout (symmetric) */
+    .bankGrid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 980px){ .bankGrid{ grid-template-columns: 1fr; } }
+
+    .bankRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+    }
+    .bankList{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .bankItem{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      cursor:pointer;
+    }
+    .bankItem:last-child{border-bottom:none}
+    .bankItem:hover{background: rgba(255,255,255,.04)}
+    .bankItem.active{
+      background: linear-gradient(135deg, rgba(80,255,170,.12), rgba(255,90,120,.10));
+      outline: 1px solid rgba(255,255,255,.10);
+    }
+    .bankTitle{
+      font-weight: 950;
+      margin: 0 0 2px;
+      letter-spacing: -.2px;
+    }
+    .bankMeta{
+      font-size: .86rem;
+      color: var(--muted2);
+      font-weight: 850;
+      line-height: 1.35;
+    }
+    .chip{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: rgba(238,240,255,.82);
+      font-size: .82rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .chip.green{ border-color: rgba(80,255,170,.30); background: rgba(80,255,170,.06); }
+    .chip.red{ border-color: rgba(255,90,120,.32); background: rgba(255,90,120,.06); }
   </style>
 </head>
 
@@ -333,11 +414,10 @@
     <div class="navL">
       <div class="brand"><span class="dot"></span>Remix Assistant</div>
       <a class="navBtn" href="https://liamnweir.github.io/liamweirportfolio.github.io/">← Back</a>
-      <a class="navBtn primary" href="#" id="jumpDemo">Demo</a>
-      <a class="navBtn" href="#" id="jumpStudy">A/B Study</a>
-      <a class="navBtn" href="#" id="jumpEvidence">Evidence</a>
+      <a class="navBtn primary" href="#" id="jumpRemix">Remix</a>
+      <a class="navBtn" href="#" id="jumpBank">Bank</a>
     </div>
-    <div class="tiny">Upload MIDI → remix → compare → download</div>
+    <div class="tiny">Upload MIDI → remix → play → download / save</div>
   </div>
 
   <div class="wrap">
@@ -345,7 +425,7 @@
       <h1>Remix Assistant (MIDI)</h1>
       <p>
         Upload a MIDI idea and generate a remix with better harmony, bass motion, and musical phrasing.
-        Then A/B compare and export the remix as a new MIDI file.
+        Play it back, download it, or save versions to a remix bank.
       </p>
 
       <div class="pills">
@@ -353,19 +433,19 @@
         <span class="pill">Broken chords</span>
         <span class="pill">Bass movement</span>
         <span class="pill">Counter line</span>
-        <span class="pill">A/B listening</span>
         <span class="pill">MIDI export</span>
+        <span class="pill">Remix bank</span>
       </div>
     </div>
 
     <div class="grid">
       <!-- LEFT -->
       <div>
-        <!-- DEMO -->
-        <section class="card" id="demo">
+        <!-- REMIX -->
+        <section class="card remix" id="remix">
           <div class="cardHeader">
-            <h2>Demo</h2>
-            <div class="tabs" role="tablist" aria-label="Demo tabs">
+            <h2>Remix</h2>
+            <div class="tabs" role="tablist" aria-label="Remix tabs">
               <button class="tab active" id="tabUpload" type="button">Upload</button>
               <button class="tab" id="tabExamples" type="button">Examples</button>
               <button class="tab" id="tabSettings" type="button">Settings</button>
@@ -499,7 +579,7 @@
 
             <div class="divider"></div>
 
-            <div class="hint">
+            <div class="hint red">
               Music theory tweaks built-in: the remix tends to <strong>start/end on the tonic</strong>,
               uses <strong>broken chords</strong>, applies <strong>smooth inversions</strong>,
               and adds <strong>bass motion</strong> that supports the harmony.
@@ -514,6 +594,7 @@
             <button class="btn secondary" id="playRemixBtn" disabled type="button">Play Remix</button>
             <button class="btn secondary" id="stopBtn" disabled type="button">Stop</button>
             <button class="btn" id="downloadBtn" disabled type="button">Download Remix MIDI</button>
+            <button class="btn green" id="saveToBankBtn" disabled type="button">Save Remix to Bank</button>
           </div>
 
           <div id="warn" class="warn"></div>
@@ -529,139 +610,11 @@
             <span style="font-family:var(--mono)">Space</span> stop
           </div>
         </section>
-
-        <!-- A/B LISTENING STUDY -->
-        <section class="card soft" id="study" style="margin-top:16px">
-          <div class="cardHeader">
-            <h2>A/B Listening Study</h2>
-            <div class="tiny">Blind compare Original vs Remix (randomized A/B)</div>
-          </div>
-
-          <p class="tiny">
-            Click “Start A/B Test” to randomize which version is A vs B. Play both, then submit ratings.
-            Results are stored locally and can be exported as CSV.
-          </p>
-
-          <div class="row" style="margin-top:10px">
-            <button class="btn" id="abStartBtn" disabled type="button">Start A/B Test</button>
-            <button class="btn secondary" id="playAB_A" disabled type="button">Play A</button>
-            <button class="btn secondary" id="playAB_B" disabled type="button">Play B</button>
-            <button class="btn secondary" id="abStopBtn" disabled type="button">Stop</button>
-            <button class="btn ghost" id="abRevealBtn" disabled type="button">Reveal Mapping</button>
-          </div>
-
-          <div class="tiny" style="margin-top:8px">
-            Test ID: <span id="abId" style="font-family:var(--mono)">—</span> •
-            Mapping: <span id="abMap" style="font-family:var(--mono)">Hidden</span>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="row">
-            <div class="field sm">
-              <div class="label">Preference</div>
-              <select id="pref">
-                <option value="" selected>Choose…</option>
-                <option value="A">Prefer A</option>
-                <option value="B">Prefer B</option>
-                <option value="tie">Tie / no preference</option>
-              </select>
-              <div class="tiny">Which one would you keep / use?</div>
-            </div>
-
-            <div class="field sm">
-              <div class="label">Overall quality (1–5)</div>
-              <div class="stars" id="starsQuality" aria-label="Quality stars"></div>
-              <div class="tiny" id="qHint">Click stars to rate.</div>
-            </div>
-
-            <div class="field sm">
-              <div class="label">Creativity (1–5)</div>
-              <div class="stars" id="starsCreativity" aria-label="Creativity stars"></div>
-              <div class="tiny" id="cHint">Click stars to rate.</div>
-            </div>
-
-            <div class="field sm">
-              <div class="label">Coherence (1–5)</div>
-              <div class="stars" id="starsCoherence" aria-label="Coherence stars"></div>
-              <div class="tiny" id="coHint">Click stars to rate.</div>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px">
-            <div class="field">
-              <div class="label">Comment (optional)</div>
-              <textarea id="abComment" placeholder="e.g., 'Nice bass motion, but bar 3 chords feel too dense'"></textarea>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px">
-            <button class="btn" id="saveABBtn" disabled type="button">Save A/B Result</button>
-            <button class="btn secondary" id="exportABBtn" type="button">Export Results CSV</button>
-            <button class="btn secondary" id="clearABBtn" type="button">Clear Local Results</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="label">Recent results (this device)</div>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:180px">When</th>
-                <th style="width:120px">Winner</th>
-                <th>Condition</th>
-              </tr>
-            </thead>
-            <tbody id="abTable">
-              <tr><td colspan="3" class="tiny">No study results yet.</td></tr>
-            </tbody>
-          </table>
-        </section>
-
-        <!-- EVIDENCE -->
-        <section class="card" id="evidence" style="margin-top:16px">
-          <div class="cardHeader">
-            <h2>Evidence</h2>
-            <div class="tiny">Plots update from your saved A/B results</div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <div class="canvasWrap"><canvas id="plotPref"></canvas></div>
-              <div class="tiny" style="margin-top:6px">Preference outcomes (who “wins” in A/B)</div>
-            </div>
-            <div class="field">
-              <div class="canvasWrap"><canvas id="plotAvg"></canvas></div>
-              <div class="tiny" style="margin-top:6px">Average ratings by winner (quality/creativity/coherence)</div>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:12px">
-            <div class="field">
-              <div class="canvasWrap"><canvas id="plotStyle"></canvas></div>
-              <div class="tiny" style="margin-top:6px">Preference by style preset (remix win-rate)</div>
-            </div>
-            <div class="field">
-              <div class="canvasWrap"><canvas id="plotStrength"></canvas></div>
-              <div class="tiny" style="margin-top:6px">Preference by strength bucket</div>
-            </div>
-          </div>
-
-          <details style="margin-top:10px">
-            <summary>Quick summary</summary>
-            <p class="tiny" style="margin-top:8px">
-              Across <span id="nTests">0</span> A/B tests on this device, listeners preferred the Remix
-              <strong><span id="remixWinPct">0%</span></strong> of the time (ties excluded).
-              Remix wins were strongest in <strong><span id="bestStyle">—</span></strong> and at
-              <strong><span id="bestStrength">—</span></strong> strength.
-            </p>
-          </details>
-        </section>
       </div>
 
       <!-- RIGHT -->
       <div class="rightColSticky">
-        <section class="card">
+        <section class="card stats">
           <div class="cardHeader">
             <h2>Stats</h2>
             <div class="tiny">What the tool detected / used</div>
@@ -675,7 +628,7 @@
 
           <div class="divider"></div>
 
-          <div class="hint">
+          <div class="hint green">
             If your input MIDI is “weird” harmonically, try:
             <ul class="list" style="margin-top:6px">
               <li>Set Key manually (Settings).</li>
@@ -687,6 +640,92 @@
         </section>
       </div>
     </div>
+
+    <!-- BANK (symmetric section) -->
+    <section id="bank" class="bankGrid" aria-label="Remix bank section">
+      <div class="card soft">
+        <div class="cardHeader">
+          <h2>Remix Bank</h2>
+          <div class="tiny">Saved on this device (localStorage)</div>
+        </div>
+
+        <div class="bankRow">
+          <div class="field">
+            <div class="label">Bank item name (for saving new remixes)</div>
+            <input id="bankName" type="text" placeholder="e.g., 'LoFi v3 - stronger bass'" />
+            <div class="tiny" style="margin-top:6px">
+              Tip: Save multiple versions while iterating settings.
+            </div>
+          </div>
+
+          <div class="field xs">
+            <div class="label">Actions</div>
+            <button class="btn secondary" id="bankRefreshBtn" type="button">Refresh List</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="bankList" id="bankList" role="list">
+          <div class="tiny" style="padding:12px" id="bankEmpty">No saved remixes yet.</div>
+        </div>
+
+        <details style="margin-top:12px">
+          <summary>What is saved?</summary>
+          <p class="tiny" style="margin-top:8px">
+            The bank stores your generated remix MIDI bytes + basic metadata (tempo, key, style, strength).
+            It’s stored locally in your browser, so clearing site data will erase it.
+          </p>
+        </details>
+      </div>
+
+      <div class="card soft">
+        <div class="cardHeader">
+          <h2>Selected</h2>
+          <div class="tiny" id="bankSelectedHint">Pick a saved remix to manage it</div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <div class="label">Title</div>
+            <input id="selTitle" type="text" placeholder="(select an item)" disabled />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field sm">
+            <div class="label">Metadata</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px">
+              <span class="chip red" id="selStyle">style: —</span>
+              <span class="chip green" id="selKey">key: —</span>
+              <span class="chip" id="selBpm">bpm: —</span>
+              <span class="chip" id="selStrength">strength: —</span>
+            </div>
+            <div class="tiny" style="margin-top:8px" id="selWhen">—</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <button class="btn green" id="bankPlayBtn" disabled type="button">Play</button>
+          <button class="btn secondary" id="bankStopBtn" disabled type="button">Stop</button>
+          <button class="btn" id="bankDownloadBtn" disabled type="button">Download MIDI</button>
+          <button class="btn secondary" id="bankRenameBtn" disabled type="button">Rename</button>
+          <button class="btn ghost" id="bankDeleteBtn" disabled type="button">Delete</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="hint">
+          Want to keep the “best” one? Rename it, then download the MIDI and drop it into your DAW.
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn ghost" id="bankClearAllBtn" type="button">Clear Entire Bank</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -732,8 +771,9 @@
     }
 
     function makeRng(){
-      const s = Number($("seed").value);
-      if (Number.isFinite(s)) return mulberry32(s);
+      const raw = $("seed").value;
+      const s = Number(raw);
+      if (raw !== "" && Number.isFinite(s)) return mulberry32(s);
       return Math.random;
     }
 
@@ -758,9 +798,8 @@
     }
     function jumpTo(id){ $(id).scrollIntoView({behavior:"smooth", block:"start"}); }
 
-    $("jumpDemo").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("demo"); });
-    $("jumpStudy").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("study"); });
-    $("jumpEvidence").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("evidence"); });
+    $("jumpRemix").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("remix"); });
+    $("jumpBank").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("bank"); });
 
     // Tabs
     const tabUpload = $("tabUpload"), tabExamples = $("tabExamples"), tabSettings = $("tabSettings");
@@ -856,7 +895,7 @@
       return best;
     }
 
-    // Krumhansl-ish profiles (simple) to pick major vs minor + tonic
+    // Krumhansl-ish profiles
     const KS_MAJOR = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
     const KS_MINOR = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
 
@@ -881,7 +920,6 @@
         hist[pc] += w;
       }
 
-      // normalize
       const sum = hist.reduce((a,b)=>a+b,0) || 1;
       const norm = hist.map(x=>x/sum);
 
@@ -905,7 +943,6 @@
     }
 
     function pentatonicFromMode(tonicPc, mode){
-      // Major pent: 1 2 3 5 6 ; Minor pent: 1 b3 4 5 b7
       if (mode === "minor" || mode === "phrygian"){
         const rel = [0,3,5,7,10];
         return rel.map(x => (x + tonicPc) % 12);
@@ -929,7 +966,6 @@
       const pc = ((midi % 12) + 12) % 12;
       if (allowedPcs.includes(pc)) return midi;
 
-      // try shifting by semitones within +/- 2 first (gentle)
       for (let step=1; step<=2; step++){
         const up = (pc + step) % 12;
         const dn = (pc - step + 12) % 12;
@@ -937,9 +973,7 @@
         if (allowedPcs.includes(dn)) return midi - step;
       }
 
-      // fallback to nearest
       const bestPc = nearestPcInSet(pc, allowedPcs);
-      // shift to nearest pc by smallest signed distance
       let bestShift = 0;
       let best = 999;
       for (let s=-6; s<=6; s++){
@@ -952,23 +986,18 @@
     }
 
     function enforceTonicCadence(notes, tonicPc, mode, beatSec, bars, beatsPerBar){
-      // Add/shape ending to land on tonic, and (lightly) starting on tonic.
       if (!notes.length) return notes;
 
       const barSec = beatsPerBar * beatSec;
       const totalSec = bars * barSec;
 
-      // Start: if first note isn't tonic-ish, nudge by scale snap (handled earlier).
-      // End: add a final tonic note (or resolve last note to tonic) near the end.
       const last = notes[notes.length-1];
       const lastPc = ((last.midi % 12) + 12) % 12;
 
       const allow = scalePcs(tonicPc, mode);
       const tonicMidiNear = (m) => {
-        // keep octave similar
         const baseOct = Math.floor(m/12);
         let cand = baseOct*12 + tonicPc;
-        // adjust to nearest octave to m
         while (cand - m > 6) cand -= 12;
         while (m - cand > 6) cand += 12;
         return clamp(cand, 36, 96);
@@ -977,9 +1006,7 @@
       const endTime = Math.max(0, totalSec - 1.0*beatSec);
       const endDur = 0.9*beatSec;
 
-      // If last note is not tonic, gently resolve it.
       if (lastPc !== tonicPc){
-        // shorten last note slightly so resolution reads
         last.duration = Math.min(last.duration ?? endDur, 0.6*beatSec);
         const resMidi = tonicMidiNear(last.midi);
         notes.push({
@@ -989,7 +1016,6 @@
           velocity: clamp((last.velocity ?? 0.82) + 0.06, 0.2, 1.0)
         });
       } else {
-        // if already tonic, extend/anchor with a final longer tonic if needed
         if ((last.time ?? 0) < endTime){
           notes.push({
             midi: last.midi,
@@ -1004,7 +1030,7 @@
     }
 
     // ------------------------------------------------------------
-    // Remix engine (better theory: tonic cadence + inversions + broken chords + bass motion)
+    // Remix engine
     // ------------------------------------------------------------
     function diatonicTriads(tonicPc, mode){
       const sc = scalePcs(tonicPc, mode);
@@ -1027,7 +1053,6 @@
         chords.forEach((ch, i) => { if (ch.pcs.includes(pc)) scores[i] += ov; });
       }
 
-      // small preference for tonic and dominant (to reduce random-sounding changes)
       chords.forEach((ch,i)=>{
         if (ch.degree === 1) scores[i] *= 1.10;
         if (ch.degree === 5) scores[i] *= 1.06;
@@ -1041,11 +1066,9 @@
     }
 
     function buildChordMidiFromPcs(pcs, centerMidi){
-      // Convert pcs to midi notes around a center, sorted
       const out = [];
       for (const pc of pcs){
         let m = centerMidi + ((pc - (centerMidi % 12) + 12) % 12);
-        // shift into a pleasant range
         while (m < centerMidi-12) m += 12;
         while (m > centerMidi+12) m -= 12;
         out.push(m);
@@ -1055,32 +1078,24 @@
     }
 
     function chooseBestInversion(prevVoiced, chordPcs, baseMidi){
-      // Try 3 inversions by rotating chord tones +/- octaves, choose minimal movement
       const candidates = [];
-
-      // base triad around baseMidi
       const base = buildChordMidiFromPcs(chordPcs, baseMidi);
 
       function score(voiced){
         if (!prevVoiced?.length) return 0;
         const a = [...prevVoiced].sort((x,y)=>x-y);
         const b = [...voiced].sort((x,y)=>x-y);
-
-        // compare nearest pairs (truncate to min length)
         const k = Math.min(a.length, b.length);
         let s = 0;
         for (let i=0;i<k;i++) s += Math.abs(a[i]-b[i]);
-        // penalize huge spreads
         const spread = (b[b.length-1] - b[0]);
         s += Math.max(0, spread - 18);
         return s;
       }
 
-      // generate inversions by moving bottom note up octave
       let v = [...base];
       for (let inv=0; inv<3; inv++){
         candidates.push(v);
-        // next inversion
         const next = [...v];
         next[0] += 12;
         next.sort((a,b)=>a-b);
@@ -1092,7 +1107,6 @@
     }
 
     function maybeAddExtensions(voiced, tonicPc, mode, rng, style, strength){
-      // tasteful 7ths/9ths; more in lofi, less in baroque; edm uses stabs so keep tight
       if (style === "edm") return voiced;
 
       const sc = scalePcs(tonicPc, mode);
@@ -1105,14 +1119,11 @@
 
       if (rng() > extChance) return voiced;
 
-      // choose 7th or 9th scale tone relative to chord root (diatonic-ish)
       const addType = (rng() < 0.60) ? "7" : "9";
       let add = top + (addType === "7" ? 10 : 14);
 
       const addPc = ((add % 12) + 12) % 12;
-      // keep extension in scale
       const snappedPc = nearestPcInSet(addPc, sc);
-      // shift add to snapped pc minimally
       for (let s=-2; s<=2; s++){
         const pc = ((add + s) % 12 + 12) % 12;
         if (pc === snappedPc){ add += s; break; }
@@ -1158,11 +1169,7 @@
     }
 
     function brokenChordPattern(voiced, style, beatSec, slotT0, slotT1, strength, rng){
-      // Returns list of {midi,time,duration,velocity} for an arpeggiated chord
       const events = [];
-      const barLen = slotT1 - slotT0;
-
-      // step: faster for baroque, medium for lofi, stabs for edm (handled elsewhere)
       const step =
         style === "baroque" ? 0.5*beatSec :
         style === "lofi" ? 0.5*beatSec :
@@ -1170,7 +1177,6 @@
 
       const dur = Math.max(0.03, step*0.90);
 
-      // pattern selection
       const tri = voiced.slice(0,3);
       const upDown = (rng() < 0.55);
       const pat = upDown ? [0,1,2,1] : [0,1,2,0,2,1];
@@ -1202,27 +1208,20 @@
       const beatSec = 60 / Math.max(1, bpm);
       const barSec = beatsPerBar * beatSec;
 
-      // key + mode
       const keyOverride = $("keyOverride").value;
       modeName = $("modeOverride").value;
 
       const detected = detectKeyAndModeFromNotes(melodyNotes);
       keyPc = (keyOverride === "auto") ? detected.pc : NOTE_TO_PC[keyOverride];
 
-      // If user left key auto, keep detected major/minor as a default *unless* user picked a specific mode
-      // (user mode should win; detected mode just affects display log and scale lock behavior).
-      // We won't override modeName because user explicitly chose it in UI.
-
       const durSec = midiDurationSeconds(m);
       const bars = Math.max(1, Math.ceil(durSec / barSec));
 
-      // Allowed pitch sets for melody/counter
       const diatonic = scalePcs(keyPc, modeName);
       const penta = pentatonicFromMode(keyPc, modeName);
       const preferPenta = $("preferPentatonic").checked;
       const melodicAllowed = preferPenta ? penta : diatonic;
 
-      // Build chord plan from melody, then force tonic at start/end
       const chords = diatonicTriads(keyPc, modeName);
       const chordPlan = [];
       for (let b=0; b<bars; b++){
@@ -1232,7 +1231,6 @@
         chordPlan.push({ bar: b, t0, t1, chord: ch });
       }
 
-      // enforce tonic at start/end (start/end on tonic)
       const tonicChord = chords.find(c=>c.degree===1) || chords[0];
       chordPlan[0].chord = tonicChord;
       chordPlan[chordPlan.length-1].chord = tonicChord;
@@ -1241,19 +1239,15 @@
       try{ out.header.fromJSON(m.header.toJSON()); }
       catch(e){ try{ out.header.setTempo(bpm / 60); }catch(_){} }
 
-      // Track: Melody (copy selected track only, with optional scale lock + cadence)
+      // Melody copy
       const tMel = out.addTrack(); tMel.name = "Melody";
 
       let melCopy = melodyNotes.map(n => ({
         midi: n.midi, time: n.time, duration: n.duration, velocity: n.velocity ?? 0.85
       }));
 
-      // Gentle scale lock (fix “sounds like shit” when input has stray notes)
       if ($("lockToScale").checked){
-        melCopy = melCopy.map(n => ({
-          ...n,
-          midi: snapMidiToScale(n.midi, diatonic) // always use full diatonic for melody lock
-        }));
+        melCopy = melCopy.map(n => ({ ...n, midi: snapMidiToScale(n.midi, diatonic) }));
       }
 
       melCopy = applyRhythmTransform(melCopy, style, beatSec, rng);
@@ -1268,11 +1262,11 @@
         });
       }
 
-      // Harmony: use inversions (voice leading) + broken chords option by style/strength
+      // Harmony
       if ($("doChords").checked){
         const tCh = out.addTrack(); tCh.name = "Chords";
-
         let prevVoiced = null;
+
         for (const slot of chordPlan){
           const baseMidi =
             style === "edm" ? 60 :
@@ -1282,7 +1276,6 @@
           let voiced = chooseBestInversion(prevVoiced, slot.chord.pcs, baseMidi);
           voiced = maybeAddExtensions(voiced, keyPc, modeName, rng, style, strength);
 
-          // EDM: stabs (keep tight)
           if (style === "edm"){
             const stabDur = 0.42 * beatSec;
             const times = beatsPerBar === 3 ? [slot.t0, slot.t0 + 1.5*beatSec] : [slot.t0, slot.t0 + 2*beatSec];
@@ -1293,7 +1286,6 @@
               }
             }
           } else {
-            // Broken chords technique (always for baroque; often for lofi when strength higher)
             const useBroken =
               (style === "baroque") ||
               (style === "lofi" && strength > 0.35 && rng() < 0.75) ||
@@ -1316,34 +1308,30 @@
         }
       }
 
-      // Bass: use inversion-aware bass + motion (approach tones / fifths / scale tones)
+      // Bass
       if ($("doBass").checked){
         const tBa = out.addTrack(); tBa.name = "Bass";
         const diatonicSet = scalePcs(keyPc, modeName);
-
         let prevBass = null;
 
         for (let i=0;i<chordPlan.length;i++){
           const slot = chordPlan[i];
           const rootPc = slot.chord.rootPc;
 
-          // pick a bass target: mostly root, sometimes fifth/third (inversion feel)
           const pickRoll = rng();
           let bassPc = rootPc;
           if (style !== "edm"){
-            if (pickRoll < 0.18*strength) bassPc = slot.chord.pcs[1]; // 3rd
-            else if (pickRoll < 0.40*strength) bassPc = (rootPc + 7) % 12; // 5th
+            if (pickRoll < 0.18*strength) bassPc = slot.chord.pcs[1];
+            else if (pickRoll < 0.40*strength) bassPc = (rootPc + 7) % 12;
           }
 
-          // choose bass midi in a musical range
           let bassMidi = 36 + ((bassPc - (36 % 12) + 12) % 12);
           while (bassMidi < 30) bassMidi += 12;
           while (bassMidi > 50) bassMidi -= 12;
-
           bassMidi = clamp(bassMidi, 28, 55);
 
           if (style === "edm"){
-            const step = 0.5 * beatSec; // 8ths
+            const step = 0.5 * beatSec;
             let t = slot.t0;
             let k = 0;
             while (t < slot.t1 - 0.02){
@@ -1354,7 +1342,6 @@
               t += step; k++;
             }
           } else if (style === "baroque"){
-            // walking bass with chord tones + passing scale tones
             const step = 0.5 * beatSec;
             const chordTones = slot.chord.pcs.map(pc => {
               let m0 = 36 + ((pc - 0 + 12) % 12);
@@ -1367,7 +1354,6 @@
             let k = 0;
             while (t < slot.t1 - 0.02){
               let m0 = chordTones[k % chordTones.length];
-              // occasional passing tone
               if (rng() < 0.35*strength){
                 const pc = ((m0 % 12) + 12) % 12;
                 const passPc = diatonicSet[(diatonicSet.indexOf(pc)+1+7)%7] ?? pc;
@@ -1379,9 +1365,7 @@
               t += step; k++;
             }
           } else {
-            // Lofi: root + fifth + approach to next bar’s bass
             const half = (beatsPerBar/2) * beatSec;
-
             const fifthPc = (rootPc + 7) % 12;
             let fifthMidi = 36 + ((fifthPc - (36 % 12) + 12) % 12);
             fifthMidi = clamp(fifthMidi, 28, 55);
@@ -1392,22 +1376,17 @@
               tBa.addNote({ midi: fifthMidi, time: slot.t0 + half, duration: (half*0.80), velocity: 0.50 + 0.10*strength });
             }
 
-            // approach tone into next bar (smooth movement)
             if (strength > 0.30 && i < chordPlan.length-1){
               const nextRootPc = chordPlan[i+1].chord.rootPc;
               let nextMidi = 36 + ((nextRootPc - (36 % 12) + 12) % 12);
               nextMidi = clamp(nextMidi, 28, 55);
 
-              // approach by a diatonic step if possible
               let approach = nextMidi;
               if (prevBass != null){
-                // step toward next
                 const dir = (nextMidi >= bassMidi) ? +1 : -1;
-                approach = nextMidi - dir*1; // chromatic approach
-                // keep approach within diatonic if possible
+                approach = nextMidi - dir*1;
                 const apPc = ((approach%12)+12)%12;
                 if (!diatonicSet.includes(apPc)){
-                  // try +/-1
                   if (diatonicSet.includes((apPc+1)%12)) approach += 1;
                   else if (diatonicSet.includes((apPc+11)%12)) approach -= 1;
                 }
@@ -1427,7 +1406,7 @@
         }
       }
 
-      // Counter-melody: prefer consonant intervals + (optionally) pentatonic tones
+      // Counter
       if ($("doCounter").checked){
         const tCo = out.addTrack(); tCo.name = "Counter";
 
@@ -1435,15 +1414,13 @@
         const allow = ($("preferPentatonic").checked) ? pentatonicFromMode(keyPc, modeName) : diatonic;
         const allowSet = new Set(allow);
 
-        const consonant = [3,4,7,8,9]; // 3rds/5ths/6ths
-
+        const consonant = [3,4,7,8,9];
         const durGrid = (style === "edm") ? 0.25 * beatSec : 0.5 * beatSec;
         const durNote = durGrid * 0.92;
 
         const total = bars * barSec;
 
         for (let t=0; t<total; t += durGrid){
-          // find active melody at time t
           let mel = null;
           for (const n of melCopy){
             const t0 = n.time ?? 0;
@@ -1466,7 +1443,6 @@
             }
           }
 
-          // also allow a “single note melody” trick sometimes (monotony over moving harmony)
           if (rng() < 0.10 + 0.20*strength){
             const pc = ((base % 12) + 12) % 12;
             if (allowSet.has(pc)) choices.push(base);
@@ -1474,11 +1450,9 @@
 
           if (!choices.length) continue;
 
-          // generally above melody, avoid extreme highs
           choices = choices.filter(x => x >= base && x <= 88);
           if (!choices.length) continue;
 
-          // “big leap” occasionally (major 6th-ish) but still in allowed
           if (rng() < 0.06*strength){
             const leap = base + 9;
             const pc = ((leap % 12) + 12) % 12;
@@ -1490,7 +1464,7 @@
         }
       }
 
-      // final rhythm pass across generated tracks
+      // final rhythm pass
       if ($("doRhythm").checked){
         for (const tr of out.tracks){
           const notes = tr.notes.map(n => ({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.7 }));
@@ -1507,7 +1481,7 @@
     }
 
     // ------------------------------------------------------------
-    // Tone.js playback (nicer sound)
+    // Tone.js playback
     // ------------------------------------------------------------
     let audioReady = false;
     let lead, pad, bassSynth, counter;
@@ -1519,14 +1493,12 @@
       if (audioReady) return;
 
       master = new Tone.Gain(0.95).toDestination();
-
       comp = new Tone.Compressor({ threshold: -20, ratio: 3, attack: 0.01, release: 0.15 });
       limiter = new Tone.Limiter(-1);
 
       chorus = new Tone.Chorus({ frequency: 1.2, delayTime: 3.5, depth: 0.3, wet: 0.18 }).start();
       reverb = new Tone.Reverb({ decay: 2.8, preDelay: 0.01, wet: 0.16 });
 
-      // routing
       chorus.connect(reverb);
       reverb.connect(comp);
       comp.connect(limiter);
@@ -1584,7 +1556,7 @@
       Tone.Transport.cancel();
       Tone.Transport.position = 0;
       $("stopBtn").disabled = true;
-      $("abStopBtn").disabled = true;
+      $("bankStopBtn").disabled = true;
     }
 
     function flattenNotesWithTrackName(m){
@@ -1650,12 +1622,15 @@
     // Load MIDI (file or example)
     // ------------------------------------------------------------
     function updateReadyState(){
-      const ok = !!midiIn;
-      $("remixBtn").disabled = !ok;
-      $("playOrigBtn").disabled = !ok;
-      $("abStartBtn").disabled = !(midiIn && midiOut);
-      $("playRemixBtn").disabled = !midiOut;
-      $("downloadBtn").disabled = !midiOut;
+      const okIn = !!midiIn;
+      const okOut = !!midiOut;
+
+      $("remixBtn").disabled = !okIn;
+      $("playOrigBtn").disabled = !okIn;
+
+      $("playRemixBtn").disabled = !okOut;
+      $("downloadBtn").disabled = !okOut;
+      $("saveToBankBtn").disabled = !okOut;
     }
 
     function setStats({fileName, bpm, key, trackName, trackIndex, durSec}){
@@ -1704,9 +1679,6 @@
       });
 
       updateReadyState();
-      refreshABUI();
-      renderABTable();
-      renderEvidence();
     }
 
     $("midiFile").addEventListener("change", async () => {
@@ -1741,11 +1713,11 @@
 
       let seq = [];
       if (which === "minor"){
-        seq = [69,72,76,79,76,74,72,69]; // A minor-ish
+        seq = [69,72,76,79,76,74,72,69];
       } else if (which === "riff"){
-        seq = [62,64,66,69,67,66,64,62]; // D mixo-ish
+        seq = [62,64,66,69,67,66,64,62];
       } else {
-        seq = [60,64,67,69,67,64,62,60]; // C major-ish
+        seq = [60,64,67,69,67,64,62,60];
       }
 
       for (let b=0; b<totalBars; b++){
@@ -1798,7 +1770,7 @@
         logLine(`Bars: ${info.bars}`);
         logLine(`Strength: ${info.strength.toFixed(2)}`);
         logLine(`Tracks out: ${midiOut.tracks.length}`);
-        logLine("Done. Preview and download the remix (and A/B test if you want).");
+        logLine("Done. Preview, download, or save to bank.");
 
         statBpm.textContent = `${Math.round(info.bpm)} BPM`;
         statKey.textContent = info.key;
@@ -1806,7 +1778,6 @@
 
         updateReadyState();
         setOk("Remix created.");
-
       }catch(e){
         console.error(e);
         setWarn(e?.message || "Remix failed. Check console.");
@@ -1868,127 +1839,48 @@
     });
 
     // ------------------------------------------------------------
-    // A/B Study storage + UI
+    // Remix Bank (save / load / play / download / delete)
     // ------------------------------------------------------------
-    const AB_KEY = "liam_remix_ab_results_v1";
-    function loadAB(){ try{ return JSON.parse(localStorage.getItem(AB_KEY) || "[]"); }catch(e){ return []; } }
-    function saveAB(list){ localStorage.setItem(AB_KEY, JSON.stringify(list)); }
+    const BANK_KEY = "liam_remix_bank_v1";
+    let selectedBankId = null;
+
+    function loadBank(){
+      try{
+        const raw = localStorage.getItem(BANK_KEY);
+        const arr = JSON.parse(raw || "[]");
+        return Array.isArray(arr) ? arr : [];
+      }catch(e){
+        return [];
+      }
+    }
+    function saveBank(arr){
+      localStorage.setItem(BANK_KEY, JSON.stringify(arr));
+    }
 
     function fmtWhen(iso){
       try{
         const d = new Date(iso);
-        return d.toLocaleString(undefined, { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+        return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
       }catch(e){ return iso; }
     }
 
-    // star widgets
-    function makeStarRow(containerId, onChange){
-      const wrap = $(containerId);
-      wrap.innerHTML = "";
-      const stars = [];
-      for(let i=1;i<=5;i++){
-        const s = document.createElement("div");
-        s.className = "star";
-        s.textContent = "★";
-        s.dataset.s = String(i);
-        s.addEventListener("click", ()=>{
-          stars.forEach(el => el.classList.toggle("on", Number(el.dataset.s) <= i));
-          onChange(i);
-        });
-        wrap.appendChild(s);
-        stars.push(s);
+    function bytesToBase64(u8){
+      // chunked to avoid callstack limits
+      let binary = "";
+      const chunk = 0x8000;
+      for (let i=0; i<u8.length; i+=chunk){
+        binary += String.fromCharCode.apply(null, u8.subarray(i, i+chunk));
       }
-      return {
-        set: (n) => stars.forEach(el => el.classList.toggle("on", Number(el.dataset.s) <= n)),
-        get: () => stars.filter(el => el.classList.contains("on")).length
-      };
+      return btoa(binary);
+    }
+    function base64ToBytes(b64){
+      const bin = atob(b64);
+      const u8 = new Uint8Array(bin.length);
+      for (let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
+      return u8;
     }
 
-    let qStars = 0, cStars = 0, coStars = 0;
-    const qRow = makeStarRow("starsQuality", (n)=>{ qStars=n; refreshABUI(); });
-    const cRow = makeStarRow("starsCreativity", (n)=>{ cStars=n; refreshABUI(); });
-    const coRow = makeStarRow("starsCoherence", (n)=>{ coStars=n; refreshABUI(); });
-
-    // A/B mapping state (randomized)
-    let abActive = false;
-    let abId = null;
-    let mapA = null; // "orig" | "remix"
-    let mapB = null;
-
-    function newABId(){
-      const s = Math.random().toString(16).slice(2, 10);
-      return `ab_${Date.now().toString(16)}_${s}`;
-    }
-
-    function refreshABUI(){
-      $("abId").textContent = abId || "—";
-      $("abMap").textContent = (!abActive) ? "Hidden" : "Hidden";
-      $("abRevealBtn").disabled = !abActive;
-      $("playAB_A").disabled = !abActive;
-      $("playAB_B").disabled = !abActive;
-      $("abStopBtn").disabled = !abActive;
-
-      const pref = $("pref").value;
-      const canSave = abActive && pref && qStars>0 && cStars>0 && coStars>0;
-      $("saveABBtn").disabled = !canSave;
-    }
-
-    $("abStartBtn").addEventListener("click", () => {
-      if (!midiIn || !midiOut) return;
-      setWarn(null); setOk(null);
-      abActive = true;
-      abId = newABId();
-
-      if (Math.random() < 0.5){
-        mapA = "orig"; mapB = "remix";
-      } else {
-        mapA = "remix"; mapB = "orig";
-      }
-
-      $("pref").value = "";
-      qStars = 0; cStars = 0; coStars = 0;
-      qRow.set(0); cRow.set(0); coRow.set(0);
-      $("abComment").value = "";
-      $("abMap").textContent = "Hidden";
-
-      setOk("A/B test started. Play A and B, then submit.");
-      refreshABUI();
-    });
-
-    $("abRevealBtn").addEventListener("click", () => {
-      if (!abActive) return;
-      $("abMap").textContent = `A=${mapA.toUpperCase()} • B=${mapB.toUpperCase()}`;
-    });
-
-    $("playAB_A").addEventListener("click", async () => {
-      if (!abActive) return;
-      try{
-        await ensureAudio();
-        playMidi(mapA === "orig" ? midiIn : midiOut);
-        $("abStopBtn").disabled = false;
-      }catch(e){
-        console.error(e);
-        setWarn("Audio failed to start. Click play again.");
-      }
-    });
-
-    $("playAB_B").addEventListener("click", async () => {
-      if (!abActive) return;
-      try{
-        await ensureAudio();
-        playMidi(mapB === "orig" ? midiIn : midiOut);
-        $("abStopBtn").disabled = false;
-      }catch(e){
-        console.error(e);
-        setWarn("Audio failed to start. Click play again.");
-      }
-    });
-
-    $("abStopBtn").addEventListener("click", stopPlayback);
-
-    $("pref").addEventListener("change", refreshABUI);
-
-    function currentConditionSnapshot(){
+    function getCurrentRemixMeta(){
       return {
         style: $("style").value,
         strength: Number($("strength").value),
@@ -2002,274 +1894,247 @@
       };
     }
 
-    $("saveABBtn").addEventListener("click", () => {
-      if (!abActive) return;
-      const pref = $("pref").value;
-      if (!pref || qStars<=0 || cStars<=0 || coStars<=0) return;
+    function setSelectedDetails(item){
+      const has = !!item;
 
-      const chosen = pref === "tie" ? "tie" : (pref === "A" ? mapA : mapB);
-      const entry = {
-        ts: new Date().toISOString(),
-        abId,
-        mapping: { A: mapA, B: mapB },
-        pref,
-        chosen,
-        ratings: { quality: qStars, creativity: cStars, coherence: coStars },
-        comment: ($("abComment").value || "").trim(),
-        file: statFile.textContent || "",
-        bpm: bpm,
-        keyGuess: statKey.textContent || "",
-        condition: currentConditionSnapshot()
-      };
+      $("selTitle").disabled = !has;
+      $("bankPlayBtn").disabled = !has;
+      $("bankStopBtn").disabled = !has;
+      $("bankDownloadBtn").disabled = !has;
+      $("bankRenameBtn").disabled = !has;
+      $("bankDeleteBtn").disabled = !has;
 
-      const list = loadAB();
-      list.push(entry);
-      saveAB(list);
+      if (!has){
+        $("bankSelectedHint").textContent = "Pick a saved remix to manage it";
+        $("selTitle").value = "";
+        $("selStyle").textContent = "style: —";
+        $("selKey").textContent = "key: —";
+        $("selBpm").textContent = "bpm: —";
+        $("selStrength").textContent = "strength: —";
+        $("selWhen").textContent = "—";
+        return;
+      }
 
-      setOk("Saved A/B result. Evidence plots updated.");
-      abActive = false;
-      abId = null; mapA=null; mapB=null;
-      refreshABUI();
-      renderABTable();
-      renderEvidence();
-    });
+      $("bankSelectedHint").textContent = "Manage this saved remix";
+      $("selTitle").value = item.title || "Untitled Remix";
+      $("selStyle").textContent = `style: ${item.info?.style || "—"}`;
+      $("selKey").textContent = `key: ${item.info?.key || "—"}`;
+      $("selBpm").textContent = `bpm: ${Math.round(item.info?.bpm || 0) || "—"}`;
+      $("selStrength").textContent = `strength: ${Number(item.info?.strength ?? 0).toFixed(2)}`;
+      $("selWhen").textContent = `Saved: ${fmtWhen(item.ts)}`;
+    }
 
-    $("clearABBtn").addEventListener("click", () => {
-      localStorage.removeItem(AB_KEY);
-      setOk("Cleared local A/B results.");
-      renderABTable();
-      renderEvidence();
-    });
+    function renderBank(){
+      const list = loadBank().sort((a,b)=> (b.ts||"").localeCompare(a.ts||""));
+      const wrap = $("bankList");
+      const empty = $("bankEmpty");
 
-    function exportCSV(filename, rows){
-      const csv = rows.map(r => r.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
+      if (!list.length){
+        wrap.innerHTML = "";
+        empty.style.display = "block";
+        wrap.appendChild(empty);
+        selectedBankId = null;
+        setSelectedDetails(null);
+        return;
+      }
+
+      empty.style.display = "none";
+      wrap.innerHTML = "";
+
+      // keep selection if possible
+      if (selectedBankId && !list.some(x => x.id === selectedBankId)) selectedBankId = null;
+      if (!selectedBankId) selectedBankId = list[0].id;
+
+      for (const item of list){
+        const row = document.createElement("div");
+        row.className = "bankItem" + (item.id === selectedBankId ? " active" : "");
+        row.setAttribute("role","listitem");
+
+        const left = document.createElement("div");
+        left.style.minWidth = "0";
+
+        const title = document.createElement("div");
+        title.className = "bankTitle";
+        title.textContent = item.title || "Untitled Remix";
+
+        const meta = document.createElement("div");
+        meta.className = "bankMeta";
+        const bpmTxt = item.info?.bpm ? `${Math.round(item.info.bpm)}bpm` : "—bpm";
+        const keyTxt = item.info?.key || "—";
+        const stTxt = `strength ${Number(item.info?.strength ?? 0).toFixed(2)}`;
+        const when = fmtWhen(item.ts);
+        meta.textContent = `${keyTxt} • ${bpmTxt} • ${item.info?.style || "—"} • ${stTxt}\n${when}`;
+
+        left.appendChild(title);
+        left.appendChild(meta);
+
+        const right = document.createElement("div");
+        right.style.display = "flex";
+        right.style.flexDirection = "column";
+        right.style.gap = "6px";
+        right.style.alignItems = "flex-end";
+
+        const chip1 = document.createElement("span");
+        chip1.className = "chip green";
+        chip1.textContent = (item.info?.style || "—").toUpperCase();
+
+        const chip2 = document.createElement("span");
+        chip2.className = "chip red";
+        chip2.textContent = (item.info?.key || "—");
+
+        right.appendChild(chip1);
+        right.appendChild(chip2);
+
+        row.appendChild(left);
+        row.appendChild(right);
+
+        row.addEventListener("click", ()=>{
+          selectedBankId = item.id;
+          renderBank();
+        });
+
+        wrap.appendChild(row);
+      }
+
+      const selected = list.find(x => x.id === selectedBankId) || null;
+      setSelectedDetails(selected);
+    }
+
+    function getSelectedBankItem(){
+      const list = loadBank();
+      return list.find(x => x.id === selectedBankId) || null;
+    }
+
+    function downloadMidiBytes(bytes, filename){
+      const blob = new Blob([bytes], { type: "audio/midi" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); a.remove();
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
       setTimeout(()=>URL.revokeObjectURL(url), 1000);
     }
 
-    $("exportABBtn").addEventListener("click", () => {
-      const list = loadAB();
-      if (!list.length){ setWarn("No A/B results to export yet."); return; }
+    $("saveToBankBtn").addEventListener("click", () => {
+      if (!midiOut) return;
+      try{
+        const bytes = midiOut.toArray(); // Uint8Array
+        const b64 = bytesToBase64(bytes);
 
-      const header = [
-        "ts","abId","pref","chosen","mapA","mapB",
-        "quality","creativity","coherence",
-        "style","strength","swing","humanize","mode","keyOverride","barsize",
-        "lockToScale","preferPentatonic",
-        "file","bpm","keyGuess","comment"
-      ];
+        const info = {
+          bpm: bpm,
+          key: statKey.textContent === "—" ? "" : statKey.textContent,
+          style: $("style").value,
+          strength: Number($("strength").value),
+          duration: (Number.parseFloat((statDur.textContent||"").replace("s","")) || null)
+        };
 
-      const rows = [header];
-      for (const r of list){
-        rows.push([
-          r.ts, r.abId, r.pref, r.chosen, r.mapping?.A, r.mapping?.B,
-          r.ratings?.quality, r.ratings?.creativity, r.ratings?.coherence,
-          r.condition?.style, r.condition?.strength, r.condition?.swing, r.condition?.humanize,
-          r.condition?.mode, r.condition?.keyOverride, r.condition?.barsize,
-          r.condition?.lockToScale, r.condition?.preferPentatonic,
-          r.file, r.bpm, r.keyGuess, r.comment
-        ]);
+        const titleRaw = ($("bankName").value || "").trim();
+        const title =
+          titleRaw ||
+          `Remix • ${info.style.toUpperCase()} • ${Math.round(info.bpm)}bpm`;
+
+        const item = {
+          id: `bank_${Date.now().toString(16)}_${Math.random().toString(16).slice(2,8)}`,
+          ts: new Date().toISOString(),
+          title,
+          info,
+          condition: getCurrentRemixMeta(),
+          midiB64: b64
+        };
+
+        const list = loadBank();
+        list.push(item);
+        saveBank(list);
+
+        $("bankName").value = "";
+        selectedBankId = item.id;
+        renderBank();
+        setOk("Saved remix to bank.");
+      }catch(e){
+        console.error(e);
+        setWarn("Failed to save to bank (unexpected).");
       }
-      exportCSV("remix_ab_results.csv", rows);
-      setOk("Exported A/B results CSV.");
     });
 
-    function renderABTable(){
-      const list = loadAB();
-      const body = $("abTable");
-      if (!list.length){
-        body.innerHTML = `<tr><td colspan="3" class="tiny">No study results yet.</td></tr>`;
+    $("bankRefreshBtn").addEventListener("click", () => renderBank());
+
+    $("bankPlayBtn").addEventListener("click", async () => {
+      const item = getSelectedBankItem();
+      if (!item) return;
+      try{
+        setWarn(null);
+        await ensureAudio();
+        const bytes = base64ToBytes(item.midiB64);
+        const m = new Midi(bytes);
+        playMidi(m);
+        $("bankStopBtn").disabled = false;
+      }catch(e){
+        console.error(e);
+        setWarn("Could not play saved remix. Try refreshing / re-saving.");
+      }
+    });
+
+    $("bankStopBtn").addEventListener("click", stopPlayback);
+
+    $("bankDownloadBtn").addEventListener("click", () => {
+      const item = getSelectedBankItem();
+      if (!item) return;
+      try{
+        const bytes = base64ToBytes(item.midiB64);
+        const safe = (item.title || "remix").replace(/[^\w\- ]+/g,"").trim().slice(0,50) || "remix";
+        downloadMidiBytes(bytes, `${safe}.mid`);
+        setOk("Downloaded saved remix MIDI.");
+      }catch(e){
+        console.error(e);
+        setWarn("Download failed for this bank item.");
+      }
+    });
+
+    $("bankRenameBtn").addEventListener("click", () => {
+      const item = getSelectedBankItem();
+      if (!item) return;
+      const newTitle = ($("selTitle").value || "").trim();
+      if (!newTitle){
+        setWarn("Enter a title to rename.");
         return;
       }
-      const view = list.slice(-10).reverse();
-      body.innerHTML = view.map(r => {
-        const winner = r.chosen === "tie" ? "Tie" : (r.chosen === "remix" ? "Remix" : "Original");
-        const cond = `${r.condition?.style || "—"} • ${r.condition?.mode || "—"} • strength ${Number(r.condition?.strength ?? 0).toFixed(2)} • bpm ${Math.round(r.bpm || 0)}`;
-        return `
-          <tr>
-            <td class="tiny">${fmtWhen(r.ts)}</td>
-            <td><strong>${winner}</strong></td>
-            <td class="tiny">${cond}</td>
-          </tr>
-        `;
-      }).join("");
-    }
+      const list = loadBank();
+      const idx = list.findIndex(x => x.id === item.id);
+      if (idx < 0) return;
+      list[idx].title = newTitle;
+      saveBank(list);
+      renderBank();
+      setOk("Renamed bank item.");
+    });
 
-    // ------------------------------------------------------------
-    // Evidence plots (simple canvas charts)
-    // ------------------------------------------------------------
-    function fitCanvas(canvas, cssH){
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const w = Math.max(320, Math.floor(canvas.getBoundingClientRect().width));
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(cssH * dpr);
-      const ctx = canvas.getContext("2d");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { ctx, w, h: cssH };
-    }
+    $("bankDeleteBtn").addEventListener("click", () => {
+      const item = getSelectedBankItem();
+      if (!item) return;
+      const list = loadBank().filter(x => x.id !== item.id);
+      saveBank(list);
+      selectedBankId = null;
+      renderBank();
+      setOk("Deleted bank item.");
+    });
 
-    function roundRect(ctx, x, y, w, h, r){
-      const rr = Math.min(r, w/2, h/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr, y);
-      ctx.arcTo(x+w, y, x+w, y+h, rr);
-      ctx.arcTo(x+w, y+h, x, y+h, rr);
-      ctx.arcTo(x, y+h, x, y, rr);
-      ctx.arcTo(x, y, x+w, y, rr);
-      ctx.closePath();
-    }
-
-    function barChart(canvas, title, labels, values, options={}){
-      const { ctx, w, h } = fitCanvas(canvas, 220);
-      ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "rgba(6,6,16,0.82)";
-      ctx.fillRect(0,0,w,h);
-
-      const padL = 46, padR = 12, padT = 30, padB = 44;
-      const innerW = w - padL - padR;
-      const innerH = h - padT - padB;
-
-      ctx.fillStyle = "rgba(238,240,255,0.90)";
-      ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto";
-      ctx.fillText(title, 12, 18);
-
-      const maxV = Math.max(1e-9, ...values);
-      const n = values.length;
-      const gap = 10;
-      const barW = Math.max(10, (innerW - gap*(n-1)) / n);
-
-      ctx.strokeStyle = "rgba(255,255,255,0.10)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(padL, padT);
-      ctx.lineTo(padL, padT + innerH);
-      ctx.lineTo(padL + innerW, padT + innerH);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(238,240,255,0.60)";
-      ctx.font = "11px system-ui, -apple-system, Segoe UI, Roboto";
-      for(let t=0; t<=2; t++){
-        const v = maxV * (t/2);
-        const y = padT + innerH - innerH*(t/2);
-        ctx.fillText((options.percent ? `${Math.round(v*100)}%` : v.toFixed(1).replace(".0","")), 10, y+4);
-        ctx.strokeStyle = "rgba(255,255,255,0.06)";
-        ctx.beginPath();
-        ctx.moveTo(padL, y);
-        ctx.lineTo(padL + innerW, y);
-        ctx.stroke();
-      }
-
-      for(let i=0;i<n;i++){
-        const v = values[i];
-        const bh = (v/maxV)*innerH;
-        const x = padL + i*(barW+gap);
-        const y = padT + innerH - bh;
-
-        ctx.fillStyle = options.alt && options.alt[i] ? "rgba(120,255,200,0.26)" : "rgba(200,120,255,0.30)";
-        ctx.strokeStyle = options.alt && options.alt[i] ? "rgba(120,255,200,0.70)" : "rgba(200,120,255,0.78)";
-        roundRect(ctx, x, y, barW, bh, 10);
-        ctx.fill(); ctx.stroke();
-
-        ctx.save();
-        ctx.translate(x + barW/2, padT + innerH + 18);
-        ctx.rotate(-0.25);
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(238,240,255,0.70)";
-        ctx.font = "11px system-ui, -apple-system, Segoe UI, Roboto";
-        ctx.fillText(labels[i], 0, 0);
-        ctx.restore();
-      }
-    }
-
-    function renderEvidence(){
-      const list = loadAB();
-      $("nTests").textContent = String(list.length);
-
-      const remixWins = list.filter(r => r.chosen === "remix").length;
-      const origWins  = list.filter(r => r.chosen === "orig").length;
-      const ties      = list.filter(r => r.chosen === "tie").length;
-
-      const totalNoTies = Math.max(1, remixWins + origWins);
-      const remixWinPct = (remixWins / totalNoTies);
-      $("remixWinPct").textContent = `${Math.round(remixWinPct*100)}%`;
-
-      barChart(
-        $("plotPref"),
-        "Preference outcomes (count)",
-        ["Remix", "Original", "Tie"],
-        [remixWins, origWins, ties],
-        { alt: [true,false,false] }
-      );
-
-      function avgFor(winner, key){
-        const rows = list.filter(r => r.chosen === winner);
-        if (!rows.length) return 0;
-        return rows.reduce((a,r)=>a + (r.ratings?.[key] || 0),0) / rows.length;
-      }
-      const avgRemixQ = avgFor("remix","quality");
-      const avgOrigQ  = avgFor("orig","quality");
-      const avgRemixC = avgFor("remix","creativity");
-      const avgOrigC  = avgFor("orig","creativity");
-      const avgRemixCo= avgFor("remix","coherence");
-      const avgOrigCo = avgFor("orig","coherence");
-
-      barChart(
-        $("plotAvg"),
-        "Average ratings by winner (1–5)",
-        ["Q Remix","Q Orig","Cr Remix","Cr Orig","Co Remix","Co Orig"],
-        [avgRemixQ, avgOrigQ, avgRemixC, avgOrigC, avgRemixCo, avgOrigCo],
-        { alt: [true,false,true,false,true,false] }
-      );
-
-      const styles = ["lofi","edm","baroque"];
-      const styleLabels = ["Lofi","EDM","Baroque"];
-      const styleRates = styles.map(s => {
-        const rows = list.filter(r => (r.condition?.style === s) && r.chosen !== "tie");
-        if (!rows.length) return 0;
-        const wins = rows.filter(r => r.chosen === "remix").length;
-        return wins / rows.length;
-      });
-      barChart($("plotStyle"), "Remix win-rate by style", styleLabels, styleRates, { percent:true, alt:[true,true,true] });
-
-      const buckets = ["0.0–0.25","0.25–0.5","0.5–0.75","0.75–1.0"];
-      const bucketRates = buckets.map((_,i)=>{
-        const lo = i*0.25;
-        const hi = (i+1)*0.25 + 1e-9;
-        const rows = list.filter(r => {
-          const st = Number(r.condition?.strength ?? 0);
-          return st >= lo && st < hi && r.chosen !== "tie";
-        });
-        if (!rows.length) return 0;
-        const wins = rows.filter(r => r.chosen === "remix").length;
-        return wins / rows.length;
-      });
-      barChart($("plotStrength"), "Remix win-rate by strength bucket", buckets, bucketRates, { percent:true, alt:[true,true,true,true] });
-
-      const stylePairs = styleLabels.map((lab,i)=>({lab, rate: styleRates[i]})).sort((a,b)=>b.rate-a.rate);
-      $("bestStyle").textContent = stylePairs[0]?.lab || "—";
-      const bestBucketIdx = bucketRates.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v)[0]?.i ?? null;
-      $("bestStrength").textContent = (bestBucketIdx == null) ? "—" : buckets[bestBucketIdx];
-    }
-
-    window.addEventListener("resize", renderEvidence);
+    $("bankClearAllBtn").addEventListener("click", () => {
+      localStorage.removeItem(BANK_KEY);
+      selectedBankId = null;
+      renderBank();
+      setOk("Cleared entire bank.");
+    });
 
     // ------------------------------------------------------------
     // Initial render
     // ------------------------------------------------------------
     function updateAll(){
       updateReadyState();
-      refreshABUI();
-      renderABTable();
-      renderEvidence();
+      renderBank();
     }
     updateAll();
-
-    // Ensure AB enabled after remix
-    $("remixBtn").addEventListener("click", ()=>{ setTimeout(()=>{ updateReadyState(); refreshABUI(); }, 0); });
 
     // Monitor slider labels
     ["style","barsize","strength","swing","humanize","keyOverride","modeOverride","lockToScale","preferPentatonic"].forEach(id=>{
@@ -2279,4 +2144,5 @@
   </script>
 </body>
 </html>
+
 
