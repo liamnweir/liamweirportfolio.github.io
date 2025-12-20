@@ -144,7 +144,6 @@
       filter:brightness(1.06);
     }
 
-    /* Range slider fill full track */
     input[type="range"]{
       -webkit-appearance:none;
       appearance:none;
@@ -227,7 +226,7 @@
     .warn{border: 1px solid var(--warnBorder); background: var(--warnBg); color: #ffe9da;}
     .ok{border: 1px solid var(--okBorder); background: var(--ok); color: rgba(220,255,235,.96);}
 
-    /* Better-looking log (FIXED HEIGHT so it never pushes other UI down) */
+    /* FIXED HEIGHT LOG: scroll inside, never pushes UI */
     .log{
       margin: 10px 0 0;
       padding: 12px 12px 12px;
@@ -239,7 +238,6 @@
         rgba(0,0,0,.35);
       color: rgba(238,240,255,.92);
 
-      /* key change: keep it contained */
       height: 240px;
       max-height: 240px;
       overflow: auto;
@@ -274,12 +272,7 @@
     .k{color: var(--muted)}
     .v{font-weight: 950}
 
-    /* Samples + Bank list UI */
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    .list{display:flex; flex-direction:column; gap:10px;}
     .item{
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.20);
@@ -313,18 +306,8 @@
       align-items:center;
       flex: 0 0 auto;
     }
-    .btn.xs{
-      padding: 8px 10px;
-      border-radius: 12px;
-      font-size: .88rem;
-      font-weight: 950;
-    }
-    .inline{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    .btn.xs{padding: 8px 10px; border-radius: 12px; font-size: .88rem; font-weight: 950;}
+    .inline{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
     .pill{
       display:inline-block;
       padding: 6px 10px;
@@ -498,14 +481,6 @@
   </div>
 
   <script>
-    // ============================================================
-    // TEMPO FIX (keeps uploaded MIDI tempo unchanged in remix)
-    // ------------------------------------------------------------
-    // - Clone original header (tempo map / PPQ)
-    // - Do NOT call header.setTempo on output
-    // - Write notes using ticks (seconds -> ticks using header map)
-    // ============================================================
-
     const $ = (id) => document.getElementById(id);
     const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
@@ -526,7 +501,7 @@
     }
 
     // ---------------------------
-    // Better Log
+    // Log (fixed height; scroll inside)
     // ---------------------------
     function logClear(){ $("log").innerHTML = ""; }
     function escapeHtml(s){
@@ -547,9 +522,9 @@
         `<span class="ts">[${time}]</span> ` +
         `<span class="tag ${tag}">${tag.toUpperCase()}</span>` +
         `<span>${escapeHtml(msg)}</span>`;
-      wrap.appendChild(line);
-      // keep the scroll pinned to the bottom unless user has scrolled up
+
       const nearBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 40;
+      wrap.appendChild(line);
       if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
     }
 
@@ -637,7 +612,6 @@
       return best;
     }
 
-    // Krumhansl-Schmuckler-ish
     const KS_MAJOR = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
     const KS_MINOR = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
 
@@ -689,7 +663,7 @@
     }
 
     // ---------------------------
-    // TEMPO-SAFE MIDI WRITING HELPERS
+    // TEMPO-SAFE MIDI WRITING
     // ---------------------------
     function headerSecondsToTicks(header, sec){
       if (header && typeof header.secondsToTicks === "function"){
@@ -817,19 +791,15 @@
       chordPlan[chordPlan.length-1].chord = tonic;
 
       const out = new Midi();
-
-      // Clone original header (tempo map / ppq / etc). Do NOT set tempo.
       try{ out.header.fromJSON(m.header.toJSON()); }catch(e){}
 
-      // Melody
       const melT = out.addTrack(); melT.name = "Melody";
       const mel = improveMelody(
         melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 })),
         keyPc, modeName, strength
       );
       for (const n of mel){
-        addNoteBySeconds(
-          melT, out.header,
+        addNoteBySeconds(out.tracks[out.tracks.length-1], out.header,
           n.midi,
           Math.max(0, n.time),
           Math.max(0.03, n.duration ?? 0.12),
@@ -837,7 +807,6 @@
         );
       }
 
-      // Chords
       const chT = out.addTrack(); chT.name = "Chords";
       for (const slot of chordPlan){
         const center = (style==="baroque") ? 58 : 60;
@@ -868,7 +837,6 @@
         }
       }
 
-      // Bass (still piano in playback; it's all one instrument now)
       const baT = out.addTrack(); baT.name = "Bass";
       for (let i=0;i<chordPlan.length;i++){
         const slot = chordPlan[i];
@@ -901,14 +869,12 @@
     }
 
     // ---------------------------
-    // Tone.js playback (ONE GOOD-SOUNDING PIANO for EVERYTHING)
+    // Tone.js playback: ONE piano for everything (fixed)
     // ---------------------------
     let audioReady = false;
-
-    // one instrument only
     let piano = null;
+    let pianoIsLoaded = false;
 
-    // gentle mastering chain
     let masterGain = null;
     let limiter = null;
     let reverb = null;
@@ -916,15 +882,8 @@
 
     let part = null;
 
-    // sampler loading promise
-    let pianoLoadPromise = null;
-
     function createPianoSampler(){
-      // Salamander Grand Piano samples (widely used in demos)
-      // Using only a subset of mapped notes keeps download reasonable.
-      // Tone.Sampler will pitch-shift between these.
       const baseUrl = "https://tonejs.github.io/audio/salamander/";
-
       return new Tone.Sampler({
         urls: {
           A0: "A0.mp3",
@@ -957,7 +916,7 @@
         },
         baseUrl,
         release: 1.2,
-        onload: () => {}
+        onload: () => { pianoIsLoaded = true; }
       });
     }
 
@@ -965,11 +924,9 @@
       if (Tone.context.state !== "running") await Tone.start();
       if (audioReady) return;
 
-      // master chain (smooth + not harsh)
       masterGain = new Tone.Gain(0.9).toDestination();
       limiter = new Tone.Limiter(-1.5).connect(masterGain);
 
-      // soften brightness a bit (helps the ears)
       toneFilter = new Tone.Filter({
         type: "lowpass",
         frequency: 11000,
@@ -983,42 +940,30 @@
         wet: 0.22
       }).connect(toneFilter);
 
-      // create + load sampler
       piano = createPianoSampler();
-      piano.volume.value = -8; // keep overall level safe
-
-      // connect to reverb
+      piano.volume.value = -8;
       piano.connect(reverb);
 
-      pianoLoadPromise = new Promise((resolve) => {
-        // Tone.Sampler doesn't always expose a promise; onload is reliable
-        piano.onload = () => resolve(true);
-        // if already loaded (cache), resolve quickly
-        if (piano.loaded) resolve(true);
-      });
-
+      // IMPORTANT: wait for buffers properly
       try{
-        await pianoLoadPromise;
+        await Tone.loaded();
+        pianoIsLoaded = true;
       }catch(e){
-        // ignore; we'll still try to play and warn
+        // if loading fails, we still keep UI alive and warn
+        pianoIsLoaded = false;
       }
 
       audioReady = true;
     }
 
     function stopAllSound(tag="stop"){
-      try{
-        if (part){ part.stop(); part.dispose(); part = null; }
-      }catch(e){}
-
+      try{ if (part){ part.stop(); part.dispose(); part = null; } }catch(e){}
       try{
         Tone.Transport.stop();
         Tone.Transport.cancel(0);
         Tone.Transport.position = 0;
       }catch(e){}
-
       try{ piano?.releaseAll?.(); }catch(e){}
-
       $("stopBtn").disabled = true;
       logLine("Stopped playback.", tag);
     }
@@ -1048,7 +993,6 @@
       Tone.Transport.cancel(0);
       Tone.Transport.position = 0;
 
-      // NOTE: One instrument for EVERYTHING (original + remix + all tracks)
       const events = notes.map(n => ({
         time: Math.max(0, n.time),
         midi: clamp(Math.round(n.midi), 21, 108),
@@ -1058,7 +1002,6 @@
 
       part = new Tone.Part((time, v) => {
         const nn = midiToNoteName(v.midi);
-        // slight velocity curve so quiet notes are still audible but not harsh
         const vel = clamp(Math.pow(v.vel, 0.85), 0.05, 1.0);
         piano.triggerAttackRelease(nn, v.dur, time, vel);
       }, events);
@@ -1131,7 +1074,7 @@
     });
 
     // ---------------------------
-    // Samples (no-upload)
+    // Samples
     // ---------------------------
     function makeSampleMidi(sampleId){
       const cfg = {
@@ -1147,7 +1090,6 @@
       const bar = 4 * beat;
       const bars = 8;
 
-      // Use ticks writing to avoid tempo weirdness (header in samples is default)
       const prevBpm = bpm;
       bpm = cfg.tempo;
 
@@ -1168,11 +1110,7 @@
       return { midi: m, title: cfg.title, tempo: cfg.tempo, keyText: cfg.key };
     }
 
-    const SAMPLE_DEFS = [
-      { id:"popC"   },
-      { id:"minorA" },
-      { id:"riffD"  }
-    ];
+    const SAMPLE_DEFS = [{ id:"popC" },{ id:"minorA" },{ id:"riffD" }];
 
     function renderSamples(){
       const wrap = $("samples");
@@ -1210,8 +1148,8 @@
           try{
             stopAllSound("stop");
             await ensureAudio();
-            if (!piano || !piano.loaded){
-              setWarn("Piano is still loading samples—try Play again in a second.");
+            if (!pianoIsLoaded){
+              setWarn("Piano samples failed to load (network/CORS). Try refreshing or try again.");
               return;
             }
             playMidi(sample.midi);
@@ -1278,8 +1216,8 @@
       setWarn(null);
       try{
         await ensureAudio();
-        if (!piano || !piano.loaded){
-          setWarn("Piano is still loading samples—try Play again in a second.");
+        if (!pianoIsLoaded){
+          setWarn("Piano samples didn’t load (network/CORS). Refresh and try again.");
           return;
         }
         playMidi(midiIn);
@@ -1295,8 +1233,8 @@
       setWarn(null);
       try{
         await ensureAudio();
-        if (!piano || !piano.loaded){
-          setWarn("Piano is still loading samples—try Play again in a second.");
+        if (!pianoIsLoaded){
+          setWarn("Piano samples didn’t load (network/CORS). Refresh and try again.");
           return;
         }
         playMidi(midiOut);
@@ -1321,7 +1259,6 @@
       }
     });
 
-    // keyboard: SPACE stop
     window.addEventListener("keydown", (e) => {
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select") return;
@@ -1329,7 +1266,7 @@
     });
 
     // ---------------------------
-    // Bank (save/play/stop/download/rename)
+    // Bank
     // ---------------------------
     const BANK_KEY = "liam_remix_bank_v2";
     let bankNowPlayingId = null;
@@ -1339,9 +1276,7 @@
         const raw = localStorage.getItem(BANK_KEY);
         const arr = JSON.parse(raw || "[]");
         return Array.isArray(arr) ? arr : [];
-      }catch(e){
-        return [];
-      }
+      }catch(e){ return []; }
     }
     function saveBank(arr){ localStorage.setItem(BANK_KEY, JSON.stringify(arr)); }
 
@@ -1438,8 +1373,8 @@
           try{
             setWarn(null);
             await ensureAudio();
-            if (!piano || !piano.loaded){
-              setWarn("Piano is still loading samples—try Play again in a second.");
+            if (!pianoIsLoaded){
+              setWarn("Piano samples didn’t load (network/CORS). Refresh and try again.");
               return;
             }
             const bytes = base64ToBytes(item.midiB64);
@@ -1569,6 +1504,7 @@
   </script>
 </body>
 </html>
+
 
 
 
