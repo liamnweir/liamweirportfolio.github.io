@@ -227,7 +227,7 @@
     .warn{border: 1px solid var(--warnBorder); background: var(--warnBg); color: #ffe9da;}
     .ok{border: 1px solid var(--okBorder); background: var(--ok); color: rgba(220,255,235,.96);}
 
-    /* Better-looking log */
+    /* Better-looking log (FIXED HEIGHT so it never pushes other UI down) */
     .log{
       margin: 10px 0 0;
       padding: 12px 12px 12px;
@@ -238,7 +238,12 @@
         radial-gradient(800px 260px at 90% 0%, rgba(80,255,170,.08), transparent 60%),
         rgba(0,0,0,.35);
       color: rgba(238,240,255,.92);
-      overflow:auto;
+
+      /* key change: keep it contained */
+      height: 240px;
+      max-height: 240px;
+      overflow: auto;
+
       min-height: 160px;
       font-family: var(--mono);
       font-size: .92rem;
@@ -494,19 +499,11 @@
 
   <script>
     // ============================================================
-    // IMPORTANT TEMPO FIX (the bug you described):
+    // TEMPO FIX (keeps uploaded MIDI tempo unchanged in remix)
     // ------------------------------------------------------------
-    // The "super fast" playback was caused by us writing MIDI OUT
-    // using seconds (time/duration) while also touching tempo in
-    // the header in a way that can mismatch how @tonejs/midi
-    // converts between seconds <-> ticks.
-    //
-    // Fix:
-    // 1) We STOP calling header.setTempo(...) entirely.
-    // 2) We clone the original header (tempo map / PPQ / etc).
-    // 3) We write notes using *ticks* (seconds -> ticks using the
-    //    output header's mapping). This preserves original tempo
-    //    for both the submitted MIDI and the remixed MIDI.
+    // - Clone original header (tempo map / PPQ)
+    // - Do NOT call header.setTempo on output
+    // - Write notes using ticks (seconds -> ticks using header map)
     // ============================================================
 
     const $ = (id) => document.getElementById(id);
@@ -551,7 +548,9 @@
         `<span class="tag ${tag}">${tag.toUpperCase()}</span>` +
         `<span>${escapeHtml(msg)}</span>`;
       wrap.appendChild(line);
-      wrap.scrollTop = wrap.scrollHeight;
+      // keep the scroll pinned to the bottom unless user has scrolled up
+      const nearBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 40;
+      if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
     }
 
     function setWarn(msg){
@@ -693,12 +692,10 @@
     // TEMPO-SAFE MIDI WRITING HELPERS
     // ---------------------------
     function headerSecondsToTicks(header, sec){
-      // robustly convert seconds -> ticks based on tempo map
       if (header && typeof header.secondsToTicks === "function"){
         const t = header.secondsToTicks(sec);
         return Math.max(0, Math.round(t));
       }
-      // fallback (should almost never happen)
       const fallbackPpq = header?.ppq || 480;
       const fallbackBpm = bpm || 120;
       const ticks = sec * (fallbackBpm/60) * fallbackPpq;
@@ -714,7 +711,7 @@
         midi: clamp(Math.round(midi), 24, 108),
         ticks,
         durationTicks,
-        velocity: clamp(vel ?? 0.85, 0.1, 1.0)
+        velocity: clamp(vel ?? 0.85, 0.08, 1.0)
       });
     }
 
@@ -797,8 +794,6 @@
 
       beatsPerBar = 4;
 
-      // we keep the ORIGINAL tempo (from the file) for analysis
-      // and we preserve the ORIGINAL header tempo map in the output.
       bpm = getFirstTempo(m);
       const beatSec = 60/Math.max(1,bpm);
       const barSec = beatsPerBar*beatSec;
@@ -823,26 +818,26 @@
 
       const out = new Midi();
 
-      // Clone the original header (tempo map / ppq / etc).
-      // DO NOT call setTempo here.
+      // Clone original header (tempo map / ppq / etc). Do NOT set tempo.
       try{ out.header.fromJSON(m.header.toJSON()); }catch(e){}
 
-      // Melody track (tempo-safe: write using ticks via header mapping)
+      // Melody
       const melT = out.addTrack(); melT.name = "Melody";
       const mel = improveMelody(
         melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 })),
         keyPc, modeName, strength
       );
       for (const n of mel){
-        addNoteBySeconds(melT, out.header,
+        addNoteBySeconds(
+          melT, out.header,
           n.midi,
           Math.max(0, n.time),
           Math.max(0.03, n.duration ?? 0.12),
-          clamp(n.velocity ?? 0.85, 0.1, 1.0)
+          clamp(n.velocity ?? 0.85, 0.08, 1.0)
         );
       }
 
-      // Chords track
+      // Chords
       const chT = out.addTrack(); chT.name = "Chords";
       for (const slot of chordPlan){
         const center = (style==="baroque") ? 58 : 60;
@@ -853,7 +848,7 @@
           const times = [slot.t0, slot.t0 + 2*beatSec];
           for (const tt of times){
             for (const m0 of voiced){
-              addNoteBySeconds(chT, out.header, m0, tt, stabDur, 0.55 + 0.15*strength);
+              addNoteBySeconds(chT, out.header, m0, tt, stabDur, 0.52 + 0.14*strength);
             }
           }
         } else if (style==="baroque"){
@@ -862,18 +857,18 @@
           let i = 0;
           while (t < slot.t1 - 0.02){
             const m0 = voiced[i % voiced.length];
-            addNoteBySeconds(chT, out.header, m0, t, step*0.92, 0.35 + 0.18*strength);
+            addNoteBySeconds(chT, out.header, m0, t, step*0.92, 0.30 + 0.16*strength);
             t += step; i++;
           }
         } else {
           const dur = (slot.t1-slot.t0) * 0.98;
           for (const m0 of voiced){
-            addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.34 + 0.16*strength);
+            addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.30 + 0.15*strength);
           }
         }
       }
 
-      // Bass track
+      // Bass (still piano in playback; it's all one instrument now)
       const baT = out.addTrack(); baT.name = "Bass";
       for (let i=0;i<chordPlan.length;i++){
         const slot = chordPlan[i];
@@ -886,18 +881,18 @@
           const step = 0.5*beatSec;
           let t=slot.t0;
           while (t < slot.t1 - 0.02){
-            addNoteBySeconds(baT, out.header, rootMidi, t, step*0.92, 0.68 + 0.20*strength);
+            addNoteBySeconds(baT, out.header, rootMidi, t, step*0.92, 0.62 + 0.18*strength);
             t += step;
           }
         } else {
           const half = 2*beatSec;
-          addNoteBySeconds(baT, out.header, rootMidi, slot.t0, half*0.98, 0.55 + 0.14*strength);
+          addNoteBySeconds(baT, out.header, rootMidi, slot.t0, half*0.98, 0.54 + 0.12*strength);
           if (strength > 0.25){
             const fifthPc = (rootPc + 7) % 12;
             let fifthMidi = 36 + ((fifthPc - (36%12) + 12)%12);
             while (fifthMidi > 55) fifthMidi -= 12;
             fifthMidi = clamp(fifthMidi, 28, 60);
-            addNoteBySeconds(baT, out.header, fifthMidi, slot.t0 + half, half*0.85, 0.50 + 0.10*strength);
+            addNoteBySeconds(baT, out.header, fifthMidi, slot.t0 + half, half*0.85, 0.48 + 0.10*strength);
           }
         }
       }
@@ -906,50 +901,123 @@
     }
 
     // ---------------------------
-    // Tone.js playback (robust stop)
+    // Tone.js playback (ONE GOOD-SOUNDING PIANO for EVERYTHING)
     // ---------------------------
     let audioReady = false;
-    let lead, pad, bassSynth;
-    let reverb, limiter, masterGain;
+
+    // one instrument only
+    let piano = null;
+
+    // gentle mastering chain
+    let masterGain = null;
+    let limiter = null;
+    let reverb = null;
+    let toneFilter = null;
+
     let part = null;
+
+    // sampler loading promise
+    let pianoLoadPromise = null;
+
+    function createPianoSampler(){
+      // Salamander Grand Piano samples (widely used in demos)
+      // Using only a subset of mapped notes keeps download reasonable.
+      // Tone.Sampler will pitch-shift between these.
+      const baseUrl = "https://tonejs.github.io/audio/salamander/";
+
+      return new Tone.Sampler({
+        urls: {
+          A0: "A0.mp3",
+          C1: "C1.mp3",
+          "D#1": "Ds1.mp3",
+          "F#1": "Fs1.mp3",
+          A1: "A1.mp3",
+          C2: "C2.mp3",
+          "D#2": "Ds2.mp3",
+          "F#2": "Fs2.mp3",
+          A2: "A2.mp3",
+          C3: "C3.mp3",
+          "D#3": "Ds3.mp3",
+          "F#3": "Fs3.mp3",
+          A3: "A3.mp3",
+          C4: "C4.mp3",
+          "D#4": "Ds4.mp3",
+          "F#4": "Fs4.mp3",
+          A4: "A4.mp3",
+          C5: "C5.mp3",
+          "D#5": "Ds5.mp3",
+          "F#5": "Fs5.mp3",
+          A5: "A5.mp3",
+          C6: "C6.mp3",
+          "D#6": "Ds6.mp3",
+          "F#6": "Fs6.mp3",
+          A6: "A6.mp3",
+          C7: "C7.mp3",
+          A7: "A7.mp3"
+        },
+        baseUrl,
+        release: 1.2,
+        onload: () => {}
+      });
+    }
 
     async function ensureAudio(){
       if (Tone.context.state !== "running") await Tone.start();
       if (audioReady) return;
 
-      masterGain = new Tone.Gain(0.95).toDestination();
-      limiter = new Tone.Limiter(-1).connect(masterGain);
-      reverb = new Tone.Reverb({ decay: 2.4, wet: 0.14 }).connect(limiter);
+      // master chain (smooth + not harsh)
+      masterGain = new Tone.Gain(0.9).toDestination();
+      limiter = new Tone.Limiter(-1.5).connect(masterGain);
 
-      lead = new Tone.PolySynth(Tone.Synth, {
-        volume: -12,
-        options: { oscillator:{type:"triangle"}, envelope:{attack:0.01, decay:0.08, sustain:0.20, release:0.6} }
-      }).connect(reverb);
-
-      pad = new Tone.PolySynth(Tone.Synth, {
-        volume: -16,
-        options: { oscillator:{type:"sawtooth"}, envelope:{attack:0.08, decay:0.2, sustain:0.6, release:1.1} }
-      }).connect(reverb);
-
-      bassSynth = new Tone.MonoSynth({
-        volume: -10,
-        oscillator: { type: "sine" },
-        envelope: { attack: 0.01, decay: 0.10, sustain: 0.6, release: 0.12 }
+      // soften brightness a bit (helps the ears)
+      toneFilter = new Tone.Filter({
+        type: "lowpass",
+        frequency: 11000,
+        rolloff: -12,
+        Q: 0.7
       }).connect(limiter);
+
+      reverb = new Tone.Reverb({
+        decay: 3.2,
+        preDelay: 0.015,
+        wet: 0.22
+      }).connect(toneFilter);
+
+      // create + load sampler
+      piano = createPianoSampler();
+      piano.volume.value = -8; // keep overall level safe
+
+      // connect to reverb
+      piano.connect(reverb);
+
+      pianoLoadPromise = new Promise((resolve) => {
+        // Tone.Sampler doesn't always expose a promise; onload is reliable
+        piano.onload = () => resolve(true);
+        // if already loaded (cache), resolve quickly
+        if (piano.loaded) resolve(true);
+      });
+
+      try{
+        await pianoLoadPromise;
+      }catch(e){
+        // ignore; we'll still try to play and warn
+      }
 
       audioReady = true;
     }
 
     function stopAllSound(tag="stop"){
-      try{ if (part){ part.stop(); part.dispose(); part = null; } }catch(e){}
+      try{
+        if (part){ part.stop(); part.dispose(); part = null; }
+      }catch(e){}
+
       try{
         Tone.Transport.stop();
         Tone.Transport.cancel(0);
         Tone.Transport.position = 0;
       }catch(e){}
-      try{ lead?.releaseAll?.(); }catch(e){}
-      try{ pad?.releaseAll?.(); }catch(e){}
-      try{ bassSynth?.triggerRelease?.(); }catch(e){}
+
+      try{ piano?.releaseAll?.(); }catch(e){}
 
       $("stopBtn").disabled = true;
       logLine("Stopped playback.", tag);
@@ -958,25 +1026,17 @@
     function flatten(m){
       const all = [];
       for (const tr of m.tracks){
-        const name = (tr.name||"").toLowerCase();
-        for (const n of (tr.notes||[])){
+        for (const n of (tr.notes || [])){
           all.push({
             midi: n.midi,
             time: n.time ?? 0,
             duration: n.duration ?? 0.1,
-            velocity: n.velocity ?? 0.8,
-            track: name
+            velocity: n.velocity ?? 0.8
           });
         }
       }
       all.sort((a,b)=>a.time-b.time);
       return all;
-    }
-
-    function synthForTrack(name){
-      if (name.includes("bass")) return "bass";
-      if (name.includes("chord") || name.includes("pad")) return "pad";
-      return "lead";
     }
 
     function playMidi(m){
@@ -988,23 +1048,19 @@
       Tone.Transport.cancel(0);
       Tone.Transport.position = 0;
 
+      // NOTE: One instrument for EVERYTHING (original + remix + all tracks)
       const events = notes.map(n => ({
-        time: Math.max(0, n.time), // seconds
-        midi: clamp(Math.round(n.midi), 24, 108),
+        time: Math.max(0, n.time),
+        midi: clamp(Math.round(n.midi), 21, 108),
         dur: Math.max(0.03, n.duration),
-        vel: clamp(n.velocity ?? 0.8, 0.1, 1.0),
-        synth: synthForTrack(n.track)
+        vel: clamp(n.velocity ?? 0.75, 0.06, 1.0)
       }));
 
       part = new Tone.Part((time, v) => {
         const nn = midiToNoteName(v.midi);
-        if (v.synth === "bass"){
-          bassSynth.triggerAttackRelease(nn, v.dur, time, v.vel);
-        } else if (v.synth === "pad"){
-          pad.triggerAttackRelease(nn, v.dur, time, v.vel);
-        } else {
-          lead.triggerAttackRelease(nn, v.dur, time, v.vel);
-        }
+        // slight velocity curve so quiet notes are still audible but not harsh
+        const vel = clamp(Math.pow(v.vel, 0.85), 0.05, 1.0);
+        piano.triggerAttackRelease(nn, v.dur, time, vel);
       }, events);
 
       part.start(0);
@@ -1077,10 +1133,6 @@
     // ---------------------------
     // Samples (no-upload)
     // ---------------------------
-    function addNoteSecondsSafe(track, header, midi, time, dur, vel=0.85){
-      addNoteBySeconds(track, header, midi, time, dur, vel);
-    }
-
     function makeSampleMidi(sampleId){
       const cfg = {
         popC:   { title:"Pop-ish Melody (C major)", key:"C major", tempo:110, seq:[60,64,67,69,67,64,62,60] },
@@ -1089,18 +1141,13 @@
       }[sampleId];
 
       const m = new Midi();
-      // For samples, set a single tempo *safely* by writing header JSON:
-      // @tonejs/midi supports header.tempos; simplest: add tempo event via header.setTempo if available,
-      // but since tempo-setting semantics can vary, we instead:
-      // - leave default, and encode times in ticks using our conversion fallback with known bpm.
-      // We'll still store cfg.tempo separately for display/analysis.
       const t = m.addTrack(); t.name = cfg.title;
 
       const beat = 60 / cfg.tempo;
       const bar = 4 * beat;
       const bars = 8;
 
-      // Use the sample's bpm for fallback conversion (since header tempo might be default)
+      // Use ticks writing to avoid tempo weirdness (header in samples is default)
       const prevBpm = bpm;
       bpm = cfg.tempo;
 
@@ -1113,7 +1160,7 @@
           const vel = 0.78 + 0.10*Math.sin((b+i)*0.7);
 
           if (sampleId==="riffD" && (i===2 || i===6) && (b%2===1)) continue;
-          addNoteSecondsSafe(t, m.header, n, time, dur, vel);
+          addNoteBySeconds(t, m.header, n, time, dur, vel);
         }
       }
 
@@ -1163,6 +1210,10 @@
           try{
             stopAllSound("stop");
             await ensureAudio();
+            if (!piano || !piano.loaded){
+              setWarn("Piano is still loading samples—try Play again in a second.");
+              return;
+            }
             playMidi(sample.midi);
             logLine(`Playing sample: ${sample.title}`, "play");
           }catch(e){
@@ -1227,8 +1278,12 @@
       setWarn(null);
       try{
         await ensureAudio();
+        if (!piano || !piano.loaded){
+          setWarn("Piano is still loading samples—try Play again in a second.");
+          return;
+        }
         playMidi(midiIn);
-        logLine("Playing original.", "play");
+        logLine("Playing original (piano).", "play");
       }catch(e){
         console.error(e);
         setWarn("Audio failed to start. Click play again.");
@@ -1240,8 +1295,12 @@
       setWarn(null);
       try{
         await ensureAudio();
+        if (!piano || !piano.loaded){
+          setWarn("Piano is still loading samples—try Play again in a second.");
+          return;
+        }
         playMidi(midiOut);
-        logLine("Playing remix.", "play");
+        logLine("Playing remix (piano).", "play");
       }catch(e){
         console.error(e);
         setWarn("Audio failed to start. Click play again.");
@@ -1379,11 +1438,15 @@
           try{
             setWarn(null);
             await ensureAudio();
+            if (!piano || !piano.loaded){
+              setWarn("Piano is still loading samples—try Play again in a second.");
+              return;
+            }
             const bytes = base64ToBytes(item.midiB64);
             const m = new Midi(bytes);
             playMidi(m);
             bankNowPlayingId = item.id;
-            logLine(`Playing bank item: ${item.title || "Untitled"}`, "play");
+            logLine(`Playing bank item (piano): ${item.title || "Untitled"}`, "play");
           }catch(e){
             console.error(e);
             setWarn("Could not play saved remix. Try refreshing or re-saving.");
@@ -1499,12 +1562,14 @@
     // Init
     // ---------------------------
     logLine("Ready. Load a sample or upload a MIDI.", "info");
+    logLine("Playback is a single grand piano + reverb for all tracks.", "info");
     renderSamples();
     renderBank();
     updateReady();
   </script>
 </body>
 </html>
+
 
 
 
