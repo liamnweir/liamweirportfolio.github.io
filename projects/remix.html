@@ -12,26 +12,20 @@
 
   <style>
     :root{
-      /* Base */
       --bg0:#070712;
       --bg1:#0b0820;
       --bg2:#120a2c;
-
       --panel: rgba(255,255,255,.055);
       --panel2: rgba(255,255,255,.038);
       --border: rgba(255,255,255,.12);
-
       --text:#eef0ff;
       --muted:rgba(238,240,255,.78);
       --muted2:rgba(238,240,255,.62);
-
       --shadow: 0 30px 70px rgba(0,0,0,.52);
-      --r: 20px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --r: 18px;
 
-      /* NEW color accents */
-      --redA: rgba(255, 90, 120, .24);
-      --redB: rgba(255, 140, 80, .18);
+      --redA: rgba(255, 90, 120, .22);
+      --redB: rgba(255, 140, 80, .16);
       --redBorder: rgba(255, 90, 120, .55);
 
       --greenA: rgba(80, 255, 170, .18);
@@ -42,10 +36,10 @@
       --okBorder: rgba(120,255,190,.28);
       --warnBg: rgba(255,170,120,.10);
       --warnBorder: rgba(255,170,120,.32);
-    }
 
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -55,11 +49,9 @@
         radial-gradient(860px 520px at 92% 0%, rgba(80, 255, 170, .14), transparent 62%),
         radial-gradient(980px 640px at 50% 110%, rgba(255, 140, 80, .10), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1) 50%, var(--bg2));
-      overflow-x:hidden;
     }
     a{color:inherit}
 
-    /* Topbar */
     .topbar{
       position:sticky; top:0; z-index:10;
       background: rgba(10, 8, 26, .78);
@@ -68,12 +60,7 @@
       padding: 14px 16px;
       display:flex; align-items:center; justify-content:space-between; gap:12px;
     }
-    .navL{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .brand{
-      font-weight: 950;
-      letter-spacing:.2px;
-      display:flex; align-items:center; gap:10px;
-    }
+    .brand{font-weight: 950; display:flex; align-items:center; gap:10px}
     .dot{
       width:10px; height:10px; border-radius:999px;
       background: linear-gradient(135deg, rgba(255, 90, 120,.95), rgba(80,255,170,.95));
@@ -87,77 +74,32 @@
       background: rgba(255,255,255,.05);
       border: 1px solid rgba(255,255,255,.12);
       color: rgba(238,240,255,.92);
-      transition: transform .12s ease, filter .12s ease;
     }
     .navBtn.primary{
       background: linear-gradient(135deg, var(--redA), var(--redB));
       border: 1px solid var(--redBorder);
     }
-    .navBtn:hover{filter:brightness(1.12); transform: translateY(-1px)}
-    .tiny{font-size:.88rem; color:var(--muted2); font-weight:800}
-
-    .wrap{max-width:1180px; margin:0 auto; padding: 18px 16px 70px}
-
-    /* Header */
+    .wrap{max-width:1100px; margin:0 auto; padding: 18px 16px 70px}
     .hero{
       margin-top: 10px;
       padding: 16px;
       border-radius: var(--r);
       border: 1px solid var(--border);
-      background:
-        radial-gradient(900px 340px at 18% 0%, rgba(255, 90, 120,.16), transparent 60%),
-        radial-gradient(900px 340px at 88% 10%, rgba(80,255,170,.12), transparent 60%),
-        rgba(255,255,255,.035);
+      background: rgba(255,255,255,.035);
       box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
     }
-    .hero::before{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:
-        radial-gradient(circle at 18% 26%, rgba(255, 90, 120,.20), transparent 40%),
-        radial-gradient(circle at 70% 35%, rgba(80,255,170,.16), transparent 45%),
-        radial-gradient(circle at 48% 80%, rgba(255, 140, 80,.10), transparent 45%);
-      filter: blur(12px);
-      transform: rotate(10deg);
-      opacity:.75;
-      pointer-events:none;
-    }
-    .hero > *{position:relative; z-index:1}
-
-    h1{margin: 4px 0 8px; font-size: 2.35rem; letter-spacing:-0.6px}
+    h1{margin: 4px 0 8px; font-size: 2.1rem}
     p{margin: 6px 0; line-height: 1.6; color: var(--muted)}
-
-    .pills{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    .pill{
-      padding: 7px 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: rgba(238,240,255,.80);
-      font-size: .86rem;
-      white-space: nowrap;
-      font-weight: 850;
-    }
-
-    /* Layout grid */
     .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap: 16px; margin-top: 16px}
     @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
 
-    /* Cards */
     .card{
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       padding: 16px;
-      overflow:hidden;
     }
-    .card.soft{ background: var(--panel2); }
-
-    /* NEW: colored widgets */
     .card.remix{
       background:
         radial-gradient(900px 420px at 20% 0%, var(--redA), transparent 60%),
@@ -173,20 +115,13 @@
       border-color: rgba(80,255,170,.34);
     }
 
-    .cardHeader{
-      display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
-      margin-bottom: 10px;
-    }
-    .cardHeader h2{margin:0; font-size: 1.25rem; letter-spacing:-0.2px}
-
-    .divider{border:0; border-top:1px solid rgba(255,255,255,.10); margin: 12px 0}
     .row{display:flex; flex-wrap:wrap; gap: 10px; align-items:flex-end}
     .field{min-width: 220px; flex:1}
-    .field.sm{min-width: 170px; flex: .75}
-    .field.xs{min-width: 140px; flex: .6}
+    .field.sm{min-width: 170px; flex: .8}
+    .field.xs{min-width: 140px; flex: .55}
     .label{font-size:.9rem; color: var(--muted); margin: 0 0 6px; font-weight: 850}
 
-    select,input[type="text"],input[type="number"],input[type="file"],input[type="range"],textarea{
+    select,input[type="text"],input[type="number"],input[type="file"],input[type="range"]{
       width:100%;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.15);
@@ -194,22 +129,7 @@
       color: rgba(238,240,255,.92);
       padding: 10px 12px;
       outline:none;
-      transition: filter .12s ease, border-color .12s ease;
     }
-    .card.remix select:focus,
-    .card.remix input:focus,
-    .card.remix textarea:focus{
-      border-color: rgba(255, 90, 120,.50);
-      filter: brightness(1.06);
-    }
-    .card.stats select:focus,
-    .card.stats input:focus,
-    .card.stats textarea:focus{
-      border-color: rgba(80,255,170,.46);
-      filter: brightness(1.06);
-    }
-
-    textarea{min-height: 84px; resize: vertical}
 
     .btn{
       appearance:none;
@@ -220,18 +140,9 @@
       border-radius: 14px;
       cursor:pointer;
       font-weight: 950;
-      letter-spacing: .2px;
-      transition: transform .12s ease, filter .12s ease;
     }
-    .btn:hover{filter:brightness(1.12); transform: translateY(-1px)}
-    .btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
     .btn.secondary{
       background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.16);
-      font-weight: 900;
-    }
-    .btn.ghost{
-      background: transparent;
       border-color: rgba(255,255,255,.16);
       font-weight: 900;
     }
@@ -239,29 +150,21 @@
       border-color: var(--greenBorder);
       background: linear-gradient(135deg, var(--greenA), var(--greenB));
     }
+    .btn:disabled{opacity:.45; cursor:not-allowed}
 
-    .warn{
+    .tiny{font-size:.88rem; color:var(--muted2); font-weight:800}
+    .divider{border:0; border-top:1px solid rgba(255,255,255,.10); margin: 12px 0}
+
+    .warn,.ok{
       display:none;
       margin-top: 10px;
       padding: 10px 12px;
       border-radius: 14px;
-      border: 1px solid var(--warnBorder);
-      background: var(--warnBg);
-      color: #ffe9da;
       white-space: pre-wrap;
       font-weight: 850;
     }
-    .ok{
-      display:none;
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--okBorder);
-      background: var(--ok);
-      color: rgba(220,255,235,.96);
-      white-space: pre-wrap;
-      font-weight: 850;
-    }
+    .warn{border: 1px solid var(--warnBorder); background: var(--warnBg); color: #ffe9da;}
+    .ok{border: 1px solid var(--okBorder); background: var(--ok); color: rgba(220,255,235,.96);}
 
     pre{
       margin: 10px 0 0;
@@ -277,473 +180,142 @@
       line-height: 1.45;
     }
 
-    .toggle{
-      display:inline-flex; align-items:center; gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
-      user-select:none;
-      font-size: .9rem;
-      color: rgba(238,240,255,.88);
-      font-weight: 900;
-      transition: transform .12s ease, filter .12s ease;
-    }
-    .toggle:hover{transform: translateY(-1px); filter: brightness(1.08)}
-    .toggle input{transform: translateY(1px)}
-    .toggles{display:flex; gap: 10px; flex-wrap:wrap}
-
     .kv{display:flex; justify-content:space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.10)}
     .kv:last-child{border-bottom:none}
     .k{color: var(--muted)}
     .v{font-weight: 950}
-
-    .tabs{display:flex; gap: 8px; flex-wrap:wrap}
-    .tab{
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
-      font-weight: 900;
-      color: rgba(238,240,255,.86);
-      transition: transform .12s ease, filter .12s ease;
-    }
-    .tab:hover{transform: translateY(-1px); filter: brightness(1.08)}
-    .tab.active{
-      background: linear-gradient(135deg, var(--redA), var(--redB));
-      border-color: var(--redBorder);
-      color: rgba(238,240,255,.96);
-    }
-
-    table{width:100%; border-collapse: collapse; margin-top: 10px; font-size: .92rem}
-    th,td{padding: 10px; border-bottom: 1px solid rgba(255,255,255,.10); vertical-align: top}
-    th{text-align:left; color: rgba(238,240,255,.82); font-weight: 950}
-    code{font-family: var(--mono); font-size: .92em}
-
-    details summary{cursor:pointer; font-weight: 950; color: rgba(238,240,255,.90)}
-    .list{margin: 8px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.65}
-    .rightColSticky{position:sticky; top: 74px}
-    @media (max-width: 980px){ .rightColSticky{position:static} }
-
-    /* Tiny hint card styling */
-    .hint{
-      border: 1px solid rgba(255, 255, 255,.14);
-      background: rgba(255,255,255,.04);
-      border-radius: 14px;
-      padding: 10px 12px;
-      color: rgba(238,240,255,.86);
-      font-weight: 850;
-      line-height: 1.55;
-    }
-    .hint.red{
-      border-color: rgba(255, 90, 120,.26);
-      background: rgba(255, 90, 120,.06);
-    }
-    .hint.green{
-      border-color: rgba(80,255,170,.22);
-      background: rgba(80,255,170,.06);
-    }
-
-    /* Bank layout (symmetric) */
-    .bankGrid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 980px){ .bankGrid{ grid-template-columns: 1fr; } }
-
-    .bankRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:flex-end;
-    }
-    .bankList{
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-      background: rgba(0,0,0,.22);
-      overflow:hidden;
-    }
-    .bankItem{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      cursor:pointer;
-    }
-    .bankItem:last-child{border-bottom:none}
-    .bankItem:hover{background: rgba(255,255,255,.04)}
-    .bankItem.active{
-      background: linear-gradient(135deg, rgba(80,255,170,.12), rgba(255,90,120,.10));
-      outline: 1px solid rgba(255,255,255,.10);
-    }
-    .bankTitle{
-      font-weight: 950;
-      margin: 0 0 2px;
-      letter-spacing: -.2px;
-    }
-    .bankMeta{
-      font-size: .86rem;
-      color: var(--muted2);
-      font-weight: 850;
-      line-height: 1.35;
-    }
-    .chip{
-      display:inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: rgba(238,240,255,.82);
-      font-size: .82rem;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .chip.green{ border-color: rgba(80,255,170,.30); background: rgba(80,255,170,.06); }
-    .chip.red{ border-color: rgba(255,90,120,.32); background: rgba(255,90,120,.06); }
   </style>
 </head>
 
 <body>
   <div class="topbar">
-    <div class="navL">
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
       <div class="brand"><span class="dot"></span>Remix Assistant</div>
       <a class="navBtn" href="https://liamnweir.github.io/liamweirportfolio.github.io/">← Back</a>
-      <a class="navBtn primary" href="#" id="jumpRemix">Remix</a>
-      <a class="navBtn" href="#" id="jumpBank">Bank</a>
     </div>
-    <div class="tiny">Upload MIDI → remix → play → download / save</div>
+    <div class="tiny">Upload MIDI → remix → play → download</div>
   </div>
 
   <div class="wrap">
     <div class="hero">
       <h1>Remix Assistant (MIDI)</h1>
       <p>
-        Upload a MIDI idea and generate a remix with better harmony, bass motion, and musical phrasing.
-        Play it back, download it, or save versions to a remix bank.
+        Upload a MIDI and generate a “better” version using simple music theory:
+        diatonic reharm, smoother voice-leading, and a lightly improved melody while keeping the same vibe.
       </p>
-
-      <div class="pills">
-        <span class="pill">Reharm + voicings</span>
-        <span class="pill">Broken chords</span>
-        <span class="pill">Bass movement</span>
-        <span class="pill">Counter line</span>
-        <span class="pill">MIDI export</span>
-        <span class="pill">Remix bank</span>
-      </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
-      <div>
-        <!-- REMIX -->
-        <section class="card remix" id="remix">
-          <div class="cardHeader">
-            <h2>Remix</h2>
-            <div class="tabs" role="tablist" aria-label="Remix tabs">
-              <button class="tab active" id="tabUpload" type="button">Upload</button>
-              <button class="tab" id="tabExamples" type="button">Examples</button>
-              <button class="tab" id="tabSettings" type="button">Settings</button>
-            </div>
-          </div>
-
-          <!-- Upload -->
-          <div id="panelUpload">
-            <div class="row">
-              <div class="field">
-                <div class="label">Upload MIDI (.mid)</div>
-                <input id="midiFile" type="file" accept=".mid,.midi,audio/midi" />
-                <div class="tiny" style="margin-top:6px">
-                  Tip: melody/piano MIDIs work great. Multi-track is fine too.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Examples -->
-          <div id="panelExamples" style="display:none">
-            <div class="row">
-              <div class="field">
-                <div class="label">Load a built-in example</div>
-                <select id="examplePick">
-                  <option value="pop" selected>Example 1: Pop-ish melody (C major)</option>
-                  <option value="minor">Example 2: Minor arpeggio hook (A minor)</option>
-                  <option value="riff">Example 3: Riff + rests (D mixolydian-ish)</option>
-                </select>
-              </div>
-              <div class="field xs">
-                <div class="label">Tempo</div>
-                <input id="exTempo" type="number" min="40" max="220" value="110" />
-              </div>
-              <div class="field xs">
-                <div class="label">Bars</div>
-                <input id="exBars" type="number" min="2" max="16" value="8" />
-              </div>
-              <div class="field xs">
-                <div class="label">Load</div>
-                <button class="btn" id="loadExampleBtn" type="button">Load Example</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div id="panelSettings" style="display:none">
-            <div class="row">
-              <div class="field sm">
-                <div class="label">Style preset</div>
-                <select id="style">
-                  <option value="lofi" selected>Lofi (swing + warm harmony)</option>
-                  <option value="edm">EDM (tight groove + punchy bass)</option>
-                  <option value="baroque">Baroque-ish (broken chords + walking bass)</option>
-                </select>
-              </div>
-
-              <div class="field xs">
-                <div class="label">Time signature</div>
-                <select id="barsize">
-                  <option value="4" selected>4/4</option>
-                  <option value="3">3/4</option>
-                </select>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Remix strength</div>
-                <input id="strength" type="range" min="0" max="1" step="0.01" value="0.75" />
-                <div class="tiny">Value: <span id="strengthVal">0.75</span> (higher = denser bass/counter/texture)</div>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Swing (lofi)</div>
-                <input id="swing" type="range" min="0" max="0.6" step="0.01" value="0.22" />
-                <div class="tiny">Value: <span id="swingVal">0.22</span></div>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Humanize (seconds)</div>
-                <input id="humanize" type="range" min="0" max="0.03" step="0.001" value="0.008" />
-                <div class="tiny">Value: <span id="humVal">0.008</span></div>
-              </div>
-
-              <div class="field xs">
-                <div class="label">Seed (optional)</div>
-                <input id="seed" type="number" placeholder="e.g., 42" />
-                <div class="tiny">Same seed + settings → repeatable output.</div>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Key</div>
-                <select id="keyOverride">
-                  <option value="auto" selected>Auto detect</option>
-                  <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
-                  <option value="E">E</option><option value="F">F</option><option value="F#">F#</option><option value="G">G</option>
-                  <option value="G#">G#</option><option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
-                </select>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Scale / Mode</div>
-                <select id="modeOverride">
-                  <option value="major" selected>Major (Ionian)</option>
-                  <option value="minor">Minor (Aeolian)</option>
-                  <option value="dorian">Dorian</option>
-                  <option value="phrygian">Phrygian</option>
-                  <option value="lydian">Lydian</option>
-                  <option value="mixolydian">Mixolydian</option>
-                </select>
-                <div class="tiny">Modes change the vibe while keeping a “key center”.</div>
-              </div>
-
-              <div class="field sm">
-                <div class="label">Pitch clean-up</div>
-                <div class="toggles">
-                  <label class="toggle"><input id="lockToScale" type="checkbox" checked /> Gently lock notes to scale</label>
-                  <label class="toggle"><input id="preferPentatonic" type="checkbox" /> Prefer pentatonic tones (melody/counter)</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="label">Remix components</div>
-            <div class="toggles">
-              <label class="toggle"><input id="doChords" type="checkbox" checked /> Harmony</label>
-              <label class="toggle"><input id="doBass" type="checkbox" checked /> Bassline</label>
-              <label class="toggle"><input id="doCounter" type="checkbox" checked /> Counter-melody</label>
-              <label class="toggle"><input id="doRhythm" type="checkbox" checked /> Rhythm variation</label>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="hint red">
-              Music theory tweaks built-in: the remix tends to <strong>start/end on the tonic</strong>,
-              uses <strong>broken chords</strong>, applies <strong>smooth inversions</strong>,
-              and adds <strong>bass motion</strong> that supports the harmony.
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="row">
-            <button class="btn" id="remixBtn" disabled type="button">Create Remix</button>
-            <button class="btn secondary" id="playOrigBtn" disabled type="button">Play Original</button>
-            <button class="btn secondary" id="playRemixBtn" disabled type="button">Play Remix</button>
-            <button class="btn secondary" id="stopBtn" disabled type="button">Stop</button>
-            <button class="btn" id="downloadBtn" disabled type="button">Download Remix MIDI</button>
-            <button class="btn green" id="saveToBankBtn" disabled type="button">Save Remix to Bank</button>
-          </div>
-
-          <div id="warn" class="warn"></div>
-          <div id="ok" class="ok"></div>
-
-          <div class="label" style="margin-top:12px">Log</div>
-          <pre id="log">(upload a MIDI file or load an example)</pre>
-
-          <div class="tiny" style="margin-top:10px">
-            Shortcuts: <span style="font-family:var(--mono)">R</span> remix •
-            <span style="font-family:var(--mono)">O</span> play original •
-            <span style="font-family:var(--mono)">P</span> play remix •
-            <span style="font-family:var(--mono)">Space</span> stop
-          </div>
-        </section>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="rightColSticky">
-        <section class="card stats">
-          <div class="cardHeader">
-            <h2>Stats</h2>
-            <div class="tiny">What the tool detected / used</div>
-          </div>
-
-          <div class="kv"><span class="k">Detected file</span><span class="v" id="statFile">—</span></div>
-          <div class="kv"><span class="k">Tempo</span><span class="v" id="statBpm">—</span></div>
-          <div class="kv"><span class="k">Key / mode</span><span class="v" id="statKey">—</span></div>
-          <div class="kv"><span class="k">Melody track</span><span class="v" id="statTrack">—</span></div>
-          <div class="kv"><span class="k">Duration</span><span class="v" id="statDur">—</span></div>
-
-          <div class="divider"></div>
-
-          <div class="hint green">
-            If your input MIDI is “weird” harmonically, try:
-            <ul class="list" style="margin-top:6px">
-              <li>Set Key manually (Settings).</li>
-              <li>Try a different Mode (Mixolydian/Dorian can sound great).</li>
-              <li>Turn on “Prefer pentatonic tones”.</li>
-              <li>Lower strength if it feels too busy.</li>
-            </ul>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- BANK (symmetric section) -->
-    <section id="bank" class="bankGrid" aria-label="Remix bank section">
-      <div class="card soft">
-        <div class="cardHeader">
-          <h2>Remix Bank</h2>
-          <div class="tiny">Saved on this device (localStorage)</div>
-        </div>
-
-        <div class="bankRow">
+      <section class="card remix">
+        <div class="row">
           <div class="field">
-            <div class="label">Bank item name (for saving new remixes)</div>
-            <input id="bankName" type="text" placeholder="e.g., 'LoFi v3 - stronger bass'" />
-            <div class="tiny" style="margin-top:6px">
-              Tip: Save multiple versions while iterating settings.
-            </div>
-          </div>
-
-          <div class="field xs">
-            <div class="label">Actions</div>
-            <button class="btn secondary" id="bankRefreshBtn" type="button">Refresh List</button>
+            <div class="label">Upload MIDI (.mid)</div>
+            <input id="midiFile" type="file" accept=".mid,.midi,audio/midi" />
+            <div class="tiny" style="margin-top:6px">Multi-track works. The tool picks a melody track automatically.</div>
           </div>
         </div>
 
         <div class="divider"></div>
-
-        <div class="bankList" id="bankList" role="list">
-          <div class="tiny" style="padding:12px" id="bankEmpty">No saved remixes yet.</div>
-        </div>
-
-        <details style="margin-top:12px">
-          <summary>What is saved?</summary>
-          <p class="tiny" style="margin-top:8px">
-            The bank stores your generated remix MIDI bytes + basic metadata (tempo, key, style, strength).
-            It’s stored locally in your browser, so clearing site data will erase it.
-          </p>
-        </details>
-      </div>
-
-      <div class="card soft">
-        <div class="cardHeader">
-          <h2>Selected</h2>
-          <div class="tiny" id="bankSelectedHint">Pick a saved remix to manage it</div>
-        </div>
-
-        <div class="row">
-          <div class="field">
-            <div class="label">Title</div>
-            <input id="selTitle" type="text" placeholder="(select an item)" disabled />
-          </div>
-        </div>
 
         <div class="row">
           <div class="field sm">
-            <div class="label">Metadata</div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px">
-              <span class="chip red" id="selStyle">style: —</span>
-              <span class="chip green" id="selKey">key: —</span>
-              <span class="chip" id="selBpm">bpm: —</span>
-              <span class="chip" id="selStrength">strength: —</span>
-            </div>
-            <div class="tiny" style="margin-top:8px" id="selWhen">—</div>
+            <div class="label">Style</div>
+            <select id="style">
+              <option value="lofi" selected>Lofi</option>
+              <option value="edm">EDM</option>
+              <option value="baroque">Baroque-ish</option>
+            </select>
+          </div>
+
+          <div class="field sm">
+            <div class="label">Remix strength</div>
+            <input id="strength" type="range" min="0" max="1" step="0.01" value="0.65" />
+            <div class="tiny">Value: <span id="strengthVal">0.65</span></div>
+          </div>
+
+          <div class="field sm">
+            <div class="label">Key</div>
+            <select id="keyOverride">
+              <option value="auto" selected>Auto detect</option>
+              <option value="C">C</option><option value="C#">C#</option><option value="D">D</option><option value="D#">D#</option>
+              <option value="E">E</option><option value="F">F</option><option value="F#">F#</option><option value="G">G</option>
+              <option value="G#">G#</option><option value="A">A</option><option value="A#">A#</option><option value="B">B</option>
+            </select>
+          </div>
+
+          <div class="field sm">
+            <div class="label">Mode</div>
+            <select id="modeOverride">
+              <option value="major" selected>Major</option>
+              <option value="minor">Minor</option>
+              <option value="dorian">Dorian</option>
+              <option value="mixolydian">Mixolydian</option>
+            </select>
           </div>
         </div>
 
         <div class="divider"></div>
 
         <div class="row">
-          <button class="btn green" id="bankPlayBtn" disabled type="button">Play</button>
-          <button class="btn secondary" id="bankStopBtn" disabled type="button">Stop</button>
-          <button class="btn" id="bankDownloadBtn" disabled type="button">Download MIDI</button>
-          <button class="btn secondary" id="bankRenameBtn" disabled type="button">Rename</button>
-          <button class="btn ghost" id="bankDeleteBtn" disabled type="button">Delete</button>
+          <button class="btn" id="remixBtn" disabled type="button">Create Remix</button>
+          <button class="btn secondary" id="playOrigBtn" disabled type="button">Play Original</button>
+          <button class="btn secondary" id="playRemixBtn" disabled type="button">Play Remix</button>
+          <button class="btn secondary" id="stopBtn" disabled type="button">Stop</button>
+          <button class="btn green" id="downloadBtn" disabled type="button">Download Remix MIDI</button>
         </div>
+
+        <div id="warn" class="warn"></div>
+        <div id="ok" class="ok"></div>
+
+        <div class="label" style="margin-top:12px">Log</div>
+        <pre id="log">(upload a MIDI file)</pre>
+
+        <div class="tiny" style="margin-top:10px">
+          Shortcut: <span style="font-family:var(--mono)">Space</span> stop
+        </div>
+      </section>
+
+      <section class="card stats">
+        <div class="kv"><span class="k">Detected file</span><span class="v" id="statFile">—</span></div>
+        <div class="kv"><span class="k">Tempo</span><span class="v" id="statBpm">—</span></div>
+        <div class="kv"><span class="k">Key / mode</span><span class="v" id="statKey">—</span></div>
+        <div class="kv"><span class="k">Melody track</span><span class="v" id="statTrack">—</span></div>
+        <div class="kv"><span class="k">Duration</span><span class="v" id="statDur">—</span></div>
 
         <div class="divider"></div>
-
-        <div class="hint">
-          Want to keep the “best” one? Rename it, then download the MIDI and drop it into your DAW.
+        <div class="tiny">
+          If remix harmony sounds off: set the Key manually and try Major/Minor.
         </div>
-
-        <div class="row" style="margin-top:10px">
-          <button class="btn ghost" id="bankClearAllBtn" type="button">Clear Entire Bank</button>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 
   <script>
-    // ------------------------------------------------------------
-    // Utilities + seeded RNG
-    // ------------------------------------------------------------
+    // ============================================================
+    // Key fixes + simplification:
+    // 1) Stop button now *always* kills ALL sound:
+    //    - Transport.stop/cancel
+    //    - dispose Part
+    //    - releaseAll on polysynths
+    //    - triggerRelease on monosynth
+    // 2) Remix now truly manipulates:
+    //    - melody (scale snapping + small contour-preserving edits)
+    //    - chord plan (diatonic triads fitted per bar)
+    //    - bass (roots + simple motion)
+    //    while keeping timing, length, and general vibe.
+    // 3) Shorter code: removed bank + extra UI + extra FX.
+    // ============================================================
+
     const $ = (id) => document.getElementById(id);
     const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+
     const PC_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
     const NOTE_TO_PC = Object.fromEntries(PC_NAMES.map((n,i)=>[n,i]));
 
-    // Modes (scale degrees)
     const MODES = {
-      major:      [0,2,4,5,7,9,11], // Ionian
-      minor:      [0,2,3,5,7,8,10], // Aeolian
+      major:      [0,2,4,5,7,9,11],
+      minor:      [0,2,3,5,7,8,10],
       dorian:     [0,2,3,5,7,9,10],
-      phrygian:   [0,1,3,5,7,8,10],
-      lydian:     [0,2,4,6,7,9,11],
       mixolydian: [0,2,4,5,7,9,10]
     };
 
@@ -753,33 +325,6 @@
       return `${name}${oct}`;
     }
 
-    function overlap(a0, a1, b0, b1){
-      const lo = Math.max(a0, b0);
-      const hi = Math.min(a1, b1);
-      return Math.max(0, hi - lo);
-    }
-
-    // Mulberry32 PRNG (small + good enough for repeatable remix)
-    function mulberry32(seed){
-      let a = seed >>> 0;
-      return function(){
-        a |= 0; a = (a + 0x6D2B79F5) | 0;
-        let t = Math.imul(a ^ (a >>> 15), 1 | a);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-
-    function makeRng(){
-      const raw = $("seed").value;
-      const s = Number(raw);
-      if (raw !== "" && Number.isFinite(s)) return mulberry32(s);
-      return Math.random;
-    }
-
-    // ------------------------------------------------------------
-    // UI helpers
-    // ------------------------------------------------------------
     function setWarn(msg){
       const el = $("warn");
       if(!msg){ el.style.display="none"; el.textContent=""; return; }
@@ -792,45 +337,17 @@
     }
     function logLine(s){
       const el = $("log");
-      if (el.textContent === "(upload a MIDI file or load an example)") el.textContent = "";
+      if (el.textContent === "(upload a MIDI file)") el.textContent = "";
       el.textContent += (el.textContent ? "\n" : "") + s;
       el.scrollTop = el.scrollHeight;
     }
-    function jumpTo(id){ $(id).scrollIntoView({behavior:"smooth", block:"start"}); }
+    function syncStrength(){ $("strengthVal").textContent = Number($("strength").value).toFixed(2); }
+    $("strength").addEventListener("input", syncStrength);
+    syncStrength();
 
-    $("jumpRemix").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("remix"); });
-    $("jumpBank").addEventListener("click", (e)=>{ e.preventDefault(); jumpTo("bank"); });
-
-    // Tabs
-    const tabUpload = $("tabUpload"), tabExamples = $("tabExamples"), tabSettings = $("tabSettings");
-    const panelUpload = $("panelUpload"), panelExamples = $("panelExamples"), panelSettings = $("panelSettings");
-    function setTab(which){
-      [tabUpload, tabExamples, tabSettings].forEach(t => t.classList.remove("active"));
-      panelUpload.style.display = "none";
-      panelExamples.style.display = "none";
-      panelSettings.style.display = "none";
-      if(which==="upload"){ tabUpload.classList.add("active"); panelUpload.style.display = ""; }
-      if(which==="examples"){ tabExamples.classList.add("active"); panelExamples.style.display = ""; }
-      if(which==="settings"){ tabSettings.classList.add("active"); panelSettings.style.display = ""; }
-    }
-    tabUpload.addEventListener("click", ()=>setTab("upload"));
-    tabExamples.addEventListener("click", ()=>setTab("examples"));
-    tabSettings.addEventListener("click", ()=>setTab("settings"));
-
-    // sliders display
-    function syncSliders(){
-      $("swingVal").textContent = Number($("swing").value).toFixed(2);
-      $("humVal").textContent = Number($("humanize").value).toFixed(3);
-      $("strengthVal").textContent = Number($("strength").value).toFixed(2);
-    }
-    $("swing").addEventListener("input", syncSliders);
-    $("humanize").addEventListener("input", syncSliders);
-    $("strength").addEventListener("input", syncSliders);
-    syncSliders();
-
-    // ------------------------------------------------------------
+    // ---------------------------
     // MIDI state
-    // ------------------------------------------------------------
+    // ---------------------------
     let midiIn = null;
     let midiOut = null;
 
@@ -840,7 +357,7 @@
     let beatsPerBar = 4;
 
     let melodyTrackIndex = -1;
-    let melodyNotes = []; // from selected track
+    let melodyNotes = [];
 
     // stats
     const statFile = $("statFile");
@@ -849,9 +366,16 @@
     const statTrack = $("statTrack");
     const statDur = $("statDur");
 
-    // ------------------------------------------------------------
-    // MIDI analysis
-    // ------------------------------------------------------------
+    function updateReady(){
+      $("remixBtn").disabled = !midiIn;
+      $("playOrigBtn").disabled = !midiIn;
+      $("playRemixBtn").disabled = !midiOut;
+      $("downloadBtn").disabled = !midiOut;
+    }
+
+    // ---------------------------
+    // MIDI analysis helpers
+    // ---------------------------
     function getFirstTempo(m){
       try{
         if (m?.header?.tempos?.length){
@@ -865,7 +389,7 @@
     function midiDurationSeconds(m){
       let maxT = 0;
       for (const tr of m.tracks){
-        for (const n of tr.notes){
+        for (const n of (tr.notes || [])){
           maxT = Math.max(maxT, (n.time || 0) + (n.duration || 0));
         }
       }
@@ -873,29 +397,22 @@
     }
 
     function pickMelodyTrack(m){
-      // Heuristic: high average pitch, not too dense
-      let best = -1;
-      let bestScore = -Infinity;
-
+      // heuristic: higher average pitch and not extremely dense
+      let best = -1, bestScore = -1e9;
       m.tracks.forEach((tr, idx) => {
-        if (!tr.notes || tr.notes.length < 6) return;
-
-        const notes = tr.notes;
-        const avgMidi = notes.reduce((a,n)=>a+(n.midi||0),0)/notes.length;
-        const dur = notes.reduce((a,n)=>a+(n.duration||0),0);
-        const density = notes.length / Math.max(0.001, dur);
-
-        const score = (avgMidi * 1.0) - (density * 25);
+        const notes = tr.notes || [];
+        if (notes.length < 6) return;
+        const avg = notes.reduce((a,n)=>a+(n.midi||0),0)/notes.length;
+        const dur = notes.reduce((a,n)=>a+(n.duration||0),0) || 0.001;
+        const density = notes.length / dur;
+        const score = avg - density*25;
         if (score > bestScore){ bestScore = score; best = idx; }
       });
-
-      if (best < 0){
-        best = m.tracks.findIndex(t => t.notes && t.notes.length);
-      }
+      if (best < 0) best = m.tracks.findIndex(t => (t.notes||[]).length);
       return best;
     }
 
-    // Krumhansl-ish profiles
+    // Krumhansl-Schmuckler style (very light) key detection from pitch-class histogram
     const KS_MAJOR = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
     const KS_MINOR = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
 
@@ -905,671 +422,318 @@
       for(let i=0;i<n;i++) out[i] = arr[(i-k+n)%n];
       return out;
     }
+    function dot(a,b){ let s=0; for(let i=0;i<a.length;i++) s += a[i]*b[i]; return s; }
 
-    function dot(a,b){
-      let s=0;
-      for(let i=0;i<a.length;i++) s += a[i]*b[i];
-      return s;
-    }
-
-    function detectKeyAndModeFromNotes(notes){
+    function detectKey(notes){
       const hist = new Array(12).fill(0);
       for (const n of notes){
-        const pc = ((n.midi ?? 0) % 12 + 12) % 12;
-        const w = clamp(n.duration ?? 0.1, 0.01, 10);
-        hist[pc] += w;
+        const pc = ((n.midi||0)%12+12)%12;
+        hist[pc] += clamp(n.duration||0.1, 0.01, 10);
       }
-
       const sum = hist.reduce((a,b)=>a+b,0) || 1;
       const norm = hist.map(x=>x/sum);
 
-      let best = { score:-Infinity, pc:0, mode:"major" };
-
-      for(let pc=0; pc<12; pc++){
-        const majScore = dot(norm, rotate(KS_MAJOR, pc));
-        const minScore = dot(norm, rotate(KS_MINOR, pc));
-        if (majScore > best.score) best = { score:majScore, pc, mode:"major" };
-        if (minScore > best.score) best = { score:minScore, pc, mode:"minor" };
+      let best = { score:-1e9, pc:0, mode:"major" };
+      for (let pc=0; pc<12; pc++){
+        const maj = dot(norm, rotate(KS_MAJOR, pc));
+        const min = dot(norm, rotate(KS_MINOR, pc));
+        if (maj > best.score) best = { score:maj, pc, mode:"major" };
+        if (min > best.score) best = { score:min, pc, mode:"minor" };
       }
       return best;
     }
 
-    // ------------------------------------------------------------
-    // Music theory helpers
-    // ------------------------------------------------------------
     function scalePcs(tonicPc, mode){
-      const arr = MODES[mode] || MODES.major;
-      return arr.map(x => (x + tonicPc) % 12);
+      const deg = MODES[mode] || MODES.major;
+      return deg.map(x => (x + tonicPc) % 12);
     }
-
-    function pentatonicFromMode(tonicPc, mode){
-      if (mode === "minor" || mode === "phrygian"){
-        const rel = [0,3,5,7,10];
-        return rel.map(x => (x + tonicPc) % 12);
-      }
-      const rel = [0,2,4,7,9];
-      return rel.map(x => (x + tonicPc) % 12);
-    }
-
-    function nearestPcInSet(targetPc, pcs){
-      let bestPc = pcs[0];
-      let bestDist = 999;
-      for (const pc of pcs){
-        let d = Math.abs(pc - targetPc);
-        d = Math.min(d, 12 - d);
-        if (d < bestDist){ bestDist = d; bestPc = pc; }
-      }
-      return bestPc;
-    }
-
-    function snapMidiToScale(midi, allowedPcs){
-      const pc = ((midi % 12) + 12) % 12;
+    function snapToScale(midi, allowedPcs){
+      const pc = ((midi%12)+12)%12;
       if (allowedPcs.includes(pc)) return midi;
-
-      for (let step=1; step<=2; step++){
-        const up = (pc + step) % 12;
-        const dn = (pc - step + 12) % 12;
-        if (allowedPcs.includes(up)) return midi + step;
-        if (allowedPcs.includes(dn)) return midi - step;
+      // search nearest within +/-2 semitones
+      for (let s=1; s<=2; s++){
+        if (allowedPcs.includes((pc+s)%12)) return midi+s;
+        if (allowedPcs.includes((pc-s+12)%12)) return midi-s;
       }
-
-      const bestPc = nearestPcInSet(pc, allowedPcs);
-      let bestShift = 0;
-      let best = 999;
-      for (let s=-6; s<=6; s++){
-        if (((pc + s + 120) % 12) === bestPc){
-          const ad = Math.abs(s);
-          if (ad < best){ best = ad; bestShift = s; }
-        }
-      }
-      return midi + bestShift;
+      // otherwise keep
+      return midi;
     }
 
-    function enforceTonicCadence(notes, tonicPc, mode, beatSec, bars, beatsPerBar){
-      if (!notes.length) return notes;
-
-      const barSec = beatsPerBar * beatSec;
-      const totalSec = bars * barSec;
-
-      const last = notes[notes.length-1];
-      const lastPc = ((last.midi % 12) + 12) % 12;
-
-      const allow = scalePcs(tonicPc, mode);
-      const tonicMidiNear = (m) => {
-        const baseOct = Math.floor(m/12);
-        let cand = baseOct*12 + tonicPc;
-        while (cand - m > 6) cand -= 12;
-        while (m - cand > 6) cand += 12;
-        return clamp(cand, 36, 96);
-      };
-
-      const endTime = Math.max(0, totalSec - 1.0*beatSec);
-      const endDur = 0.9*beatSec;
-
-      if (lastPc !== tonicPc){
-        last.duration = Math.min(last.duration ?? endDur, 0.6*beatSec);
-        const resMidi = tonicMidiNear(last.midi);
-        notes.push({
-          midi: snapMidiToScale(resMidi, allow),
-          time: Math.max(last.time + (last.duration ?? 0.2), endTime),
-          duration: endDur,
-          velocity: clamp((last.velocity ?? 0.82) + 0.06, 0.2, 1.0)
-        });
-      } else {
-        if ((last.time ?? 0) < endTime){
-          notes.push({
-            midi: last.midi,
-            time: endTime,
-            duration: endDur,
-            velocity: clamp((last.velocity ?? 0.82), 0.2, 1.0)
-          });
-        }
-      }
-
-      return notes;
-    }
-
-    // ------------------------------------------------------------
-    // Remix engine
-    // ------------------------------------------------------------
+    // ---------------------------
+    // Remix: keep rhythm, lightly improve melody, rebuild harmony/bass
+    // ---------------------------
     function diatonicTriads(tonicPc, mode){
       const sc = scalePcs(tonicPc, mode);
       const chords = [];
       for (let d=0; d<7; d++){
-        const pcs = [sc[d], sc[(d+2)%7], sc[(d+4)%7]];
-        chords.push({ degree: d+1, pcs, rootPc: pcs[0] });
+        chords.push({ degree:d+1, pcs:[sc[d], sc[(d+2)%7], sc[(d+4)%7]], rootPc: sc[d] });
       }
       return chords;
     }
 
-    function fitChordForWindow(notes, t0, t1, chords){
-      const scores = chords.map(() => 0);
+    function overlap(a0,a1,b0,b1){
+      const lo = Math.max(a0,b0);
+      const hi = Math.min(a1,b1);
+      return Math.max(0, hi-lo);
+    }
+
+    function fitChordForBar(notes, t0, t1, chords){
+      // score chords by how much bar-notes belong to chord
+      const scores = chords.map(()=>0);
       for (const n of notes){
-        const nt0 = n.time ?? 0;
-        const nt1 = nt0 + (n.duration ?? 0.1);
-        const ov = overlap(t0, t1, nt0, nt1);
-        if (ov <= 0) continue;
-        const pc = (n.midi ?? 0) % 12;
-        chords.forEach((ch, i) => { if (ch.pcs.includes(pc)) scores[i] += ov; });
+        const nt0 = n.time||0;
+        const nt1 = nt0 + (n.duration||0.1);
+        const ov = overlap(t0,t1,nt0,nt1);
+        if (ov<=0) continue;
+        const pc = ((n.midi||0)%12+12)%12;
+        chords.forEach((ch,i)=>{ if (ch.pcs.includes(pc)) scores[i]+=ov; });
       }
-
+      // bias I and V a bit (more "pop sensible")
       chords.forEach((ch,i)=>{
-        if (ch.degree === 1) scores[i] *= 1.10;
-        if (ch.degree === 5) scores[i] *= 1.06;
+        if (ch.degree===1) scores[i]*=1.10;
+        if (ch.degree===5) scores[i]*=1.06;
       });
-
-      let bestI = 0, best = -Infinity;
-      for (let i=0; i<scores.length; i++){
-        if (scores[i] > best){ best = scores[i]; bestI = i; }
-      }
+      let bestI=0, best=-1e9;
+      for (let i=0;i<scores.length;i++){ if (scores[i]>best){ best=scores[i]; bestI=i; } }
       return chords[bestI];
     }
 
-    function buildChordMidiFromPcs(pcs, centerMidi){
-      const out = [];
-      for (const pc of pcs){
-        let m = centerMidi + ((pc - (centerMidi % 12) + 12) % 12);
-        while (m < centerMidi-12) m += 12;
-        while (m > centerMidi+12) m -= 12;
-        out.push(m);
+    function improveMelody(notes, tonicPc, mode, strength){
+      const allowed = scalePcs(tonicPc, mode);
+      const out = notes.map(n => ({...n}));
+
+      // Step 1: snap to scale (gentle)
+      for (const n of out){
+        n.midi = snapToScale(n.midi, allowed);
       }
-      out.sort((a,b)=>a-b);
+
+      // Step 2: small contour edits to reduce "random jumps"
+      // - if a note leaps > 7 semitones from previous, pull it closer toward previous (still in scale)
+      // - probability controlled by strength
+      for (let i=1; i<out.length; i++){
+        const prev = out[i-1];
+        const cur = out[i];
+        const leap = cur.midi - prev.midi;
+        if (Math.abs(leap) >= 8 && Math.random() < (0.35 + 0.45*strength)){
+          let target = prev.midi + clamp(leap, -5, 5); // keep direction but smaller
+          // snap target to scale near same register
+          target = snapToScale(target, allowed);
+          cur.midi = clamp(target, 36, 96);
+        }
+      }
+
+      // Step 3: cadence: end on tonic more often
+      if (out.length){
+        const last = out[out.length-1];
+        const lastPc = ((last.midi%12)+12)%12;
+        if (lastPc !== tonicPc){
+          // move last pitch to nearest tonic in same octave-ish
+          const baseOct = Math.floor(last.midi/12);
+          let tonicMidi = baseOct*12 + tonicPc;
+          if (Math.abs(tonicMidi-last.midi) > 6) tonicMidi += (tonicMidi<last.midi?12:-12);
+          last.midi = clamp(tonicMidi, 36, 96);
+        }
+      }
+
       return out;
     }
 
-    function chooseBestInversion(prevVoiced, chordPcs, baseMidi){
-      const candidates = [];
-      const base = buildChordMidiFromPcs(chordPcs, baseMidi);
-
-      function score(voiced){
-        if (!prevVoiced?.length) return 0;
-        const a = [...prevVoiced].sort((x,y)=>x-y);
-        const b = [...voiced].sort((x,y)=>x-y);
-        const k = Math.min(a.length, b.length);
-        let s = 0;
-        for (let i=0;i<k;i++) s += Math.abs(a[i]-b[i]);
-        const spread = (b[b.length-1] - b[0]);
-        s += Math.max(0, spread - 18);
-        return s;
-      }
-
-      let v = [...base];
-      for (let inv=0; inv<3; inv++){
-        candidates.push(v);
-        const next = [...v];
-        next[0] += 12;
-        next.sort((a,b)=>a-b);
-        v = next;
-      }
-
-      candidates.sort((x,y)=>score(x)-score(y));
-      return candidates[0];
-    }
-
-    function maybeAddExtensions(voiced, tonicPc, mode, rng, style, strength){
-      if (style === "edm") return voiced;
-
-      const sc = scalePcs(tonicPc, mode);
-      const top = voiced[voiced.length-1];
-
-      const extChance =
-        style === "lofi" ? (0.45 + 0.25*strength) :
-        style === "baroque" ? (0.15 + 0.10*strength) :
-        (0.25 + 0.20*strength);
-
-      if (rng() > extChance) return voiced;
-
-      const addType = (rng() < 0.60) ? "7" : "9";
-      let add = top + (addType === "7" ? 10 : 14);
-
-      const addPc = ((add % 12) + 12) % 12;
-      const snappedPc = nearestPcInSet(addPc, sc);
-      for (let s=-2; s<=2; s++){
-        const pc = ((add + s) % 12 + 12) % 12;
-        if (pc === snappedPc){ add += s; break; }
-      }
-      if (add <= 88) return [...voiced, add].sort((a,b)=>a-b);
+    function chooseVoicing(chordPcs, centerMidi){
+      // simple close-position triad around centerMidi
+      const voiced = chordPcs.map(pc=>{
+        let m = centerMidi + ((pc - (centerMidi%12) + 12)%12);
+        while (m > centerMidi+6) m -= 12;
+        while (m < centerMidi-6) m += 12;
+        return m;
+      }).sort((a,b)=>a-b);
       return voiced;
     }
 
-    function applyRhythmTransform(notes, style, beatSec, rng){
-      const doRhythm = $("doRhythm").checked;
-      if (!doRhythm) return notes.map(n => ({...n}));
-
-      const swing = Number($("swing").value);
-      const humanize = Number($("humanize").value);
-
-      const quantGridBeats = (style === "edm") ? 0.25 : null; // 1/16
-      const out = notes.map(n => ({...n}));
-
-      for (const n of out){
-        if (quantGridBeats){
-          const gridSec = quantGridBeats * beatSec;
-          n.time = Math.round((n.time ?? 0) / gridSec) * gridSec;
-          n.duration = Math.max(gridSec * 0.9, n.duration ?? gridSec);
-        }
-
-        if (style === "lofi" && swing > 0){
-          const b = (n.time ?? 0) / beatSec;
-          const frac = b - Math.floor(b);
-          if (Math.abs(frac - 0.5) < 0.07){
-            n.time += (swing * 0.10) * beatSec;
-          }
-        }
-
-        if (humanize > 0){
-          const jitter = (rng()*2 - 1) * humanize;
-          const jitter2 = (rng()*2 - 1) * humanize;
-          n.time += jitter;
-          n.duration = Math.max(0.03, (n.duration ?? 0.1) + jitter2);
-          n.velocity = clamp((n.velocity ?? 0.75) + (rng()*2 - 1) * 0.06, 0.1, 1.0);
-        }
-      }
-      return out;
-    }
-
-    function brokenChordPattern(voiced, style, beatSec, slotT0, slotT1, strength, rng){
-      const events = [];
-      const step =
-        style === "baroque" ? 0.5*beatSec :
-        style === "lofi" ? 0.5*beatSec :
-        0.25*beatSec;
-
-      const dur = Math.max(0.03, step*0.90);
-
-      const tri = voiced.slice(0,3);
-      const upDown = (rng() < 0.55);
-      const pat = upDown ? [0,1,2,1] : [0,1,2,0,2,1];
-
-      let t = slotT0;
-      let i = 0;
-      while (t < slotT1 - 0.02){
-        const idx = pat[i % pat.length];
-        const m0 = tri[idx] ?? voiced[idx % voiced.length];
-        events.push({
-          midi: m0,
-          time: t,
-          duration: dur,
-          velocity: 0.35 + 0.14*strength
-        });
-        t += step;
-        i++;
-      }
-      return events;
-    }
-
     function buildRemix(m){
-      const rng = makeRng();
       const style = $("style").value;
-      beatsPerBar = Number($("barsize").value) || 4;
-
       const strength = clamp(Number($("strength").value), 0, 1);
-      bpm = getFirstTempo(m);
-      const beatSec = 60 / Math.max(1, bpm);
-      const barSec = beatsPerBar * beatSec;
 
+      beatsPerBar = 4;
+      bpm = getFirstTempo(m);
+      const beatSec = 60/Math.max(1,bpm);
+      const barSec = beatsPerBar*beatSec;
+
+      const det = detectKey(melodyNotes);
       const keyOverride = $("keyOverride").value;
       modeName = $("modeOverride").value;
 
-      const detected = detectKeyAndModeFromNotes(melodyNotes);
-      keyPc = (keyOverride === "auto") ? detected.pc : NOTE_TO_PC[keyOverride];
+      keyPc = (keyOverride==="auto") ? det.pc : NOTE_TO_PC[keyOverride];
 
       const durSec = midiDurationSeconds(m);
       const bars = Math.max(1, Math.ceil(durSec / barSec));
 
-      const diatonic = scalePcs(keyPc, modeName);
-      const penta = pentatonicFromMode(keyPc, modeName);
-      const preferPenta = $("preferPentatonic").checked;
-      const melodicAllowed = preferPenta ? penta : diatonic;
-
+      // chord plan per bar
       const chords = diatonicTriads(keyPc, modeName);
       const chordPlan = [];
       for (let b=0; b<bars; b++){
-        const t0 = b * barSec;
-        const t1 = (b+1) * barSec;
-        const ch = fitChordForWindow(melodyNotes, t0, t1, chords);
-        chordPlan.push({ bar: b, t0, t1, chord: ch });
+        const t0=b*barSec, t1=(b+1)*barSec;
+        chordPlan.push({ t0,t1, chord: fitChordForBar(melodyNotes,t0,t1,chords) });
       }
+      // force first/last tonic
+      const tonic = chords.find(c=>c.degree===1) || chords[0];
+      chordPlan[0].chord = tonic;
+      chordPlan[chordPlan.length-1].chord = tonic;
 
-      const tonicChord = chords.find(c=>c.degree===1) || chords[0];
-      chordPlan[0].chord = tonicChord;
-      chordPlan[chordPlan.length-1].chord = tonicChord;
-
+      // output midi
       const out = new Midi();
-      try{ out.header.fromJSON(m.header.toJSON()); }
-      catch(e){ try{ out.header.setTempo(bpm / 60); }catch(_){} }
+      try{ out.header.fromJSON(m.header.toJSON()); }catch(e){}
+      // NOTE: @tonejs/midi tempo sometimes needs setTempo(secondsPerBeat)
+      try{ out.header.setTempo(bpm/60); }catch(e){}
 
-      // Melody copy
-      const tMel = out.addTrack(); tMel.name = "Melody";
-
-      let melCopy = melodyNotes.map(n => ({
-        midi: n.midi, time: n.time, duration: n.duration, velocity: n.velocity ?? 0.85
-      }));
-
-      if ($("lockToScale").checked){
-        melCopy = melCopy.map(n => ({ ...n, midi: snapMidiToScale(n.midi, diatonic) }));
-      }
-
-      melCopy = applyRhythmTransform(melCopy, style, beatSec, rng);
-      melCopy = enforceTonicCadence(melCopy, keyPc, modeName, beatSec, bars, beatsPerBar);
-
-      for (const n of melCopy){
-        tMel.addNote({
+      // Melody track (same rhythm, updated pitches)
+      const melT = out.addTrack(); melT.name = "Melody";
+      const mel = improveMelody(
+        melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 })),
+        keyPc, modeName, strength
+      );
+      for (const n of mel){
+        melT.addNote({
           midi: clamp(Math.round(n.midi), 24, 108),
           time: Math.max(0, n.time),
-          duration: Math.max(0.03, n.duration ?? 0.1),
+          duration: Math.max(0.03, n.duration ?? 0.12),
           velocity: clamp(n.velocity ?? 0.85, 0.1, 1.0),
         });
       }
 
-      // Harmony
-      if ($("doChords").checked){
-        const tCh = out.addTrack(); tCh.name = "Chords";
-        let prevVoiced = null;
+      // Harmony track (bar chords or broken chords depending on style)
+      const chT = out.addTrack(); chT.name = "Chords";
+      for (const slot of chordPlan){
+        const center = (style==="baroque") ? 58 : 60;
+        const voiced = chooseVoicing(slot.chord.pcs, center);
 
-        for (const slot of chordPlan){
-          const baseMidi =
-            style === "edm" ? 60 :
-            style === "baroque" ? 58 :
-            60;
-
-          let voiced = chooseBestInversion(prevVoiced, slot.chord.pcs, baseMidi);
-          voiced = maybeAddExtensions(voiced, keyPc, modeName, rng, style, strength);
-
-          if (style === "edm"){
-            const stabDur = 0.42 * beatSec;
-            const times = beatsPerBar === 3 ? [slot.t0, slot.t0 + 1.5*beatSec] : [slot.t0, slot.t0 + 2*beatSec];
-            for (const tt of times){
-              if (rng() < 0.08 * (1-strength)) continue;
-              for (const m0 of voiced.slice(0,3)){
-                tCh.addNote({ midi: m0, time: tt, duration: stabDur, velocity: 0.55 + 0.15*strength });
-              }
-            }
-          } else {
-            const useBroken =
-              (style === "baroque") ||
-              (style === "lofi" && strength > 0.35 && rng() < 0.75) ||
-              (style === "lofi" && rng() < 0.45);
-
-            if (useBroken){
-              const ev = brokenChordPattern(voiced, style, beatSec, slot.t0, slot.t1, strength, rng);
-              for (const e of ev){
-                tCh.addNote({ midi: e.midi, time: e.time, duration: e.duration, velocity: e.velocity });
-              }
-            } else {
-              const dur = Math.max(0.1, (slot.t1 - slot.t0) * 0.985);
-              for (const m0 of voiced){
-                tCh.addNote({ midi: m0, time: slot.t0, duration: dur, velocity: 0.34 + 0.16*strength });
-              }
+        if (style==="edm"){
+          // short stabs (beats 1 and 3)
+          const stabDur = 0.45*beatSec;
+          const times = [slot.t0, slot.t0 + 2*beatSec];
+          for (const tt of times){
+            for (const m0 of voiced){
+              chT.addNote({ midi:m0, time:tt, duration:stabDur, velocity: 0.55 + 0.15*strength });
             }
           }
-
-          prevVoiced = voiced.slice(0,3);
+        } else if (style==="baroque"){
+          // simple arpeggio 8ths
+          const step = 0.5*beatSec;
+          let t = slot.t0;
+          let i = 0;
+          while (t < slot.t1 - 0.02){
+            const m0 = voiced[i % voiced.length];
+            chT.addNote({ midi:m0, time:t, duration:step*0.92, velocity: 0.35 + 0.18*strength });
+            t += step; i++;
+          }
+        } else {
+          // lofi: sustained chord
+          const dur = (slot.t1-slot.t0) * 0.98;
+          for (const m0 of voiced){
+            chT.addNote({ midi:m0, time:slot.t0, duration:dur, velocity: 0.34 + 0.16*strength });
+          }
         }
       }
 
-      // Bass
-      if ($("doBass").checked){
-        const tBa = out.addTrack(); tBa.name = "Bass";
-        const diatonicSet = scalePcs(keyPc, modeName);
-        let prevBass = null;
+      // Bass track (roots with slight motion)
+      const baT = out.addTrack(); baT.name = "Bass";
+      for (let i=0;i<chordPlan.length;i++){
+        const slot = chordPlan[i];
+        const rootPc = slot.chord.rootPc;
+        let rootMidi = 36 + ((rootPc - (36%12) + 12)%12);
+        while (rootMidi > 48) rootMidi -= 12;
+        rootMidi = clamp(rootMidi, 28, 55);
 
-        for (let i=0;i<chordPlan.length;i++){
-          const slot = chordPlan[i];
-          const rootPc = slot.chord.rootPc;
-
-          const pickRoll = rng();
-          let bassPc = rootPc;
-          if (style !== "edm"){
-            if (pickRoll < 0.18*strength) bassPc = slot.chord.pcs[1];
-            else if (pickRoll < 0.40*strength) bassPc = (rootPc + 7) % 12;
+        if (style==="edm"){
+          // 8th pulses
+          const step = 0.5*beatSec;
+          let t=slot.t0;
+          while (t < slot.t1 - 0.02){
+            baT.addNote({ midi:rootMidi, time:t, duration:step*0.92, velocity: 0.68 + 0.20*strength });
+            t += step;
           }
-
-          let bassMidi = 36 + ((bassPc - (36 % 12) + 12) % 12);
-          while (bassMidi < 30) bassMidi += 12;
-          while (bassMidi > 50) bassMidi -= 12;
-          bassMidi = clamp(bassMidi, 28, 55);
-
-          if (style === "edm"){
-            const step = 0.5 * beatSec;
-            let t = slot.t0;
-            let k = 0;
-            while (t < slot.t1 - 0.02){
-              if (rng() < 0.10*(1-strength)) { t += step; k++; continue; }
-              const isOff = (k % 2 === 1);
-              const m0 = (isOff && rng() < (0.25*strength)) ? bassMidi + 12 : bassMidi;
-              tBa.addNote({ midi: m0, time: t, duration: step*0.92, velocity: 0.68 + 0.20*strength });
-              t += step; k++;
-            }
-          } else if (style === "baroque"){
-            const step = 0.5 * beatSec;
-            const chordTones = slot.chord.pcs.map(pc => {
-              let m0 = 36 + ((pc - 0 + 12) % 12);
-              while (m0 < 30) m0 += 12;
-              while (m0 > 52) m0 -= 12;
-              return m0;
-            }).sort((a,b)=>a-b);
-
-            let t = slot.t0;
-            let k = 0;
-            while (t < slot.t1 - 0.02){
-              let m0 = chordTones[k % chordTones.length];
-              if (rng() < 0.35*strength){
-                const pc = ((m0 % 12) + 12) % 12;
-                const passPc = diatonicSet[(diatonicSet.indexOf(pc)+1+7)%7] ?? pc;
-                let pass = m0 + (((passPc - pc + 12) % 12) <= 6 ? ((passPc - pc + 12)%12) : -((pc - passPc + 12)%12));
-                pass = clamp(pass, 28, 55);
-                m0 = pass;
-              }
-              tBa.addNote({ midi: clamp(m0, 28, 55), time: t, duration: step*0.92, velocity: 0.58 + 0.15*strength });
-              t += step; k++;
-            }
-          } else {
-            const half = (beatsPerBar/2) * beatSec;
+        } else {
+          // 1 + (optional) 3
+          const half = 2*beatSec;
+          baT.addNote({ midi:rootMidi, time:slot.t0, duration:half*0.98, velocity: 0.55 + 0.14*strength });
+          if (strength > 0.25){
             const fifthPc = (rootPc + 7) % 12;
-            let fifthMidi = 36 + ((fifthPc - (36 % 12) + 12) % 12);
-            fifthMidi = clamp(fifthMidi, 28, 55);
-
-            tBa.addNote({ midi: bassMidi, time: slot.t0, duration: half*0.98, velocity: 0.52 + 0.12*strength });
-
-            if (strength > 0.18){
-              tBa.addNote({ midi: fifthMidi, time: slot.t0 + half, duration: (half*0.80), velocity: 0.50 + 0.10*strength });
-            }
-
-            if (strength > 0.30 && i < chordPlan.length-1){
-              const nextRootPc = chordPlan[i+1].chord.rootPc;
-              let nextMidi = 36 + ((nextRootPc - (36 % 12) + 12) % 12);
-              nextMidi = clamp(nextMidi, 28, 55);
-
-              let approach = nextMidi;
-              if (prevBass != null){
-                const dir = (nextMidi >= bassMidi) ? +1 : -1;
-                approach = nextMidi - dir*1;
-                const apPc = ((approach%12)+12)%12;
-                if (!diatonicSet.includes(apPc)){
-                  if (diatonicSet.includes((apPc+1)%12)) approach += 1;
-                  else if (diatonicSet.includes((apPc+11)%12)) approach -= 1;
-                }
-                approach = clamp(approach, 28, 55);
-              }
-
-              tBa.addNote({
-                midi: approach,
-                time: slot.t1 - 0.5*beatSec,
-                duration: 0.45*beatSec,
-                velocity: 0.46 + 0.10*strength
-              });
-            }
+            let fifthMidi = 36 + ((fifthPc - (36%12) + 12)%12);
+            while (fifthMidi > 55) fifthMidi -= 12;
+            fifthMidi = clamp(fifthMidi, 28, 60);
+            baT.addNote({ midi:fifthMidi, time:slot.t0 + half, duration:half*0.85, velocity: 0.50 + 0.10*strength });
           }
-
-          prevBass = bassMidi;
         }
       }
 
-      // Counter
-      if ($("doCounter").checked){
-        const tCo = out.addTrack(); tCo.name = "Counter";
-
-        const diatonic = scalePcs(keyPc, modeName);
-        const allow = ($("preferPentatonic").checked) ? pentatonicFromMode(keyPc, modeName) : diatonic;
-        const allowSet = new Set(allow);
-
-        const consonant = [3,4,7,8,9];
-        const durGrid = (style === "edm") ? 0.25 * beatSec : 0.5 * beatSec;
-        const durNote = durGrid * 0.92;
-
-        const total = bars * barSec;
-
-        for (let t=0; t<total; t += durGrid){
-          let mel = null;
-          for (const n of melCopy){
-            const t0 = n.time ?? 0;
-            const t1 = t0 + (n.duration ?? 0.1);
-            if (t >= t0 && t < t1){ mel = n; break; }
-          }
-          if (!mel) continue;
-
-          const density = (style === "baroque") ? (0.42*strength) : (0.55*strength);
-          if (rng() < (1 - density)) continue;
-
-          const base = clamp(Math.round(mel.midi), 48, 84);
-          let choices = [];
-
-          for (const iv of consonant){
-            for (const dir of [-1, +1]){
-              const m0 = base + dir*iv;
-              const pc = ((m0 % 12) + 12) % 12;
-              if (allowSet.has(pc)) choices.push(m0);
-            }
-          }
-
-          if (rng() < 0.10 + 0.20*strength){
-            const pc = ((base % 12) + 12) % 12;
-            if (allowSet.has(pc)) choices.push(base);
-          }
-
-          if (!choices.length) continue;
-
-          choices = choices.filter(x => x >= base && x <= 88);
-          if (!choices.length) continue;
-
-          if (rng() < 0.06*strength){
-            const leap = base + 9;
-            const pc = ((leap % 12) + 12) % 12;
-            if (allowSet.has(pc)) choices.push(leap);
-          }
-
-          const m0 = clamp(choices[Math.floor(rng()*choices.length)], 52, 90);
-          tCo.addNote({ midi: m0, time: t, duration: durNote, velocity: 0.32 + 0.18*strength });
-        }
-      }
-
-      // final rhythm pass
-      if ($("doRhythm").checked){
-        for (const tr of out.tracks){
-          const notes = tr.notes.map(n => ({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.7 }));
-          tr.notes = applyRhythmTransform(notes, style, beatSec, rng).map(n => ({
-            midi: clamp(Math.round(n.midi), 24, 108),
-            time: Math.max(0, n.time),
-            duration: Math.max(0.03, n.duration),
-            velocity: clamp(n.velocity ?? 0.7, 0.1, 1.0),
-          }));
-        }
-      }
-
-      return { out, info: { bpm, key: `${PC_NAMES[keyPc]} ${modeName}`, bars, style, duration: durSec, strength } };
+      return { out, info: { bpm, key:`${PC_NAMES[keyPc]} ${modeName}`, bars, style, durSec } };
     }
 
-    // ------------------------------------------------------------
-    // Tone.js playback
-    // ------------------------------------------------------------
+    // ---------------------------
+    // Tone.js playback (robust stop)
+    // ---------------------------
     let audioReady = false;
-    let lead, pad, bassSynth, counter;
-    let master, comp, reverb, chorus, limiter;
+    let lead, pad, bassSynth;
+    let reverb, limiter, masterGain;
     let part = null;
 
     async function ensureAudio(){
       if (Tone.context.state !== "running") await Tone.start();
       if (audioReady) return;
 
-      master = new Tone.Gain(0.95).toDestination();
-      comp = new Tone.Compressor({ threshold: -20, ratio: 3, attack: 0.01, release: 0.15 });
-      limiter = new Tone.Limiter(-1);
+      masterGain = new Tone.Gain(0.95).toDestination();
+      limiter = new Tone.Limiter(-1).connect(masterGain);
+      reverb = new Tone.Reverb({ decay: 2.4, wet: 0.14 }).connect(limiter);
 
-      chorus = new Tone.Chorus({ frequency: 1.2, delayTime: 3.5, depth: 0.3, wet: 0.18 }).start();
-      reverb = new Tone.Reverb({ decay: 2.8, preDelay: 0.01, wet: 0.16 });
-
-      chorus.connect(reverb);
-      reverb.connect(comp);
-      comp.connect(limiter);
-      limiter.connect(master);
-
-      function toFX(node){
-        node.connect(chorus);
-        node.connect(comp);
-      }
-
-      lead = new Tone.PolySynth(Tone.FMSynth, {
+      lead = new Tone.PolySynth(Tone.Synth, {
         volume: -12,
-        options: {
-          harmonicity: 1.8,
-          modulationIndex: 8,
-          envelope: { attack: 0.01, decay: 0.12, sustain: 0.20, release: 0.9 },
-          modulationEnvelope: { attack: 0.02, decay: 0.2, sustain: 0.0, release: 0.2 }
-        }
-      });
+        options: { oscillator:{type:"triangle"}, envelope:{attack:0.01, decay:0.08, sustain:0.20, release:0.6} }
+      }).connect(reverb);
 
-      pad = new Tone.PolySynth(Tone.AMSynth, {
+      pad = new Tone.PolySynth(Tone.Synth, {
         volume: -16,
-        options: {
-          oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.12, decay: 0.25, sustain: 0.75, release: 1.6 }
-        }
-      });
+        options: { oscillator:{type:"sawtooth"}, envelope:{attack:0.08, decay:0.2, sustain:0.6, release:1.1} }
+      }).connect(reverb);
 
       bassSynth = new Tone.MonoSynth({
         volume: -10,
         oscillator: { type: "sine" },
-        filter: { Q: 1, type: "lowpass", rolloff: -24, frequency: 900 },
-        envelope: { attack: 0.01, decay: 0.12, sustain: 0.6, release: 0.18 },
-        filterEnvelope: { attack: 0.01, decay: 0.12, sustain: 0.0, release: 0.1, baseFrequency: 70, octaves: 2.3 }
-      });
-
-      counter = new Tone.PolySynth(Tone.Synth, {
-        volume: -18,
-        oscillator: { type: "triangle" },
-        envelope: { attack: 0.01, decay: 0.06, sustain: 0.16, release: 0.35 }
-      });
-
-      toFX(lead);
-      toFX(pad);
-      toFX(counter);
-      bassSynth.connect(comp);
-      bassSynth.connect(reverb);
+        envelope: { attack: 0.01, decay: 0.10, sustain: 0.6, release: 0.12 }
+      }).connect(limiter);
 
       audioReady = true;
     }
 
-    function stopPlayback(){
-      if (part){ try{part.stop(); part.dispose();}catch(e){} part=null; }
-      Tone.Transport.stop();
-      Tone.Transport.cancel();
-      Tone.Transport.position = 0;
+    function stopAllSound(){
+      // Stop scheduled events
+      try{
+        if (part){ part.stop(); part.dispose(); part = null; }
+      }catch(e){}
+
+      try{
+        Tone.Transport.stop();
+        Tone.Transport.cancel(0);
+        Tone.Transport.position = 0;
+      }catch(e){}
+
+      // Kill stuck notes (THIS is what fixes "chords forever")
+      try{ lead?.releaseAll?.(); }catch(e){}
+      try{ pad?.releaseAll?.(); }catch(e){}
+      try{ bassSynth?.triggerRelease?.(); }catch(e){}
+
       $("stopBtn").disabled = true;
-      $("bankStopBtn").disabled = true;
     }
 
-    function flattenNotesWithTrackName(m){
+    function flatten(m){
       const all = [];
       for (const tr of m.tracks){
-        const tname = (tr.name || "").toLowerCase();
-        for (const n of tr.notes){
+        const name = (tr.name||"").toLowerCase();
+        for (const n of (tr.notes||[])){
           all.push({
             midi: n.midi,
             time: n.time ?? 0,
             duration: n.duration ?? 0.1,
             velocity: n.velocity ?? 0.8,
-            track: tname
+            track: name
           });
         }
       }
@@ -1577,20 +741,19 @@
       return all;
     }
 
-    function pickSynthForTrack(name){
+    function synthForTrack(name){
       if (name.includes("bass")) return "bass";
       if (name.includes("chord") || name.includes("pad")) return "pad";
-      if (name.includes("counter")) return "counter";
       return "lead";
     }
 
     function playMidi(m){
-      stopPlayback();
-      const notes = flattenNotesWithTrackName(m);
+      stopAllSound();
+      const notes = flatten(m);
       if (!notes.length) return;
 
       Tone.Transport.stop();
-      Tone.Transport.cancel();
+      Tone.Transport.cancel(0);
       Tone.Transport.position = 0;
 
       const events = notes.map(n => ({
@@ -1598,41 +761,28 @@
         midi: clamp(Math.round(n.midi), 24, 108),
         dur: Math.max(0.03, n.duration),
         vel: clamp(n.velocity ?? 0.8, 0.1, 1.0),
-        synth: pickSynthForTrack(n.track)
+        synth: synthForTrack(n.track)
       }));
 
       part = new Tone.Part((time, v) => {
-        const note = midiToNoteName(v.midi);
+        const nn = midiToNoteName(v.midi);
         if (v.synth === "bass"){
-          bassSynth.triggerAttackRelease(note, v.dur, time, v.vel);
+          bassSynth.triggerAttackRelease(nn, v.dur, time, v.vel);
         } else if (v.synth === "pad"){
-          pad.triggerAttackRelease(note, v.dur, time, v.vel);
-        } else if (v.synth === "counter"){
-          counter.triggerAttackRelease(note, v.dur, time, v.vel);
+          pad.triggerAttackRelease(nn, v.dur, time, v.vel);
         } else {
-          lead.triggerAttackRelease(note, v.dur, time, v.vel);
+          lead.triggerAttackRelease(nn, v.dur, time, v.vel);
         }
       }, events);
 
       part.start(0);
       Tone.Transport.start("+0.02");
+      $("stopBtn").disabled = false;
     }
 
-    // ------------------------------------------------------------
-    // Load MIDI (file or example)
-    // ------------------------------------------------------------
-    function updateReadyState(){
-      const okIn = !!midiIn;
-      const okOut = !!midiOut;
-
-      $("remixBtn").disabled = !okIn;
-      $("playOrigBtn").disabled = !okIn;
-
-      $("playRemixBtn").disabled = !okOut;
-      $("downloadBtn").disabled = !okOut;
-      $("saveToBankBtn").disabled = !okOut;
-    }
-
+    // ---------------------------
+    // Load MIDI
+    // ---------------------------
     function setStats({fileName, bpm, key, trackName, trackIndex, durSec}){
       statFile.textContent = fileName || "—";
       statBpm.textContent = bpm ? `${Math.round(bpm)} BPM` : "—";
@@ -1649,8 +799,8 @@
       midiOut = null;
 
       midiIn = new Midi(buf);
-
       bpm = getFirstTempo(midiIn);
+
       melodyTrackIndex = pickMelodyTrack(midiIn);
       const tr = midiIn.tracks[melodyTrackIndex];
       melodyNotes = (tr?.notes || []).map(n => ({
@@ -1658,15 +808,12 @@
       }));
 
       const dur = midiDurationSeconds(midiIn);
-      const det = detectKeyAndModeFromNotes(melodyNotes);
+      const det = detectKey(melodyNotes);
 
       logLine(`Loaded: ${fileName || "MIDI"}`);
       logLine(`Tempo: ~${Math.round(bpm)} BPM`);
-      logLine(`Picked melody track: ${melodyTrackIndex+1} (${tr?.name || "unnamed"})`);
-      logLine(`Melody notes: ${melodyNotes.length}`);
-      logLine(`Duration: ${dur.toFixed(2)} seconds`);
+      logLine(`Melody track: #${melodyTrackIndex+1} (${tr?.name || "unnamed"})`);
       logLine(`Key guess: ${PC_NAMES[det.pc]} (${det.mode} leaning)`);
-      logLine(`Tip: you can override Key/Mode in Settings.`);
       logLine(`Next: Click “Create Remix”.`);
 
       setStats({
@@ -1678,12 +825,12 @@
         durSec: dur
       });
 
-      updateReadyState();
+      updateReady();
     }
 
     $("midiFile").addEventListener("change", async () => {
       const f = $("midiFile").files?.[0];
-      if(!f){ midiIn=null; midiOut=null; updateReadyState(); return; }
+      if(!f){ midiIn=null; midiOut=null; updateReady(); return; }
       try{
         const buf = await f.arrayBuffer();
         parseMidiArrayBuffer(buf, f.name);
@@ -1691,73 +838,18 @@
         console.error(e);
         setWarn("Failed to parse MIDI. Try a different .mid file.");
         midiIn=null; midiOut=null;
-        updateReadyState();
+        updateReady();
       }
     });
 
-    // Built-in examples
-    function addNote(track, midi, time, dur, vel=0.85){
-      track.addNote({ midi, time: Math.max(0,time), duration: Math.max(0.03,dur), velocity: clamp(vel,0.1,1) });
-    }
-    function makeExampleMidi(which, tempoBpm, bars){
-      const m = new Midi();
-      try{ m.header.setTempo(tempoBpm / 60); }
-      catch(e){ try{ m.header.tempos = [{ bpm: tempoBpm, time: 0 }]; }catch(_){ } }
-
-      const t = m.addTrack();
-      t.name = "Example Melody";
-
-      const beat = 60 / Math.max(1, tempoBpm);
-      const bar = 4 * beat;
-      const totalBars = clamp(Number(bars)||8, 2, 16);
-
-      let seq = [];
-      if (which === "minor"){
-        seq = [69,72,76,79,76,74,72,69];
-      } else if (which === "riff"){
-        seq = [62,64,66,69,67,66,64,62];
-      } else {
-        seq = [60,64,67,69,67,64,62,60];
-      }
-
-      for (let b=0; b<totalBars; b++){
-        const t0 = b * bar;
-        for (let i=0; i<8; i++){
-          const n = seq[i % seq.length];
-          const time = t0 + i*(0.5*beat);
-          const dur = 0.45*beat;
-          const vel = 0.8 + 0.1*Math.sin((b+i)*0.7);
-          if (which==="riff" && (i===2 || i===6) && (b%2===1)) continue;
-          addNote(t, n, time, dur, vel);
-        }
-      }
-      return m;
-    }
-
-    $("loadExampleBtn").addEventListener("click", () => {
-      setWarn(null); setOk(null);
-      try{
-        const pick = $("examplePick").value;
-        const tempo = clamp(Number($("exTempo").value)||110, 40, 220);
-        const bars = clamp(Number($("exBars").value)||8, 2, 16);
-        const m = makeExampleMidi(pick, tempo, bars);
-        const bytes = m.toArray();
-        parseMidiArrayBuffer(new Uint8Array(bytes).buffer, `Built-in: ${pick} (${tempo}bpm)`);
-        setOk("Loaded built-in example. Now create a remix.");
-      }catch(e){
-        console.error(e);
-        setWarn("Failed to load example (unexpected).");
-      }
-    });
-
-    // ------------------------------------------------------------
-    // Remix + download
-    // ------------------------------------------------------------
+    // ---------------------------
+    // Buttons
+    // ---------------------------
     $("remixBtn").addEventListener("click", () => {
       setWarn(null); setOk(null);
       if (!midiIn) return;
 
-      stopPlayback();
+      stopAllSound();
       logLine("—");
       logLine("Creating remix…");
 
@@ -1768,23 +860,36 @@
         logLine(`Style: ${info.style}`);
         logLine(`Key/Mode: ${info.key}`);
         logLine(`Bars: ${info.bars}`);
-        logLine(`Strength: ${info.strength.toFixed(2)}`);
-        logLine(`Tracks out: ${midiOut.tracks.length}`);
-        logLine("Done. Preview, download, or save to bank.");
+        logLine("Done. Play or download.");
 
         statBpm.textContent = `${Math.round(info.bpm)} BPM`;
         statKey.textContent = info.key;
-        statDur.textContent = `${info.duration.toFixed(2)}s`;
 
-        updateReadyState();
+        updateReady();
         setOk("Remix created.");
       }catch(e){
         console.error(e);
         setWarn(e?.message || "Remix failed. Check console.");
         midiOut = null;
-        updateReadyState();
+        updateReady();
       }
     });
+
+    $("playOrigBtn").addEventListener("click", async () => {
+      if (!midiIn) return;
+      setWarn(null);
+      try{ await ensureAudio(); playMidi(midiIn); }
+      catch(e){ console.error(e); setWarn("Audio failed to start. Click play again."); }
+    });
+
+    $("playRemixBtn").addEventListener("click", async () => {
+      if (!midiOut) return;
+      setWarn(null);
+      try{ await ensureAudio(); playMidi(midiOut); }
+      catch(e){ console.error(e); setWarn("Audio failed to start. Click play again."); }
+    });
+
+    $("stopBtn").addEventListener("click", stopAllSound);
 
     $("downloadBtn").addEventListener("click", () => {
       if (!midiOut) return;
@@ -1806,343 +911,18 @@
       }
     });
 
-    // ------------------------------------------------------------
-    // Playback buttons
-    // ------------------------------------------------------------
-    $("playOrigBtn").addEventListener("click", async () => {
-      if (!midiIn) return;
-      setWarn(null);
-      try{ await ensureAudio(); playMidi(midiIn); $("stopBtn").disabled = false; }
-      catch(e){ console.error(e); setWarn("Audio failed to start. Click play again (browser audio policy)."); }
-    });
-
-    $("playRemixBtn").addEventListener("click", async () => {
-      if (!midiOut) return;
-      setWarn(null);
-      try{ await ensureAudio(); playMidi(midiOut); $("stopBtn").disabled = false; }
-      catch(e){ console.error(e); setWarn("Audio failed to start. Click play again (browser audio policy)."); }
-    });
-
-    $("stopBtn").addEventListener("click", stopPlayback);
-
-    // ------------------------------------------------------------
-    // Keyboard shortcuts
-    // ------------------------------------------------------------
+    // keyboard: SPACE stop
     window.addEventListener("keydown", (e) => {
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "select") return;
-
-      if (e.code === "Space"){ e.preventDefault(); stopPlayback(); }
-      else if (e.key.toLowerCase() === "r"){ if (!$("remixBtn").disabled) $("remixBtn").click(); }
-      else if (e.key.toLowerCase() === "o"){ if (!$("playOrigBtn").disabled) $("playOrigBtn").click(); }
-      else if (e.key.toLowerCase() === "p"){ if (!$("playRemixBtn").disabled) $("playRemixBtn").click(); }
+      if (e.code === "Space"){ e.preventDefault(); stopAllSound(); }
     });
 
-    // ------------------------------------------------------------
-    // Remix Bank (save / load / play / download / delete)
-    // ------------------------------------------------------------
-    const BANK_KEY = "liam_remix_bank_v1";
-    let selectedBankId = null;
-
-    function loadBank(){
-      try{
-        const raw = localStorage.getItem(BANK_KEY);
-        const arr = JSON.parse(raw || "[]");
-        return Array.isArray(arr) ? arr : [];
-      }catch(e){
-        return [];
-      }
-    }
-    function saveBank(arr){
-      localStorage.setItem(BANK_KEY, JSON.stringify(arr));
-    }
-
-    function fmtWhen(iso){
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }catch(e){ return iso; }
-    }
-
-    function bytesToBase64(u8){
-      // chunked to avoid callstack limits
-      let binary = "";
-      const chunk = 0x8000;
-      for (let i=0; i<u8.length; i+=chunk){
-        binary += String.fromCharCode.apply(null, u8.subarray(i, i+chunk));
-      }
-      return btoa(binary);
-    }
-    function base64ToBytes(b64){
-      const bin = atob(b64);
-      const u8 = new Uint8Array(bin.length);
-      for (let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
-      return u8;
-    }
-
-    function getCurrentRemixMeta(){
-      return {
-        style: $("style").value,
-        strength: Number($("strength").value),
-        swing: Number($("swing").value),
-        humanize: Number($("humanize").value),
-        keyOverride: $("keyOverride").value,
-        mode: $("modeOverride").value,
-        barsize: $("barsize").value,
-        lockToScale: $("lockToScale").checked,
-        preferPentatonic: $("preferPentatonic").checked
-      };
-    }
-
-    function setSelectedDetails(item){
-      const has = !!item;
-
-      $("selTitle").disabled = !has;
-      $("bankPlayBtn").disabled = !has;
-      $("bankStopBtn").disabled = !has;
-      $("bankDownloadBtn").disabled = !has;
-      $("bankRenameBtn").disabled = !has;
-      $("bankDeleteBtn").disabled = !has;
-
-      if (!has){
-        $("bankSelectedHint").textContent = "Pick a saved remix to manage it";
-        $("selTitle").value = "";
-        $("selStyle").textContent = "style: —";
-        $("selKey").textContent = "key: —";
-        $("selBpm").textContent = "bpm: —";
-        $("selStrength").textContent = "strength: —";
-        $("selWhen").textContent = "—";
-        return;
-      }
-
-      $("bankSelectedHint").textContent = "Manage this saved remix";
-      $("selTitle").value = item.title || "Untitled Remix";
-      $("selStyle").textContent = `style: ${item.info?.style || "—"}`;
-      $("selKey").textContent = `key: ${item.info?.key || "—"}`;
-      $("selBpm").textContent = `bpm: ${Math.round(item.info?.bpm || 0) || "—"}`;
-      $("selStrength").textContent = `strength: ${Number(item.info?.strength ?? 0).toFixed(2)}`;
-      $("selWhen").textContent = `Saved: ${fmtWhen(item.ts)}`;
-    }
-
-    function renderBank(){
-      const list = loadBank().sort((a,b)=> (b.ts||"").localeCompare(a.ts||""));
-      const wrap = $("bankList");
-      const empty = $("bankEmpty");
-
-      if (!list.length){
-        wrap.innerHTML = "";
-        empty.style.display = "block";
-        wrap.appendChild(empty);
-        selectedBankId = null;
-        setSelectedDetails(null);
-        return;
-      }
-
-      empty.style.display = "none";
-      wrap.innerHTML = "";
-
-      // keep selection if possible
-      if (selectedBankId && !list.some(x => x.id === selectedBankId)) selectedBankId = null;
-      if (!selectedBankId) selectedBankId = list[0].id;
-
-      for (const item of list){
-        const row = document.createElement("div");
-        row.className = "bankItem" + (item.id === selectedBankId ? " active" : "");
-        row.setAttribute("role","listitem");
-
-        const left = document.createElement("div");
-        left.style.minWidth = "0";
-
-        const title = document.createElement("div");
-        title.className = "bankTitle";
-        title.textContent = item.title || "Untitled Remix";
-
-        const meta = document.createElement("div");
-        meta.className = "bankMeta";
-        const bpmTxt = item.info?.bpm ? `${Math.round(item.info.bpm)}bpm` : "—bpm";
-        const keyTxt = item.info?.key || "—";
-        const stTxt = `strength ${Number(item.info?.strength ?? 0).toFixed(2)}`;
-        const when = fmtWhen(item.ts);
-        meta.textContent = `${keyTxt} • ${bpmTxt} • ${item.info?.style || "—"} • ${stTxt}\n${when}`;
-
-        left.appendChild(title);
-        left.appendChild(meta);
-
-        const right = document.createElement("div");
-        right.style.display = "flex";
-        right.style.flexDirection = "column";
-        right.style.gap = "6px";
-        right.style.alignItems = "flex-end";
-
-        const chip1 = document.createElement("span");
-        chip1.className = "chip green";
-        chip1.textContent = (item.info?.style || "—").toUpperCase();
-
-        const chip2 = document.createElement("span");
-        chip2.className = "chip red";
-        chip2.textContent = (item.info?.key || "—");
-
-        right.appendChild(chip1);
-        right.appendChild(chip2);
-
-        row.appendChild(left);
-        row.appendChild(right);
-
-        row.addEventListener("click", ()=>{
-          selectedBankId = item.id;
-          renderBank();
-        });
-
-        wrap.appendChild(row);
-      }
-
-      const selected = list.find(x => x.id === selectedBankId) || null;
-      setSelectedDetails(selected);
-    }
-
-    function getSelectedBankItem(){
-      const list = loadBank();
-      return list.find(x => x.id === selectedBankId) || null;
-    }
-
-    function downloadMidiBytes(bytes, filename){
-      const blob = new Blob([bytes], { type: "audio/midi" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1000);
-    }
-
-    $("saveToBankBtn").addEventListener("click", () => {
-      if (!midiOut) return;
-      try{
-        const bytes = midiOut.toArray(); // Uint8Array
-        const b64 = bytesToBase64(bytes);
-
-        const info = {
-          bpm: bpm,
-          key: statKey.textContent === "—" ? "" : statKey.textContent,
-          style: $("style").value,
-          strength: Number($("strength").value),
-          duration: (Number.parseFloat((statDur.textContent||"").replace("s","")) || null)
-        };
-
-        const titleRaw = ($("bankName").value || "").trim();
-        const title =
-          titleRaw ||
-          `Remix • ${info.style.toUpperCase()} • ${Math.round(info.bpm)}bpm`;
-
-        const item = {
-          id: `bank_${Date.now().toString(16)}_${Math.random().toString(16).slice(2,8)}`,
-          ts: new Date().toISOString(),
-          title,
-          info,
-          condition: getCurrentRemixMeta(),
-          midiB64: b64
-        };
-
-        const list = loadBank();
-        list.push(item);
-        saveBank(list);
-
-        $("bankName").value = "";
-        selectedBankId = item.id;
-        renderBank();
-        setOk("Saved remix to bank.");
-      }catch(e){
-        console.error(e);
-        setWarn("Failed to save to bank (unexpected).");
-      }
-    });
-
-    $("bankRefreshBtn").addEventListener("click", () => renderBank());
-
-    $("bankPlayBtn").addEventListener("click", async () => {
-      const item = getSelectedBankItem();
-      if (!item) return;
-      try{
-        setWarn(null);
-        await ensureAudio();
-        const bytes = base64ToBytes(item.midiB64);
-        const m = new Midi(bytes);
-        playMidi(m);
-        $("bankStopBtn").disabled = false;
-      }catch(e){
-        console.error(e);
-        setWarn("Could not play saved remix. Try refreshing / re-saving.");
-      }
-    });
-
-    $("bankStopBtn").addEventListener("click", stopPlayback);
-
-    $("bankDownloadBtn").addEventListener("click", () => {
-      const item = getSelectedBankItem();
-      if (!item) return;
-      try{
-        const bytes = base64ToBytes(item.midiB64);
-        const safe = (item.title || "remix").replace(/[^\w\- ]+/g,"").trim().slice(0,50) || "remix";
-        downloadMidiBytes(bytes, `${safe}.mid`);
-        setOk("Downloaded saved remix MIDI.");
-      }catch(e){
-        console.error(e);
-        setWarn("Download failed for this bank item.");
-      }
-    });
-
-    $("bankRenameBtn").addEventListener("click", () => {
-      const item = getSelectedBankItem();
-      if (!item) return;
-      const newTitle = ($("selTitle").value || "").trim();
-      if (!newTitle){
-        setWarn("Enter a title to rename.");
-        return;
-      }
-      const list = loadBank();
-      const idx = list.findIndex(x => x.id === item.id);
-      if (idx < 0) return;
-      list[idx].title = newTitle;
-      saveBank(list);
-      renderBank();
-      setOk("Renamed bank item.");
-    });
-
-    $("bankDeleteBtn").addEventListener("click", () => {
-      const item = getSelectedBankItem();
-      if (!item) return;
-      const list = loadBank().filter(x => x.id !== item.id);
-      saveBank(list);
-      selectedBankId = null;
-      renderBank();
-      setOk("Deleted bank item.");
-    });
-
-    $("bankClearAllBtn").addEventListener("click", () => {
-      localStorage.removeItem(BANK_KEY);
-      selectedBankId = null;
-      renderBank();
-      setOk("Cleared entire bank.");
-    });
-
-    // ------------------------------------------------------------
-    // Initial render
-    // ------------------------------------------------------------
-    function updateAll(){
-      updateReadyState();
-      renderBank();
-    }
-    updateAll();
-
-    // Monitor slider labels
-    ["style","barsize","strength","swing","humanize","keyOverride","modeOverride","lockToScale","preferPentatonic"].forEach(id=>{
-      $(id).addEventListener("change", ()=>{ syncSliders(); });
-      $(id).addEventListener("input", ()=>{ syncSliders(); });
-    });
+    // init
+    updateReady();
   </script>
 </body>
 </html>
+
 
 
