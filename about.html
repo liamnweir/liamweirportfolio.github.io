@@ -232,6 +232,101 @@
       line-height: 1.45;
     }
 
+    /* TikTok card (fills space under photo) */
+    .tiktokCard{
+      margin-top: 0.95rem;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 18px 55px rgba(0,0,0,0.25);
+      overflow:hidden;
+    }
+
+    .ttThumbWrap{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow:hidden;
+    }
+
+    .ttThumbWrap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(420px 260px at 18% 10%, rgba(0,212,255,0.18), transparent 60%),
+        radial-gradient(420px 260px at 85% 15%, rgba(255,79,216,0.14), transparent 60%),
+        linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.45));
+      pointer-events:none;
+    }
+
+    .ttThumb{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      filter: contrast(1.02) saturate(1.02);
+      transform: scale(1.01);
+    }
+
+    .ttBody{
+      padding: 0.95rem 1rem 1.05rem;
+      text-align:left;
+    }
+
+    .ttTopRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 0.8rem;
+    }
+
+    .ttTitle{
+      margin: 0;
+      font-weight: 750;
+      letter-spacing: 0.2px;
+      font-size: 1.02rem;
+    }
+
+    .ttChip{
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(238,240,255,0.85);
+      white-space: nowrap;
+    }
+
+    .ttDesc{
+      margin: 0.55rem 0 0.8rem;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: rgba(216,219,255,0.9);
+    }
+
+    .ttLink{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 0.5rem;
+      text-decoration:none;
+      font-weight: 700;
+      padding: 0.55rem 0.85rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(238,240,255,0.92);
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .ttLink:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.11);
+      border-color: rgba(255,255,255,0.16);
+    }
+
     /* Text blocks */
     .section{
       border-radius: var(--radius);
@@ -295,7 +390,6 @@
       line-height: 1.55;
     }
 
-    /* Small footer line */
     .footerLine{
       margin-top: 1.2rem;
       text-align:center;
@@ -303,7 +397,6 @@
       font-size: 0.92rem;
     }
 
-    /* Accessibility */
     a:focus-visible{
       outline: 3px solid rgba(0,212,255,0.35);
       outline-offset: 3px;
@@ -340,19 +433,39 @@
         </div>
 
         <div class="grid">
-          <!-- PHOTO CARD -->
-          <aside class="photoCard">
-            <div class="photoWrap">
-              <!-- Put your uploaded image in your repo at: assets/me.jpg -->
-             <img class="photo" src="IMG_2817.JPEG" alt="Photo of Liam Weir" />
+          <!-- LEFT COLUMN -->
+          <aside>
+            <div class="photoCard">
+              <div class="photoWrap">
+                <img class="photo" src="IMG_2817.JPEG" alt="Photo of Liam Weir" />
+              </div>
+              <div class="photoFooter">
+                <p class="photoName">Liam Weir</p>
+                <p class="photoMeta">UCSC • Cognitive Science (AI/HCI) • Electronic Music minor</p>
+              </div>
             </div>
-            <div class="photoFooter">
-              <p class="photoName">Liam Weir</p>
-              <p class="photoMeta">UCSC • Cognitive Science (AI/HCI) • Electronic Music minor</p>
+
+            <!-- TikTok Card (with your uploaded thumbnail: tiktok.png) -->
+            <div class="tiktokCard">
+              <div class="ttThumbWrap">
+                <img class="ttThumb" src="tiktok.png" alt="TikTok profile preview" />
+              </div>
+              <div class="ttBody">
+                <div class="ttTopRow">
+                  <p class="ttTitle">@dajackedpianoman</p>
+                  <span class="ttChip">TikTok 🎹</span>
+                </div>
+                <p class="ttDesc">
+                  I post short-form videos learning and performing songs on piano!
+                </p>
+                <a class="ttLink" href="https://www.tiktok.com/@dajackedpianoman" target="_blank" rel="noreferrer">
+                  Visit my TikTok →
+                </a>
+              </div>
             </div>
           </aside>
 
-          <!-- TEXT CONTENT -->
+          <!-- RIGHT COLUMN -->
           <div>
             <section class="section">
               <h3>My Focus</h3>
@@ -403,3 +516,4 @@
   </main>
 </body>
 </html>
+
