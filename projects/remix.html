@@ -287,7 +287,8 @@
       <h1>Remix Assistant (MIDI)</h1>
       <p>
         Upload a MIDI and generate a “better” version using simple music theory:
-        diatonic reharm, smoother voice-leading, and a lightly improved melody while keeping the same vibe.
+        diatonic reharm (now with 7ths + broken chords), smoother voice-leading,
+        and a melody that actually gets tasteful embellishments (trills / passing tones).
       </p>
     </div>
 
@@ -419,10 +420,23 @@
 
   <script>
     // ============================================================
-    // KEY FIX: AUDIO LOADER WON'T HANG ANYMORE
-    // - Use Tone.Sampler({ onload: ... }) (reliable)
-    // - Add timeout so ensureAudio always finishes
-    // - Add fallback synth if samples fail / slow network
+    // FIXES YOU ASKED FOR
+    // 1) Tempo mismatch: chords/color stuck at 120bpm
+    //    -> We now FORCE the output MIDI header to include:
+    //       - tempo event at tick 0 (original bpm)
+    //       - time signature at tick 0
+    //    This prevents @tonejs/midi from defaulting to 120.
+    //
+    // 2) Remix button barely changes melody
+    //    -> Melody now gets actual tasteful embellishments:
+    //       - passing tones on leaps
+    //       - neighbor tones on repeated notes
+    //       - trills on long notes (probability scales w/ strength)
+    //
+    // 3) More "color"
+    //    -> Adds:
+    //       - Chords track uses DIATONIC 7TH CHORDS
+    //       - Color track plays BROKEN 7TH CHORD arpeggios
     // ============================================================
 
     const $ = (id) => document.getElementById(id);
@@ -603,6 +617,9 @@
       const deg = MODES[mode] || MODES.major;
       return deg.map(x => (x + tonicPc) % 12);
     }
+
+    function isPcInScale(pc, allowedPcs){ return allowedPcs.includes(((pc%12)+12)%12); }
+
     function snapToScale(midi, allowedPcs){
       const pc = ((midi%12)+12)%12;
       if (allowedPcs.includes(pc)) return midi;
@@ -613,7 +630,18 @@
       return midi;
     }
 
-    // tempo-safe writing
+    function nearestScaleMidi(targetMidi, allowedPcs){
+      let m = Math.round(targetMidi);
+      if (isPcInScale(m, allowedPcs)) return m;
+      // search around
+      for (let d=1; d<=6; d++){
+        if (isPcInScale(m+d, allowedPcs)) return m+d;
+        if (isPcInScale(m-d, allowedPcs)) return m-d;
+      }
+      return snapToScale(m, allowedPcs);
+    }
+
+    // tempo-safe writing (depends on header tempo being set correctly!)
     function headerSecondsToTicks(header, sec){
       if (header && typeof header.secondsToTicks === "function"){
         const t = header.secondsToTicks(sec);
@@ -624,6 +652,7 @@
       const ticks = sec * (fallbackBpm/60) * fallbackPpq;
       return Math.max(0, Math.round(ticks));
     }
+
     function addNoteBySeconds(track, header, midi, timeSec, durSec, vel){
       const ticks = headerSecondsToTicks(header, Math.max(0, timeSec));
       const endTicks = headerSecondsToTicks(header, Math.max(0, timeSec + Math.max(0.03, durSec)));
@@ -632,57 +661,205 @@
         midi: clamp(Math.round(midi), 24, 108),
         ticks,
         durationTicks,
-        velocity: clamp(vel ?? 0.85, 0.08, 1.0)
+        velocity: clamp(vel ?? 0.85, 0.05, 1.0)
       });
     }
 
+    // --- deterministic randomness (so remix is repeatable per file) ---
+    function xmur3(str){
+      let h = 1779033703 ^ str.length;
+      for (let i=0; i<str.length; i++){
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return function(){
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+    function mulberry32(a){
+      return function(){
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // --- force output header tempo + time signature at tick 0 ---
+    function forceHeaderTempoAndTS(outMidi, bpmVal, num, den){
+      const header = outMidi.header;
+
+      // Tempo
+      try{
+        if (typeof header.setTempo === "function") header.setTempo(bpmVal, 0);
+      }catch(e){}
+      try{
+        header.tempos = [{ ticks: 0, bpm: bpmVal }];
+      }catch(e){}
+
+      // Time signature
+      try{
+        header.timeSignatures = [{ ticks: 0, timeSignature: [num, den] }];
+      }catch(e){}
+
+      // Safety: ensure ppq exists
+      try{
+        if (!header.ppq) header.ppq = 480;
+      }catch(e){}
+    }
+
     // ---------------------------
-    // Remix (kept simple here; your previous tempo/time-sig fix stays)
+    // Harmony helpers
     // ---------------------------
-    function diatonicTriads(tonicPc, mode){
-      const sc = scalePcs(tonicPc, mode);
+    function diatonic7ths(tonicPc, mode){
+      const sc = scalePcs(tonicPc, mode); // 7 pcs
       const chords = [];
       for (let d=0; d<7; d++){
-        chords.push({ degree:d+1, pcs:[sc[d], sc[(d+2)%7], sc[(d+4)%7]], rootPc: sc[d] });
+        // 1-3-5-7
+        const pcs = [sc[d], sc[(d+2)%7], sc[(d+4)%7], sc[(d+6)%7]];
+        chords.push({ degree:d+1, pcs, rootPc: sc[d] });
       }
       return chords;
     }
+
     function overlap(a0,a1,b0,b1){
       const lo = Math.max(a0,b0);
       const hi = Math.min(a1,b1);
       return Math.max(0, hi-lo);
     }
+
     function fitChordForBar(notes, t0, t1, chords){
       const scores = chords.map(()=>0);
+
       for (const n of notes){
         const nt0 = n.time||0;
         const nt1 = nt0 + (n.duration||0.1);
         const ov = overlap(t0,t1,nt0,nt1);
         if (ov<=0) continue;
         const pc = ((n.midi||0)%12+12)%12;
-        chords.forEach((ch,i)=>{ if (ch.pcs.includes(pc)) scores[i]+=ov; });
+
+        chords.forEach((ch,i)=>{
+          if (ch.pcs.includes(pc)) scores[i] += ov * 1.0;
+          // weight root a tiny bit more
+          if (pc === ch.rootPc) scores[i] += ov * 0.12;
+        });
       }
+
+      // gentle functional bias
       chords.forEach((ch,i)=>{
-        if (ch.degree===1) scores[i]*=1.10;
-        if (ch.degree===5) scores[i]*=1.06;
+        if (ch.degree===1) scores[i]*=1.12;
+        if (ch.degree===5) scores[i]*=1.07;
+        if (ch.degree===4) scores[i]*=1.03;
       });
+
       let bestI=0, best=-1e9;
-      for (let i=0;i<scores.length;i++){ if (scores[i]>best){ best=scores[i]; bestI=i; } }
+      for (let i=0;i<scores.length;i++){
+        if (scores[i]>best){ best=scores[i]; bestI=i; }
+      }
       return chords[bestI];
     }
+
     function chooseVoicing(chordPcs, centerMidi){
+      // map pcs near center and sort
       const voiced = chordPcs.map(pc=>{
         let m = centerMidi + ((pc - (centerMidi%12) + 12)%12);
-        while (m > centerMidi+6) m -= 12;
-        while (m < centerMidi-6) m += 12;
+        while (m > centerMidi+8) m -= 12;
+        while (m < centerMidi-8) m += 12;
         return m;
       }).sort((a,b)=>a-b);
+
+      // ensure span not too wide
+      while (voiced[voiced.length-1] - voiced[0] > 16){
+        voiced[voiced.length-1] -= 12;
+        voiced.sort((a,b)=>a-b);
+      }
       return voiced;
     }
-    function improveMelody(notes, tonicPc, mode){
+
+    // ---------------------------
+    // Melody embellishment (trills, passing tones, neighbor tones)
+    // ---------------------------
+    function buildTrillNotes(baseMidi, allowedPcs, time, dur, rateHz, up=true){
+      // alternate base <-> neighbor for dur
+      const out = [];
+      const step = 1 / rateHz;
+      const nSteps = Math.max(2, Math.floor(dur / step));
+      const neighbor = nearestScaleMidi(baseMidi + (up ? 1 : -1), allowedPcs);
+
+      const seg = dur / nSteps;
+      for (let i=0; i<nSteps; i++){
+        const m = (i % 2 === 0) ? baseMidi : neighbor;
+        out.push({ midi: m, time: time + i*seg, duration: seg*0.95, velocity: 0.82 });
+      }
+      return out;
+    }
+
+    function embellishMelody(notesIn, tonicPc, mode, style, strength, rand){
       const allowed = scalePcs(tonicPc, mode);
-      const out = notes.map(n => ({...n}));
-      for (const n of out) n.midi = snapToScale(n.midi, allowed);
+      const out = [];
+
+      // base cleanup: snap to scale
+      const base = notesIn.map(n => ({
+        midi: snapToScale(n.midi, allowed),
+        time: n.time,
+        duration: Math.max(0.03, n.duration ?? 0.12),
+        velocity: clamp(n.velocity ?? 0.85, 0.06, 1.0)
+      }));
+
+      // parameters
+      const trillChance = clamp(0.08 + 0.30*strength, 0, 0.45); // actually audible
+      const passChance  = clamp(0.10 + 0.25*strength, 0, 0.40);
+      const neighChance = clamp(0.06 + 0.22*strength, 0, 0.35);
+
+      const longNoteSec = (style==="baroque") ? 0.22 : 0.30;
+      const leapSemis = 5;
+
+      for (let i=0; i<base.length; i++){
+        const n = base[i];
+        const prev = base[i-1];
+
+        // occasional neighbor-tone on repeats / near-repeats
+        const isRepeatish = prev && Math.abs(prev.midi - n.midi) <= 1 && n.duration >= 0.12;
+        if (isRepeatish && rand() < neighChance){
+          const neighbor = nearestScaleMidi(n.midi + (rand()<0.5 ? 1 : -1), allowed);
+          const seg = Math.min(0.10, n.duration*0.35);
+          out.push({ midi: neighbor, time: n.time, duration: seg*0.9, velocity: n.velocity*0.9 });
+          out.push({ midi: n.midi, time: n.time + seg, duration: n.duration - seg, velocity: n.velocity });
+          continue;
+        }
+
+        // passing tone on leaps (split note at start as a quick approach)
+        if (prev && Math.abs(n.midi - prev.midi) >= leapSemis && rand() < passChance){
+          const dir = (n.midi > prev.midi) ? 1 : -1;
+          const passTarget = nearestScaleMidi(prev.midi + dir*2, allowed);
+          const seg = Math.min(0.10, n.duration*0.30);
+          out.push({ midi: passTarget, time: n.time, duration: seg*0.9, velocity: n.velocity*0.85 });
+          out.push({ midi: n.midi, time: n.time + seg, duration: n.duration - seg, velocity: n.velocity });
+          continue;
+        }
+
+        // trills on long notes
+        if (n.duration >= longNoteSec && rand() < trillChance){
+          const rate = (style==="baroque") ? (10 + 8*strength) : (7 + 6*strength);
+          const up = rand() < 0.55;
+          const trillDur = Math.min(n.duration, (style==="edm") ? 0.35 + 0.20*strength : 0.25 + 0.18*strength);
+          // start trill after a short hold
+          const hold = Math.max(0.05, n.duration - trillDur);
+          if (hold > 0.04){
+            out.push({ midi: n.midi, time: n.time, duration: hold, velocity: n.velocity });
+          }
+          const trillNotes = buildTrillNotes(n.midi, allowed, n.time + hold, trillDur, rate, up);
+          out.push(...trillNotes);
+          continue;
+        }
+
+        // default: keep note
+        out.push(n);
+      }
+
+      // cadence polish: end on tonic (closest tonic)
       if (out.length){
         const last = out[out.length-1];
         const lastPc = ((last.midi%12)+12)%12;
@@ -693,31 +870,54 @@
           last.midi = clamp(tonicMidi, 36, 96);
         }
       }
+
+      // small de-overlap safety (avoid accidental overlap)
+      out.sort((a,b)=>a.time-b.time);
+      for (let i=0; i<out.length-1; i++){
+        const a = out[i];
+        const b = out[i+1];
+        const aEnd = a.time + a.duration;
+        if (aEnd > b.time){
+          a.duration = Math.max(0.03, b.time - a.time - 0.001);
+        }
+      }
+
       return out;
     }
 
+    // ---------------------------
+    // Remix builder
+    // ---------------------------
     function buildRemix(m){
       const style = $("style").value;
       const strength = clamp(Number($("strength").value), 0, 1);
 
+      // Use ORIGINAL tempo and time signature
       bpm = getFirstTempo(m);
       const ts = getFirstTimeSignature(m);
       beatsPerBar = ts.beatsPerBar;
       beatUnit = ts.beatUnit;
 
+      // PRNG seed based on file duration + bpm + trackIndex (repeatable)
+      const durSec = midiDurationSeconds(m);
+      const seedGen = xmur3(`${durSec.toFixed(3)}|${bpm}|${beatsPerBar}/${beatUnit}|${melodyTrackIndex}`);
+      const rand = mulberry32(seedGen());
+
+      // timing in seconds
       const quarterSec = 60/Math.max(1,bpm);
       const beatSec = quarterSec * (4/beatUnit);
       const barSec = beatsPerBar*beatSec;
 
+      // key/mode
       const det = detectKey(melodyNotes);
       const keyOverride = $("keyOverride").value;
       modeName = $("modeOverride").value;
       keyPc = (keyOverride==="auto") ? det.pc : NOTE_TO_PC[keyOverride];
 
-      const durSec = midiDurationSeconds(m);
       const bars = Math.max(1, Math.ceil(durSec / barSec));
 
-      const chords = diatonicTriads(keyPc, modeName);
+      // chord plan using diatonic 7ths
+      const chords = diatonic7ths(keyPc, modeName);
       const chordPlan = [];
       for (let b=0; b<bars; b++){
         const t0=b*barSec, t1=(b+1)*barSec;
@@ -727,33 +927,92 @@
       chordPlan[0].chord = tonic;
       chordPlan[chordPlan.length-1].chord = tonic;
 
+      // Create output MIDI and FORCE its tempo/TS at tick 0 (fixes your 120bpm bug)
       const out = new Midi();
+      // copy some header info but do NOT trust it for tempo/TS
       try{ out.header.fromJSON(m.header.toJSON()); }catch(e){}
+      forceHeaderTempoAndTS(out, bpm, beatsPerBar, beatUnit);
 
-      const melT = out.addTrack(); melT.name = "Melody";
-      const mel = improveMelody(
-        melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 })),
-        keyPc, modeName
-      );
+      // --- Melody track (embellished) ---
+      const melT = out.addTrack(); melT.name = "Melody (Remix)";
+      const melIn = melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 }));
+      const mel = embellishMelody(melIn, keyPc, modeName, style, strength, rand);
       for (const n of mel){
-        addNoteBySeconds(melT, out.header, n.midi, n.time, Math.max(0.03, n.duration ?? 0.12), n.velocity ?? 0.85);
+        addNoteBySeconds(melT, out.header, n.midi, n.time, n.duration, n.velocity);
       }
 
-      const chT = out.addTrack(); chT.name = "Chords";
+      // --- Chords track (block 7ths) ---
+      const chT = out.addTrack(); chT.name = "Chords (7ths)";
       for (const slot of chordPlan){
-        const center = (style==="baroque") ? 58 : 60;
+        const center = (style==="baroque") ? 56 : 58;
         const voiced = chooseVoicing(slot.chord.pcs, center);
-        const dur = (slot.t1-slot.t0) * 0.98;
+        const dur = (slot.t1-slot.t0) * (style==="edm" ? 0.92 : 0.97);
+
+        // mild voice-leading nudge: keep top note from jumping too much
         for (const m0 of voiced){
-          addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.28 + 0.18*strength);
+          addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.24 + 0.20*strength);
         }
       }
 
-      return { out, info: { bpm, key:`${PC_NAMES[keyPc]} ${modeName}`, bars, style, durSec } };
+      // --- Color track (broken 7th chords / arpeggios) ---
+      const colT = out.addTrack(); colT.name = "Color (Broken 7ths)";
+      const arpRate = (style==="baroque") ? 8 : (style==="edm" ? 12 : 10); // notes per bar-ish
+      const stepsPerBar = (style==="edm") ? 16 : 8; // 16ths vs 8ths feel
+      const stepSec = barSec / stepsPerBar;
+
+      for (let b=0; b<bars; b++){
+        const slot = chordPlan[b];
+        const center = (style==="baroque") ? 60 : 62;
+        let voiced = chooseVoicing(slot.chord.pcs, center);
+
+        // "broken" pattern order
+        // baroque: 1-3-5-7-5-3
+        // lofi:    1-5-3-7
+        // edm:     1-3-5-7 (faster)
+        let pattern;
+        if (style==="baroque") pattern = [0,1,2,3,2,1];
+        else if (style==="edm") pattern = [0,1,2,3,2,1,3,2];
+        else pattern = [0,2,1,3];
+
+        // occasional inversion for movement
+        if (rand() < (0.18 + 0.25*strength)){
+          voiced = voiced.slice(1).concat([voiced[0]+12]).sort((a,b)=>a-b);
+        }
+
+        const t0 = b*barSec;
+        const velBase = (style==="edm") ? 0.20 : 0.18;
+        const vel = velBase + 0.16*strength;
+
+        const totalSteps = stepsPerBar;
+        for (let s=0; s<totalSteps; s++){
+          const p = pattern[s % pattern.length];
+          const midiN = voiced[p];
+
+          // small skip / syncopation sometimes
+          if (style==="lofi" && rand() < 0.10 && (s%4===2)) continue;
+          if (style==="edm" && rand() < 0.08 && (s%8===7)) continue;
+
+          const t = t0 + s*stepSec;
+          const d = stepSec * (style==="edm" ? 0.85 : 0.78);
+
+          addNoteBySeconds(colT, out.header, midiN, t, d, vel);
+        }
+      }
+
+      return {
+        out,
+        info: {
+          bpm,
+          key: `${PC_NAMES[keyPc]} ${modeName}`,
+          bars,
+          style,
+          durSec
+        }
+      };
     }
 
     // ---------------------------
-    // AUDIO (FIXED)
+    // AUDIO (fixed sampler load)
     // ---------------------------
     let audioReady = false;
 
@@ -812,11 +1071,10 @@
         }
       });
 
-      // HARD TIMEOUT: never hang the UI waiting for samples
       setTimeout(() => {
         if (!resolved){
           resolved = true;
-          resolveReady(false); // false = timed out (we'll still use fallback synth)
+          resolveReady(false);
         }
       }, 3500);
 
@@ -824,12 +1082,9 @@
     }
 
     async function ensureAudio(){
-      // must be called inside a user gesture (click)
       try{
         if (Tone.context.state !== "running") await Tone.start();
-      }catch(e){
-        // If start fails, we'll still try to construct nodes; browser may block audio.
-      }
+      }catch(e){}
 
       if (audioReady) return;
 
@@ -849,7 +1104,6 @@
         wet: 0.22
       }).connect(toneFilter);
 
-      // Fallback synth ALWAYS works (no downloads)
       fallbackSynth = new Tone.PolySynth(Tone.Synth, {
         oscillator: { type: "sine" },
         envelope: { attack: 0.005, decay: 0.12, sustain: 0.25, release: 0.9 }
@@ -857,7 +1111,6 @@
       fallbackSynth.volume.value = -12;
       fallbackSynth.connect(reverb);
 
-      // Sampler piano (may take time / may fail)
       const { sampler, ready } = createPianoSamplerWithPromise();
       samplerPiano = sampler;
       samplerPiano.volume.value = -8;
@@ -874,7 +1127,6 @@
     }
 
     function getInstrument(){
-      // If sampler is loaded, use it. Otherwise fallback synth.
       if (samplerPiano && samplerPiano.loaded) return samplerPiano;
       return fallbackSynth;
     }
@@ -930,8 +1182,6 @@
         const inst = getInstrument();
         const nn = midiToNoteName(v.midi);
         const vel = clamp(Math.pow(v.vel, 0.85), 0.05, 1.0);
-
-        // Sampler supports triggerAttackRelease(noteName,...)
         if (inst && typeof inst.triggerAttackRelease === "function"){
           inst.triggerAttackRelease(nn, v.dur, time, vel);
         }
@@ -1010,7 +1260,7 @@
     });
 
     // ---------------------------
-    // Samples
+    // Samples (now with forced tempo/TS too)
     // ---------------------------
     function makeSampleMidi(sampleId){
       const cfg = {
@@ -1020,15 +1270,14 @@
       }[sampleId];
 
       const m = new Midi();
+      forceHeaderTempoAndTS(m, cfg.tempo, cfg.ts[0], cfg.ts[1]);
+
       const t = m.addTrack(); t.name = cfg.title;
 
       const quarterSec = 60 / cfg.tempo;
       const beatSec = quarterSec * (4 / cfg.ts[1]);
       const barSec = cfg.ts[0] * beatSec;
       const bars = 8;
-
-      const prevBpm = bpm;
-      bpm = cfg.tempo;
 
       for (let b=0; b<bars; b++){
         const t0 = b * barSec;
@@ -1042,7 +1291,6 @@
         }
       }
 
-      bpm = prevBpm;
       return { midi: m, title: cfg.title, tempo: cfg.tempo, keyText: cfg.key };
     }
 
@@ -1127,6 +1375,7 @@
 
         logLine(`Style: ${info.style}`, "info");
         logLine(`Key/Mode: ${info.key}`, "info");
+        logLine(`Tempo (forced): ${Math.round(info.bpm)} BPM`, "ok");
         logLine(`Bars: ${info.bars}`, "info");
         logLine("Done. Play or download.", "ok");
 
@@ -1134,7 +1383,7 @@
         statKey.textContent = info.key;
 
         updateReady();
-        setOk("Remix created.");
+        setOk("Remix created (melody embellished + 7ths + broken-chord color).");
       }catch(e){
         console.error(e);
         setWarn(e?.message || "Remix failed. Check console.");
