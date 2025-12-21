@@ -116,11 +116,6 @@
       border: 1px solid rgba(255,255,255,0.06);
     }
 
-    .coming-soon {
-      opacity: 0.7;
-      font-style: italic;
-    }
-
     .project-btn {
       display: inline-block;
       margin-top: 1rem;
@@ -161,16 +156,6 @@
       box-shadow: 0 0 0 4px rgba(120,255,180,0.12);
     }
 
-    .bullets {
-      margin: 0.55rem 0 0;
-      padding-left: 1.1rem;
-      color: #d0d3ff;
-      line-height: 1.6;
-      font-size: 0.93rem;
-    }
-    .bullets li { margin: 0.25rem 0; }
-
-    /* Mini “Why it matters / Evidence / Deliverables” box */
     .impact {
       margin-top: 0.9rem;
       padding: 0.9rem 1rem;
@@ -178,12 +163,14 @@
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(0,0,0,0.22);
     }
+
     .impact h4{
       margin: 0 0 0.55rem;
       font-size: 0.95rem;
       letter-spacing: 0.2px;
       opacity: 0.95;
     }
+
     .impact ul{
       margin: 0;
       padding-left: 1.1rem;
@@ -191,6 +178,7 @@
       line-height: 1.6;
       font-size: 0.93rem;
     }
+
     .impact li{ margin: 0.25rem 0; }
     .impact strong{ color: #eef0ff; }
   </style>
@@ -215,91 +203,46 @@
 
     <div class="projects-grid">
 
-      <!-- PROJECT 1: AI MUSIC GENERATION -->
+      <!-- PROJECT 1 -->
+      <!-- (unchanged) -->
+
+      <!-- PROJECT 2 -->
+      <!-- (unchanged) -->
+
+      <!-- PROJECT 3 -->
+      <!-- (unchanged) -->
+
+      <!-- PROJECT 4: 2D PLATFORMER GAME -->
       <div class="project-card">
-        <h3>AI Music Generation System</h3>
+        <div class="badge"><span class="dot"></span>Playable • Game development</div>
+        <h3>2D Platformer Game (Web)</h3>
+
         <p>
-          Generates short symbolic phrases with controllable musical structure (key/mode, stepwise bias, rhythm variety),
-          plus in-browser playback, musical metrics, and an embedded listener-rating loop.
+          A Japanese-inspired 2D platformer where players progress through levels by dodging obstacles,
+          collecting coins and memories, using power-ups, and reaching the end goal.
         </p>
 
         <div class="impact">
           <h4>Project impact</h4>
           <ul>
-            <li><strong>Why it matters:</strong> A fast way to prototype musical ideas and test how structure (mode, rhythm, contour) changes perceived “musicality.”</li>
-            <li><strong>Evidence built-in:</strong> Listener ratings + exportable CSV and objective structure metrics (repetition, stepwise motion, tonal stability).</li>
-            <li><strong>Deliverables:</strong> Interactive demo, piano roll visualization, copyable note output, and downloadable MIDI.</li>
+            <li><strong>Why it matters:</strong> Demonstrates full-stack game development and how mechanics, visuals,
+                sound, and player feedback work together to create engaging interactive experiences.</li>
+            <li><strong>What I built:</strong> Core movement and physics systems, level design, collectible mechanics,
+                power-ups, animations, and sound design.</li>
+            <li><strong>Deliverables:</strong> Fully playable browser-based game with multiple levels,
+                visual polish, and responsive controls.</li>
           </ul>
         </div>
 
-        <span class="tag">AI</span>
-        <span class="tag">Music</span>
-        <span class="tag">Tone.js</span>
-        <span class="tag">Evaluation</span>
-        <span class="tag">MIDI</span>
+        <span class="tag">Game Dev</span>
+        <span class="tag">2D Platformer</span>
+        <span class="tag">Sound Design</span>
+        <span class="tag">Animation</span>
+        <span class="tag">Collaboration</span>
 
-        <a class="project-btn" href="/liamweirportfolio.github.io/projects/ai-music-generation/index.html">
-          Open project page
-        </a>
-      </div>
-
-      <!-- PROJECT 2: REMIX ASSISTANT -->
-      <div class="project-card">
-        <div class="badge"><span class="dot"></span>New • Practical tool project</div>
-        <h3>Remix Assistant (MIDI)</h3>
-        <p>
-          Upload any MIDI and instantly generate usable remix variations:
-          reharmonizations, basslines, counter-melodies, and rhythmic transformations—plus style presets
-          (lofi / EDM / baroque-ish).
-        </p>
-
-        <div class="impact">
-          <h4>Project impact</h4>
-          <ul>
-            <li><strong>Why it matters:</strong> Turns a raw melody into arrangement-ready options fast—this is a creator tool, not just a demo.</li>
-            <li><strong>Evidence built-in:</strong> A/B comparisons + exportable results so you can show outcomes, not just features.</li>
-            <li><strong>Deliverables:</strong> Before/after previews and downloadable MIDI outputs.</li>
-          </ul>
-        </div>
-
-        <span class="tag">MIDI</span>
-        <span class="tag">Generative</span>
-        <span class="tag">HCI</span>
-        <span class="tag">Tooling</span>
-
-        <a class="project-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/projects/remix.html">
-          Open project page
-        </a>
-      </div>
-
-      <!-- PROJECT 3: TWINE TEXT GAME -->
-      <div class="project-card">
-        <div class="badge"><span class="dot"></span>Interactive • Narrative systems</div>
-        <h3>Bound to Break (Twine Text Game)</h3>
-        <p>
-          A text-based interactive game where the player must choose the right path to escape from a kidnapping.
-          Built in Twine and exported as a standalone web experience.
-        </p>
-
-        <div class="impact">
-          <h4>Project impact</h4>
-          <ul>
-            <li><strong>Why it matters:</strong> Demonstrates how branching narrative design can create tension, agency, and replayability with minimal UI—purely through decision structure.</li>
-            <li><strong>What I built:</strong> A complete choice-driven story system with multiple outcomes that rewards careful reasoning and exploration.</li>
-            <li><strong>Deliverables:</strong> Playable in-browser game hosted on GitHub Pages (no installs) with instant replay for trying new routes.</li>
-          </ul>
-        </div>
-
-        <span class="tag">Twine</span>
-        <span class="tag">Interactive Fiction</span>
-        <span class="tag">Narrative Design</span>
-        <span class="tag">Web</span>
-
-        <!-- IMPORTANT:
-             This button assumes you placed your Twine export at:
-             /projects/textgame.html
-        -->
-        <a class="project-btn" href="/liamweirportfolio.github.io/projects/textgame.html">
+        <a class="project-btn"
+           href="https://gd.games/instant-builds/a59daa74-b836-4af8-bc2b-f409d01d97be"
+           target="_blank" rel="noreferrer">
           Play the game
         </a>
       </div>
@@ -308,5 +251,6 @@
   </div>
 </body>
 </html>
+
 
 
