@@ -126,9 +126,10 @@
     .row{display:flex; flex-wrap:wrap; gap: 10px; align-items:flex-end}
     .field{min-width: 220px; flex:1}
     .field.sm{min-width: 170px; flex: .8}
+    .field.xs{min-width: 140px; flex: .55}
     .label{font-size:.9rem; color: var(--muted); margin: 0 0 6px; font-weight: 850}
 
-    select,input[type="text"],input[type="file"],input[type="range"]{
+    select,input[type="text"],input[type="number"],input[type="file"],input[type="range"]{
       width:100%;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.15);
@@ -168,6 +169,20 @@
       border: 1px solid rgba(255,255,255,.22);
       box-shadow: 0 10px 24px rgba(0,0,0,.35);
     }
+    input[type="range"]::-moz-range-track{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    input[type="range"]::-moz-range-thumb{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 90, 120,.95), rgba(255, 140, 80,.85));
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+    }
 
     .btn{
       appearance:none;
@@ -187,8 +202,13 @@
       font-weight: 900;
     }
     .btn.green{
-      border-color: rgba(80,255,170,.48);
-      background: linear-gradient(135deg, rgba(80,255,170,.18), rgba(60,220,140,.12));
+      border-color: var(--greenBorder);
+      background: linear-gradient(135deg, var(--greenA), var(--greenB));
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(255,255,255,.16);
+      font-weight: 900;
     }
     .btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
 
@@ -208,13 +228,18 @@
 
     .log{
       margin: 10px 0 0;
-      padding: 12px;
+      padding: 12px 12px 12px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.35);
+      background:
+        radial-gradient(800px 260px at 10% 0%, rgba(255, 90, 120,.10), transparent 60%),
+        radial-gradient(800px 260px at 90% 0%, rgba(80,255,170,.08), transparent 60%),
+        rgba(0,0,0,.35);
       color: rgba(238,240,255,.92);
       height: 240px;
+      max-height: 240px;
       overflow: auto;
+      min-height: 160px;
       font-family: var(--mono);
       font-size: .92rem;
       line-height: 1.55;
@@ -235,14 +260,20 @@
     }
     .log .tag.ok{border-color: rgba(120,255,190,.28); background: rgba(120,255,190,.08)}
     .log .tag.warn{border-color: rgba(255,170,120,.32); background: rgba(255,170,120,.08)}
+    .log .tag.info{border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.05)}
     .log .tag.play{border-color: rgba(80,255,170,.32); background: rgba(80,255,170,.08)}
+    .log .tag.stop{border-color: rgba(255,90,120,.32); background: rgba(255,90,120,.08)}
 
     .kv{display:flex; justify-content:space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.10)}
     .kv:last-child{border-bottom:none}
     .k{color: var(--muted)}
     .v{font-weight: 950}
 
-    .list{display:flex; flex-direction:column; gap:10px;}
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
     .item{
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.20);
@@ -253,11 +284,41 @@
       gap: 12px;
       align-items:flex-start;
     }
-    .item .title{font-weight:950; margin:0 0 4px;}
-    .item .sub{color: var(--muted2); font-weight:850; font-size:.88rem;}
-    .item .actions{display:flex; gap: 8px; flex-wrap:wrap; justify-content:flex-end;}
-    .btn.xs{padding: 8px 10px; border-radius: 12px; font-size: .88rem; font-weight: 950;}
-    .inline{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    .item .meta{min-width:0}
+    .item .title{
+      font-weight: 950;
+      letter-spacing: -.2px;
+      margin: 0 0 4px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .item .sub{
+      color: var(--muted2);
+      font-weight: 850;
+      font-size: .88rem;
+      line-height: 1.35;
+    }
+    .item .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      justify-content:flex-end;
+      align-items:center;
+      flex: 0 0 auto;
+    }
+    .btn.xs{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: .88rem;
+      font-weight: 950;
+    }
+    .inline{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
     .pill{
       display:inline-block;
       padding: 6px 10px;
@@ -287,12 +348,12 @@
       <h1>Remix Assistant (MIDI)</h1>
       <p>
         Upload a MIDI and generate a “better” version using simple music theory:
-        diatonic reharm (now with 7ths + broken chords), smoother voice-leading,
-        and a melody that actually gets tasteful embellishments (trills / passing tones).
+        diatonic reharm, smoother voice-leading, and a lightly improved melody while keeping the same vibe.
       </p>
     </div>
 
     <div class="grid">
+      <!-- LEFT: Remix -->
       <section class="card remix">
         <div class="row">
           <div class="field">
@@ -365,6 +426,7 @@
         </div>
       </section>
 
+      <!-- RIGHT: Stats + Samples -->
       <div style="display:flex; flex-direction:column; gap:16px">
         <section class="card stats">
           <div class="kv"><span class="k">Detected file</span><span class="v" id="statFile">—</span></div>
@@ -372,13 +434,23 @@
           <div class="kv"><span class="k">Key / mode</span><span class="v" id="statKey">—</span></div>
           <div class="kv"><span class="k">Melody track</span><span class="v" id="statTrack">—</span></div>
           <div class="kv"><span class="k">Duration</span><span class="v" id="statDur">—</span></div>
+
+          <div class="divider"></div>
+          <div class="tiny">
+            If remix harmony sounds off: set the Key manually and try Major/Minor.
+          </div>
         </section>
 
         <section class="card soft">
-          <div style="font-weight:950; margin-bottom:4px">Sample MIDIs</div>
-          <div class="tiny">Try the tool without uploading anything.</div>
+          <div class="row" style="justify-content:space-between; align-items:center">
+            <div>
+              <div style="font-weight:950; margin-bottom:4px">Sample MIDIs</div>
+              <div class="tiny">Try the tool without uploading anything.</div>
+            </div>
+          </div>
 
           <div class="divider"></div>
+
           <div id="samples" class="list"></div>
 
           <div class="divider"></div>
@@ -389,6 +461,7 @@
       </div>
     </div>
 
+    <!-- BANK -->
     <section id="bank" class="card soft" style="margin-top:16px">
       <div class="row" style="justify-content:space-between; align-items:center">
         <div>
@@ -397,7 +470,7 @@
         </div>
         <div class="inline">
           <button class="btn secondary xs" id="bankRefresh" type="button">Refresh</button>
-          <button class="btn xs" id="bankClear" type="button" style="background:transparent;border-color:rgba(255,255,255,.16);font-weight:900;">Clear All</button>
+          <button class="btn ghost xs" id="bankClear" type="button">Clear All</button>
         </div>
       </div>
 
@@ -420,23 +493,12 @@
 
   <script>
     // ============================================================
-    // FIXES YOU ASKED FOR
-    // 1) Tempo mismatch: chords/color stuck at 120bpm
-    //    -> We now FORCE the output MIDI header to include:
-    //       - tempo event at tick 0 (original bpm)
-    //       - time signature at tick 0
-    //    This prevents @tonejs/midi from defaulting to 120.
-    //
-    // 2) Remix button barely changes melody
-    //    -> Melody now gets actual tasteful embellishments:
-    //       - passing tones on leaps
-    //       - neighbor tones on repeated notes
-    //       - trills on long notes (probability scales w/ strength)
-    //
-    // 3) More "color"
-    //    -> Adds:
-    //       - Chords track uses DIATONIC 7TH CHORDS
-    //       - Color track plays BROKEN 7TH CHORD arpeggios
+    // FIXES + UPGRADES:
+    // 1) Tempo alignment: harmony grid uses the MIDI's time signature
+    //    (not hardcoded 4/4) so chords won't "drag" behind melody.
+    // 2) More theory/color: optional 7ths, suspensions, tasteful
+    //    broken-chord patterns, and occasional melodic trills/passing tones.
+    // 3) Still tempo-safe: clone original header (tempo map / PPQ).
     // ============================================================
 
     const $ = (id) => document.getElementById(id);
@@ -459,7 +521,7 @@
     }
 
     // ---------------------------
-    // Log
+    // Better Log
     // ---------------------------
     function logClear(){ $("log").innerHTML = ""; }
     function escapeHtml(s){
@@ -484,6 +546,7 @@
       const nearBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 40;
       if (nearBottom) wrap.scrollTop = wrap.scrollHeight;
     }
+
     function setWarn(msg){
       const el = $("warn");
       if(!msg){ el.style.display="none"; el.textContent=""; return; }
@@ -511,12 +574,14 @@
     let keyPc = 0;
     let modeName = "major";
 
-    let beatsPerBar = 4;
-    let beatUnit = 4;
+    // IMPORTANT: time signature (used for harmony grid)
+    let beatsPerBar = 4;   // numerator
+    let beatUnit = 4;      // denominator (4=quarter, 8=eighth...)
 
     let melodyTrackIndex = -1;
     let melodyNotes = [];
 
+    // stats
     const statFile = $("statFile");
     const statBpm = $("statBpm");
     const statKey = $("statKey");
@@ -532,7 +597,7 @@
     }
 
     // ---------------------------
-    // MIDI helpers
+    // MIDI analysis helpers
     // ---------------------------
     function getFirstTempo(m){
       try{
@@ -545,12 +610,13 @@
     }
 
     function getFirstTimeSignature(m){
+      // Tonejs/midi: header.timeSignatures = [{ ticks, timeSignature:[num,den] }, ...]
       try{
         const ts = m?.header?.timeSignatures;
         if (ts && ts.length && ts[0]?.timeSignature?.length === 2){
           const [num, den] = ts[0].timeSignature;
           const n = Number(num), d = Number(den);
-          if (isFinite(n) && isFinite(d) && n > 0 && (d===1 || d===2 || d===4 || d===8 || d===16)){
+          if (isFinite(n) && isFinite(d) && n > 0 && (d === 1 || d === 2 || d === 4 || d === 8 || d === 16)){
             return { beatsPerBar: n, beatUnit: d };
           }
         }
@@ -583,9 +649,10 @@
       return best;
     }
 
-    // simple key detector
+    // Krumhansl-Schmuckler-ish
     const KS_MAJOR = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
     const KS_MINOR = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+
     function rotate(arr, k){
       const n = arr.length;
       const out = new Array(n);
@@ -617,9 +684,6 @@
       const deg = MODES[mode] || MODES.major;
       return deg.map(x => (x + tonicPc) % 12);
     }
-
-    function isPcInScale(pc, allowedPcs){ return allowedPcs.includes(((pc%12)+12)%12); }
-
     function snapToScale(midi, allowedPcs){
       const pc = ((midi%12)+12)%12;
       if (allowedPcs.includes(pc)) return midi;
@@ -630,18 +694,15 @@
       return midi;
     }
 
-    function nearestScaleMidi(targetMidi, allowedPcs){
-      let m = Math.round(targetMidi);
-      if (isPcInScale(m, allowedPcs)) return m;
-      // search around
-      for (let d=1; d<=6; d++){
-        if (isPcInScale(m+d, allowedPcs)) return m+d;
-        if (isPcInScale(m-d, allowedPcs)) return m-d;
-      }
-      return snapToScale(m, allowedPcs);
+    function overlap(a0,a1,b0,b1){
+      const lo = Math.max(a0,b0);
+      const hi = Math.min(a1,b1);
+      return Math.max(0, hi-lo);
     }
 
-    // tempo-safe writing (depends on header tempo being set correctly!)
+    // ---------------------------
+    // TEMPO-SAFE MIDI WRITING HELPERS
+    // ---------------------------
     function headerSecondsToTicks(header, sec){
       if (header && typeof header.secondsToTicks === "function"){
         const t = header.secondsToTicks(sec);
@@ -657,209 +718,190 @@
       const ticks = headerSecondsToTicks(header, Math.max(0, timeSec));
       const endTicks = headerSecondsToTicks(header, Math.max(0, timeSec + Math.max(0.03, durSec)));
       const durationTicks = Math.max(1, endTicks - ticks);
+
       track.addNote({
         midi: clamp(Math.round(midi), 24, 108),
         ticks,
         durationTicks,
-        velocity: clamp(vel ?? 0.85, 0.05, 1.0)
+        velocity: clamp(vel ?? 0.85, 0.08, 1.0)
       });
     }
 
-    // --- deterministic randomness (so remix is repeatable per file) ---
-    function xmur3(str){
-      let h = 1779033703 ^ str.length;
-      for (let i=0; i<str.length; i++){
-        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-        h = (h << 13) | (h >>> 19);
-      }
-      return function(){
-        h = Math.imul(h ^ (h >>> 16), 2246822507);
-        h = Math.imul(h ^ (h >>> 13), 3266489909);
-        return (h ^= h >>> 16) >>> 0;
-      };
-    }
-    function mulberry32(a){
-      return function(){
-        let t = a += 0x6D2B79F5;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-
-    // --- force output header tempo + time signature at tick 0 ---
-    function forceHeaderTempoAndTS(outMidi, bpmVal, num, den){
-      const header = outMidi.header;
-
-      // Tempo
-      try{
-        if (typeof header.setTempo === "function") header.setTempo(bpmVal, 0);
-      }catch(e){}
-      try{
-        header.tempos = [{ ticks: 0, bpm: bpmVal }];
-      }catch(e){}
-
-      // Time signature
-      try{
-        header.timeSignatures = [{ ticks: 0, timeSignature: [num, den] }];
-      }catch(e){}
-
-      // Safety: ensure ppq exists
-      try{
-        if (!header.ppq) header.ppq = 480;
-      }catch(e){}
-    }
-
     // ---------------------------
-    // Harmony helpers
+    // Music theory helpers (more color)
     // ---------------------------
-    function diatonic7ths(tonicPc, mode){
+    function pcDistance(a,b){
+      const d = Math.abs(((a-b)%12+12)%12);
+      return Math.min(d, 12-d);
+    }
+
+    function diatonicChords(tonicPc, mode){
+      // returns diatonic triads + 7ths (quality implied by scale)
       const sc = scalePcs(tonicPc, mode); // 7 pcs
       const chords = [];
       for (let d=0; d<7; d++){
-        // 1-3-5-7
-        const pcs = [sc[d], sc[(d+2)%7], sc[(d+4)%7], sc[(d+6)%7]];
-        chords.push({ degree:d+1, pcs, rootPc: sc[d] });
+        const root = sc[d];
+        const third = sc[(d+2)%7];
+        const fifth = sc[(d+4)%7];
+        const seventh = sc[(d+6)%7];
+        chords.push({
+          degree: d+1,
+          pcsTriad: [root, third, fifth],
+          pcs7: [root, third, fifth, seventh],
+          rootPc: root
+        });
       }
       return chords;
     }
 
-    function overlap(a0,a1,b0,b1){
-      const lo = Math.max(a0,b0);
-      const hi = Math.min(a1,b1);
-      return Math.max(0, hi-lo);
-    }
-
     function fitChordForBar(notes, t0, t1, chords){
       const scores = chords.map(()=>0);
-
       for (const n of notes){
         const nt0 = n.time||0;
         const nt1 = nt0 + (n.duration||0.1);
         const ov = overlap(t0,t1,nt0,nt1);
         if (ov<=0) continue;
         const pc = ((n.midi||0)%12+12)%12;
-
         chords.forEach((ch,i)=>{
-          if (ch.pcs.includes(pc)) scores[i] += ov * 1.0;
-          // weight root a tiny bit more
-          if (pc === ch.rootPc) scores[i] += ov * 0.12;
+          if (ch.pcsTriad.includes(pc)) scores[i]+=ov;
+          else if (ch.pcs7.includes(pc)) scores[i]+=ov*0.55; // give partial credit to 7th tone
         });
       }
-
-      // gentle functional bias
+      // functional bias
       chords.forEach((ch,i)=>{
         if (ch.degree===1) scores[i]*=1.12;
-        if (ch.degree===5) scores[i]*=1.07;
+        if (ch.degree===5) scores[i]*=1.08;
         if (ch.degree===4) scores[i]*=1.03;
       });
-
       let bestI=0, best=-1e9;
-      for (let i=0;i<scores.length;i++){
-        if (scores[i]>best){ best=scores[i]; bestI=i; }
-      }
+      for (let i=0;i<scores.length;i++){ if (scores[i]>best){ best=scores[i]; bestI=i; } }
       return chords[bestI];
     }
 
     function chooseVoicing(chordPcs, centerMidi){
-      // map pcs near center and sort
       const voiced = chordPcs.map(pc=>{
         let m = centerMidi + ((pc - (centerMidi%12) + 12)%12);
-        while (m > centerMidi+8) m -= 12;
-        while (m < centerMidi-8) m += 12;
+        while (m > centerMidi+7) m -= 12;
+        while (m < centerMidi-7) m += 12;
         return m;
       }).sort((a,b)=>a-b);
 
-      // ensure span not too wide
-      while (voiced[voiced.length-1] - voiced[0] > 16){
-        voiced[voiced.length-1] -= 12;
-        voiced.sort((a,b)=>a-b);
+      // tiny voice-leading smoothing: keep close spacing
+      for (let i=1;i<voiced.length;i++){
+        while (voiced[i] - voiced[i-1] > 10) voiced[i] -= 12;
+        while (voiced[i] - voiced[i-1] < 2) voiced[i] += 12;
       }
-      return voiced;
+      return voiced.sort((a,b)=>a-b);
     }
 
-    // ---------------------------
-    // Melody embellishment (trills, passing tones, neighbor tones)
-    // ---------------------------
-    function buildTrillNotes(baseMidi, allowedPcs, time, dur, rateHz, up=true){
-      // alternate base <-> neighbor for dur
-      const out = [];
-      const step = 1 / rateHz;
-      const nSteps = Math.max(2, Math.floor(dur / step));
-      const neighbor = nearestScaleMidi(baseMidi + (up ? 1 : -1), allowedPcs);
+    function maybeAddSuspension(voiced, allowedPcs, strength){
+      // Add a sus2 or sus4 by replacing the third occasionally (tasteful)
+      if (Math.random() > (0.10 + 0.18*strength)) return voiced;
+      if (voiced.length < 3) return voiced;
 
-      const seg = dur / nSteps;
-      for (let i=0; i<nSteps; i++){
-        const m = (i % 2 === 0) ? baseMidi : neighbor;
-        out.push({ midi: m, time: time + i*seg, duration: seg*0.95, velocity: 0.82 });
-      }
-      return out;
+      // find "third" by closest to chord root+3/4? (approx) -> simplest: replace middle note
+      const midIdx = Math.floor(voiced.length/2);
+      const midMidi = voiced[midIdx];
+      const pc = ((midMidi%12)+12)%12;
+
+      // move it up/down by a step to sus (scale step)
+      let up = snapToScale(midMidi + 1, allowedPcs);
+      let dn = snapToScale(midMidi - 1, allowedPcs);
+
+      // choose the one that changes pc (avoid no-op)
+      if (((up%12)+12)%12 === pc) up += 2;
+      if (((dn%12)+12)%12 === pc) dn -= 2;
+
+      const pick = (Math.random() < 0.5) ? up : dn;
+      const out = voiced.slice();
+      out[midIdx] = clamp(pick, 36, 96);
+      return out.sort((a,b)=>a-b);
     }
 
-    function embellishMelody(notesIn, tonicPc, mode, style, strength, rand){
+    function improveMelody(notes, tonicPc, mode, strength, beatSec){
       const allowed = scalePcs(tonicPc, mode);
-      const out = [];
+      const out = notes.map(n => ({...n}));
 
-      // base cleanup: snap to scale
-      const base = notesIn.map(n => ({
-        midi: snapToScale(n.midi, allowed),
-        time: n.time,
-        duration: Math.max(0.03, n.duration ?? 0.12),
-        velocity: clamp(n.velocity ?? 0.85, 0.06, 1.0)
-      }));
-
-      // parameters
-      const trillChance = clamp(0.08 + 0.30*strength, 0, 0.45); // actually audible
-      const passChance  = clamp(0.10 + 0.25*strength, 0, 0.40);
-      const neighChance = clamp(0.06 + 0.22*strength, 0, 0.35);
-
-      const longNoteSec = (style==="baroque") ? 0.22 : 0.30;
-      const leapSemis = 5;
-
-      for (let i=0; i<base.length; i++){
-        const n = base[i];
-        const prev = base[i-1];
-
-        // occasional neighbor-tone on repeats / near-repeats
-        const isRepeatish = prev && Math.abs(prev.midi - n.midi) <= 1 && n.duration >= 0.12;
-        if (isRepeatish && rand() < neighChance){
-          const neighbor = nearestScaleMidi(n.midi + (rand()<0.5 ? 1 : -1), allowed);
-          const seg = Math.min(0.10, n.duration*0.35);
-          out.push({ midi: neighbor, time: n.time, duration: seg*0.9, velocity: n.velocity*0.9 });
-          out.push({ midi: n.midi, time: n.time + seg, duration: n.duration - seg, velocity: n.velocity });
-          continue;
-        }
-
-        // passing tone on leaps (split note at start as a quick approach)
-        if (prev && Math.abs(n.midi - prev.midi) >= leapSemis && rand() < passChance){
-          const dir = (n.midi > prev.midi) ? 1 : -1;
-          const passTarget = nearestScaleMidi(prev.midi + dir*2, allowed);
-          const seg = Math.min(0.10, n.duration*0.30);
-          out.push({ midi: passTarget, time: n.time, duration: seg*0.9, velocity: n.velocity*0.85 });
-          out.push({ midi: n.midi, time: n.time + seg, duration: n.duration - seg, velocity: n.velocity });
-          continue;
-        }
-
-        // trills on long notes
-        if (n.duration >= longNoteSec && rand() < trillChance){
-          const rate = (style==="baroque") ? (10 + 8*strength) : (7 + 6*strength);
-          const up = rand() < 0.55;
-          const trillDur = Math.min(n.duration, (style==="edm") ? 0.35 + 0.20*strength : 0.25 + 0.18*strength);
-          // start trill after a short hold
-          const hold = Math.max(0.05, n.duration - trillDur);
-          if (hold > 0.04){
-            out.push({ midi: n.midi, time: n.time, duration: hold, velocity: n.velocity });
-          }
-          const trillNotes = buildTrillNotes(n.midi, allowed, n.time + hold, trillDur, rate, up);
-          out.push(...trillNotes);
-          continue;
-        }
-
-        // default: keep note
-        out.push(n);
+      // 1) snap to scale
+      for (const n of out){
+        n.midi = snapToScale(n.midi, allowed);
       }
 
-      // cadence polish: end on tonic (closest tonic)
+      // 2) smooth huge leaps sometimes
+      for (let i=1; i<out.length; i++){
+        const prev = out[i-1];
+        const cur = out[i];
+        const leap = cur.midi - prev.midi;
+        if (Math.abs(leap) >= 8 && Math.random() < (0.35 + 0.45*strength)){
+          let target = prev.midi + clamp(leap, -5, 5);
+          target = snapToScale(target, allowed);
+          cur.midi = clamp(target, 36, 96);
+        }
+      }
+
+      // 3) occasional passing tone into a strong note (more "color", not every time)
+      for (let i=1; i<out.length; i++){
+        if (Math.random() > (0.08 + 0.20*strength)) continue;
+        const prev = out[i-1];
+        const cur = out[i];
+        const gap = cur.midi - prev.midi;
+        if (Math.abs(gap) < 3 || Math.abs(gap) > 9) continue;
+        if ((cur.duration ?? 0.12) < 0.15*beatSec) continue;
+
+        // insert quick approach in first 25% of note duration by splitting cur
+        const step = gap > 0 ? 1 : -1;
+        const approachMidi = snapToScale(cur.midi - step, allowed);
+        const d0 = Math.max(0.03, (cur.duration ?? 0.12) * 0.25);
+        const d1 = Math.max(0.03, (cur.duration ?? 0.12) - d0);
+
+        // shift current note to approach, and create new note event immediately after
+        cur.duration = d0;
+        const inserted = {
+          midi: cur.midi,
+          time: (cur.time ?? 0) + d0,
+          duration: d1,
+          velocity: cur.velocity ?? 0.85
+        };
+        cur.midi = approachMidi;
+        out.splice(i+1, 0, inserted);
+        i++;
+      }
+
+      // 4) occasional trill on long note (tasteful)
+      // (replace one long note with alternating neighbor tones)
+      for (let i=0; i<out.length; i++){
+        const n = out[i];
+        const dur = n.duration ?? 0.12;
+        if (dur < 0.70*beatSec) continue;
+        if (Math.random() > (0.05 + 0.14*strength)) continue;
+
+        const base = n.midi;
+        const up = snapToScale(base + 1, allowed);
+        const dn = snapToScale(base - 1, allowed);
+        const neigh = (Math.random() < 0.5) ? up : dn;
+
+        const steps = clamp(Math.round(dur / (0.14*beatSec)), 4, 10);
+        const sub = dur / steps;
+
+        // replace current note with the first trill segment
+        n.midi = base;
+        n.duration = sub;
+
+        // insert remaining segments alternating
+        let t = (n.time ?? 0) + sub;
+        for (let k=1; k<steps; k++){
+          out.splice(i+k, 0, {
+            midi: (k % 2 === 1) ? neigh : base,
+            time: t,
+            duration: sub,
+            velocity: (n.velocity ?? 0.85) * 0.92
+          });
+          t += sub;
+        }
+        i += steps;
+      }
+
+      // cadence: land on tonic at end
       if (out.length){
         const last = out[out.length-1];
         const lastPc = ((last.midi%12)+12)%12;
@@ -870,168 +912,228 @@
           last.midi = clamp(tonicMidi, 36, 96);
         }
       }
-
-      // small de-overlap safety (avoid accidental overlap)
-      out.sort((a,b)=>a.time-b.time);
-      for (let i=0; i<out.length-1; i++){
-        const a = out[i];
-        const b = out[i+1];
-        const aEnd = a.time + a.duration;
-        if (aEnd > b.time){
-          a.duration = Math.max(0.03, b.time - a.time - 0.001);
-        }
-      }
-
       return out;
     }
 
     // ---------------------------
-    // Remix builder
+    // Remix generation (tempo-aligned harmony grid)
     // ---------------------------
     function buildRemix(m){
       const style = $("style").value;
       const strength = clamp(Number($("strength").value), 0, 1);
 
-      // Use ORIGINAL tempo and time signature
       bpm = getFirstTempo(m);
+
+      // >>> FIX: use the MIDI's time signature (prevents chords feeling "slower")
       const ts = getFirstTimeSignature(m);
       beatsPerBar = ts.beatsPerBar;
       beatUnit = ts.beatUnit;
 
-      // PRNG seed based on file duration + bpm + trackIndex (repeatable)
-      const durSec = midiDurationSeconds(m);
-      const seedGen = xmur3(`${durSec.toFixed(3)}|${bpm}|${beatsPerBar}/${beatUnit}|${melodyTrackIndex}`);
-      const rand = mulberry32(seedGen());
+      // bpm is quarter-note BPM in MIDI
+      const quarterSec = 60 / Math.max(1, bpm);
+      const beatSec = quarterSec * (4 / beatUnit);          // "beat" as defined by time signature denominator
+      const barSec  = beatsPerBar * beatSec;
 
-      // timing in seconds
-      const quarterSec = 60/Math.max(1,bpm);
-      const beatSec = quarterSec * (4/beatUnit);
-      const barSec = beatsPerBar*beatSec;
-
-      // key/mode
       const det = detectKey(melodyNotes);
       const keyOverride = $("keyOverride").value;
       modeName = $("modeOverride").value;
       keyPc = (keyOverride==="auto") ? det.pc : NOTE_TO_PC[keyOverride];
 
+      const durSec = midiDurationSeconds(m);
       const bars = Math.max(1, Math.ceil(durSec / barSec));
 
-      // chord plan using diatonic 7ths
-      const chords = diatonic7ths(keyPc, modeName);
+      const allowed = scalePcs(keyPc, modeName);
+      const chords = diatonicChords(keyPc, modeName);
+
+      // plan harmony per bar (with optional faster harmonic rhythm if strength is high)
       const chordPlan = [];
       for (let b=0; b<bars; b++){
         const t0=b*barSec, t1=(b+1)*barSec;
-        chordPlan.push({ t0,t1, chord: fitChordForBar(melodyNotes,t0,t1,chords) });
+
+        // if strong remix + EDM, allow 2 chords per bar sometimes
+        const wantSplit = (style==="edm" && strength > 0.55 && Math.random() < 0.35);
+        if (wantSplit){
+          const mid = t0 + 0.5*barSec;
+          chordPlan.push({ t0, t1: mid, chord: fitChordForBar(melodyNotes, t0, mid, chords) });
+          chordPlan.push({ t0: mid, t1, chord: fitChordForBar(melodyNotes, mid, t1, chords) });
+        } else {
+          chordPlan.push({ t0,t1, chord: fitChordForBar(melodyNotes,t0,t1,chords) });
+        }
       }
+
       const tonic = chords.find(c=>c.degree===1) || chords[0];
       chordPlan[0].chord = tonic;
       chordPlan[chordPlan.length-1].chord = tonic;
 
-      // Create output MIDI and FORCE its tempo/TS at tick 0 (fixes your 120bpm bug)
       const out = new Midi();
-      // copy some header info but do NOT trust it for tempo/TS
+
+      // Clone original header (tempo map / ppq / time sig / etc). Do NOT set tempo.
       try{ out.header.fromJSON(m.header.toJSON()); }catch(e){}
-      forceHeaderTempoAndTS(out, bpm, beatsPerBar, beatUnit);
 
-      // --- Melody track (embellished) ---
-      const melT = out.addTrack(); melT.name = "Melody (Remix)";
-      const melIn = melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 }));
-      const mel = embellishMelody(melIn, keyPc, modeName, style, strength, rand);
+      // Melody
+      const melT = out.addTrack(); melT.name = "Melody";
+      const mel = improveMelody(
+        melodyNotes.map(n=>({ midi:n.midi, time:n.time, duration:n.duration, velocity:n.velocity ?? 0.85 })),
+        keyPc, modeName, strength, beatSec
+      );
       for (const n of mel){
-        addNoteBySeconds(melT, out.header, n.midi, n.time, n.duration, n.velocity);
+        addNoteBySeconds(
+          melT, out.header,
+          n.midi,
+          Math.max(0, n.time),
+          Math.max(0.03, n.duration ?? 0.12),
+          clamp(n.velocity ?? 0.85, 0.08, 1.0)
+        );
       }
 
-      // --- Chords track (block 7ths) ---
-      const chT = out.addTrack(); chT.name = "Chords (7ths)";
+      // Chords + Color
+      const chT = out.addTrack(); chT.name = "Chords";
       for (const slot of chordPlan){
-        const center = (style==="baroque") ? 56 : 58;
-        const voiced = chooseVoicing(slot.chord.pcs, center);
-        const dur = (slot.t1-slot.t0) * (style==="edm" ? 0.92 : 0.97);
+        const center = (style==="baroque") ? 58 : 60;
 
-        // mild voice-leading nudge: keep top note from jumping too much
-        for (const m0 of voiced){
-          addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.24 + 0.20*strength);
+        // choose triad vs 7th occasionally (more color, not always)
+        const use7 = (strength > 0.40 && Math.random() < (0.18 + 0.22*strength));
+        const pcs = use7 ? slot.chord.pcs7 : slot.chord.pcsTriad;
+
+        let voiced = chooseVoicing(pcs, center);
+
+        // tasteful suspension sometimes (lofi/baroque more than EDM)
+        if (style !== "edm") voiced = maybeAddSuspension(voiced, allowed, strength);
+
+        const span = Math.max(0.06, slot.t1 - slot.t0);
+
+        if (style==="edm"){
+          // stabs aligned to the bar (not hard-coded beat numbers)
+          const stabDur = Math.min(0.48*beatSec, 0.35*span);
+          const tA = slot.t0;
+          const tB = slot.t0 + Math.min(2*beatSec, 0.5*span); // "middle-ish" hit
+          const times = [tA, tB];
+
+          for (const tt of times){
+            for (const m0 of voiced){
+              addNoteBySeconds(chT, out.header, m0, tt, stabDur, 0.50 + 0.16*strength);
+            }
+          }
+
+          // add a quick top "color tone" (9th) occasionally
+          if (strength > 0.55 && Math.random() < 0.25){
+            const top = voiced[voiced.length-1];
+            const color = snapToScale(top + 2, allowed);
+            addNoteBySeconds(chT, out.header, color, tB + 0.55*stabDur, 0.18*beatSec, 0.35);
+          }
+
+        } else if (style==="baroque"){
+          // broken chords (but not every time): alternate between arpeggio + held
+          const doArp = Math.random() < (0.55 + 0.25*strength);
+          if (doArp){
+            const step = 0.5*beatSec;
+            let t = slot.t0;
+            let i = 0;
+            while (t < slot.t1 - 0.02){
+              const m0 = voiced[i % voiced.length];
+              addNoteBySeconds(chT, out.header, m0, t, step*0.92, 0.28 + 0.18*strength);
+              t += step; i++;
+            }
+          } else {
+            const dur = span * 0.98;
+            for (const m0 of voiced){
+              addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.26 + 0.14*strength);
+            }
+          }
+
+        } else {
+          // LOFI: mostly pads, sometimes broken chords for movement
+          const doBroken = Math.random() < (0.18 + 0.28*strength);
+          if (doBroken){
+            const step = 0.5*beatSec;
+            const pattern = [0,1,2,1]; // simple arpeggio loop
+            let t = slot.t0;
+            let pi = 0;
+            while (t < slot.t1 - 0.02){
+              const idx = pattern[pi % pattern.length] % voiced.length;
+              addNoteBySeconds(chT, out.header, voiced[idx], t, step*0.85, 0.24 + 0.18*strength);
+              t += step;
+              pi++;
+            }
+            // occasional gentle "color" tone (6 or 9) as a short sprinkle
+            if (strength > 0.55 && Math.random() < 0.22){
+              const top = voiced[voiced.length-1];
+              const c1 = snapToScale(top + (Math.random()<0.5?2:9), allowed); // 9th or 6th up an octave-ish
+              addNoteBySeconds(chT, out.header, c1, slot.t0 + 0.75*span, 0.22*beatSec, 0.20);
+            }
+          } else {
+            const dur = span * 0.98;
+            for (const m0 of voiced){
+              addNoteBySeconds(chT, out.header, m0, slot.t0, dur, 0.26 + 0.16*strength);
+            }
+          }
         }
       }
 
-      // --- Color track (broken 7th chords / arpeggios) ---
-      const colT = out.addTrack(); colT.name = "Color (Broken 7ths)";
-      const arpRate = (style==="baroque") ? 8 : (style==="edm" ? 12 : 10); // notes per bar-ish
-      const stepsPerBar = (style==="edm") ? 16 : 8; // 16ths vs 8ths feel
-      const stepSec = barSec / stepsPerBar;
+      // Bass
+      const baT = out.addTrack(); baT.name = "Bass";
+      for (let i=0;i<chordPlan.length;i++){
+        const slot = chordPlan[i];
+        const rootPc = slot.chord.rootPc;
 
-      for (let b=0; b<bars; b++){
-        const slot = chordPlan[b];
-        const center = (style==="baroque") ? 60 : 62;
-        let voiced = chooseVoicing(slot.chord.pcs, center);
+        // root around low register
+        let rootMidi = 36 + ((rootPc - (36%12) + 12)%12);
+        while (rootMidi > 48) rootMidi -= 12;
+        rootMidi = clamp(rootMidi, 28, 55);
 
-        // "broken" pattern order
-        // baroque: 1-3-5-7-5-3
-        // lofi:    1-5-3-7
-        // edm:     1-3-5-7 (faster)
-        let pattern;
-        if (style==="baroque") pattern = [0,1,2,3,2,1];
-        else if (style==="edm") pattern = [0,1,2,3,2,1,3,2];
-        else pattern = [0,2,1,3];
+        const span = Math.max(0.06, slot.t1 - slot.t0);
 
-        // occasional inversion for movement
-        if (rand() < (0.18 + 0.25*strength)){
-          voiced = voiced.slice(1).concat([voiced[0]+12]).sort((a,b)=>a-b);
-        }
+        if (style==="edm"){
+          const step = 0.5*beatSec;
+          let t=slot.t0;
+          while (t < slot.t1 - 0.02){
+            addNoteBySeconds(baT, out.header, rootMidi, t, step*0.92, 0.62 + 0.18*strength);
+            t += step;
+          }
+        } else {
+          // lofi/baroque: root + occasional 5th or approach tone
+          const half = Math.min(span/2, 2*beatSec);
+          addNoteBySeconds(baT, out.header, rootMidi, slot.t0, half*0.98, 0.52 + 0.14*strength);
 
-        const t0 = b*barSec;
-        const velBase = (style==="edm") ? 0.20 : 0.18;
-        const vel = velBase + 0.16*strength;
+          if (strength > 0.25){
+            const fifthPc = (rootPc + 7) % 12;
+            let fifthMidi = 36 + ((fifthPc - (36%12) + 12)%12);
+            while (fifthMidi > 55) fifthMidi -= 12;
+            fifthMidi = clamp(fifthMidi, 28, 60);
+            addNoteBySeconds(baT, out.header, fifthMidi, slot.t0 + half, half*0.90, 0.44 + 0.12*strength);
+          }
 
-        const totalSteps = stepsPerBar;
-        for (let s=0; s<totalSteps; s++){
-          const p = pattern[s % pattern.length];
-          const midiN = voiced[p];
-
-          // small skip / syncopation sometimes
-          if (style==="lofi" && rand() < 0.10 && (s%4===2)) continue;
-          if (style==="edm" && rand() < 0.08 && (s%8===7)) continue;
-
-          const t = t0 + s*stepSec;
-          const d = stepSec * (style==="edm" ? 0.85 : 0.78);
-
-          addNoteBySeconds(colT, out.header, midiN, t, d, vel);
+          // tiny approach note into next root sometimes (more musical bassline)
+          if (strength > 0.55 && i < chordPlan.length-1 && Math.random() < 0.20){
+            const nxtRootPc = chordPlan[i+1].chord.rootPc;
+            let nxtMidi = 36 + ((nxtRootPc - (36%12) + 12)%12);
+            while (nxtMidi > 48) nxtMidi -= 12;
+            nxtMidi = clamp(nxtMidi, 28, 55);
+            const approach = (nxtMidi > rootMidi) ? nxtMidi - 1 : nxtMidi + 1;
+            const aMidi = snapToScale(approach, scalePcs(keyPc, modeName));
+            addNoteBySeconds(baT, out.header, aMidi, slot.t1 - 0.22*beatSec, 0.18*beatSec, 0.34);
+          }
         }
       }
 
-      return {
-        out,
-        info: {
-          bpm,
-          key: `${PC_NAMES[keyPc]} ${modeName}`,
-          bars,
-          style,
-          durSec
-        }
-      };
+      return { out, info: { bpm, key:`${PC_NAMES[keyPc]} ${modeName}`, bars, style, durSec, timeSig:`${beatsPerBar}/${beatUnit}` } };
     }
 
     // ---------------------------
-    // AUDIO (fixed sampler load)
+    // Tone.js playback (ONE GOOD-SOUNDING PIANO for EVERYTHING)
     // ---------------------------
     let audioReady = false;
-
-    let samplerPiano = null;     // Tone.Sampler
-    let fallbackSynth = null;    // Tone.PolySynth
+    let piano = null;
     let masterGain = null;
     let limiter = null;
     let reverb = null;
     let toneFilter = null;
-
     let part = null;
+    let pianoLoadPromise = null;
 
-    function createPianoSamplerWithPromise(){
+    function createPianoSampler(){
       const baseUrl = "https://tonejs.github.io/audio/salamander/";
-      let resolved = false;
-      let resolveReady;
-      const ready = new Promise((res) => { resolveReady = res; });
-
-      const sampler = new Tone.Sampler({
+      return new Tone.Sampler({
         urls: {
           A0: "A0.mp3",
           C1: "C1.mp3",
@@ -1063,29 +1165,12 @@
         },
         baseUrl,
         release: 1.2,
-        onload: () => {
-          if (!resolved){
-            resolved = true;
-            resolveReady(true);
-          }
-        }
+        onload: () => {}
       });
-
-      setTimeout(() => {
-        if (!resolved){
-          resolved = true;
-          resolveReady(false);
-        }
-      }, 3500);
-
-      return { sampler, ready };
     }
 
     async function ensureAudio(){
-      try{
-        if (Tone.context.state !== "running") await Tone.start();
-      }catch(e){}
-
+      if (Tone.context.state !== "running") await Tone.start();
       if (audioReady) return;
 
       masterGain = new Tone.Gain(0.9).toDestination();
@@ -1104,31 +1189,17 @@
         wet: 0.22
       }).connect(toneFilter);
 
-      fallbackSynth = new Tone.PolySynth(Tone.Synth, {
-        oscillator: { type: "sine" },
-        envelope: { attack: 0.005, decay: 0.12, sustain: 0.25, release: 0.9 }
+      piano = createPianoSampler();
+      piano.volume.value = -8;
+      piano.connect(reverb);
+
+      pianoLoadPromise = new Promise((resolve) => {
+        piano.onload = () => resolve(true);
+        if (piano.loaded) resolve(true);
       });
-      fallbackSynth.volume.value = -12;
-      fallbackSynth.connect(reverb);
 
-      const { sampler, ready } = createPianoSamplerWithPromise();
-      samplerPiano = sampler;
-      samplerPiano.volume.value = -8;
-      samplerPiano.connect(reverb);
-
-      const ok = await ready;
-      if (ok){
-        logLine("Piano samples loaded.", "ok");
-      } else {
-        logLine("Piano samples still loading (using fallback synth for now).", "warn");
-      }
-
+      try{ await pianoLoadPromise; }catch(e){}
       audioReady = true;
-    }
-
-    function getInstrument(){
-      if (samplerPiano && samplerPiano.loaded) return samplerPiano;
-      return fallbackSynth;
     }
 
     function stopAllSound(tag="stop"){
@@ -1140,8 +1211,7 @@
         Tone.Transport.cancel(0);
         Tone.Transport.position = 0;
       }catch(e){}
-      try{ samplerPiano?.releaseAll?.(); }catch(e){}
-      try{ fallbackSynth?.releaseAll?.(); }catch(e){}
+      try{ piano?.releaseAll?.(); }catch(e){}
       $("stopBtn").disabled = true;
       logLine("Stopped playback.", tag);
     }
@@ -1179,12 +1249,9 @@
       }));
 
       part = new Tone.Part((time, v) => {
-        const inst = getInstrument();
         const nn = midiToNoteName(v.midi);
         const vel = clamp(Math.pow(v.vel, 0.85), 0.05, 1.0);
-        if (inst && typeof inst.triggerAttackRelease === "function"){
-          inst.triggerAttackRelease(nn, v.dur, time, vel);
-        }
+        piano.triggerAttackRelease(nn, v.dur, time, vel);
       }, events);
 
       part.start(0);
@@ -1260,7 +1327,7 @@
     });
 
     // ---------------------------
-    // Samples (now with forced tempo/TS too)
+    // Samples (no-upload)
     // ---------------------------
     function makeSampleMidi(sampleId){
       const cfg = {
@@ -1270,8 +1337,6 @@
       }[sampleId];
 
       const m = new Midi();
-      forceHeaderTempoAndTS(m, cfg.tempo, cfg.ts[0], cfg.ts[1]);
-
       const t = m.addTrack(); t.name = cfg.title;
 
       const quarterSec = 60 / cfg.tempo;
@@ -1279,22 +1344,33 @@
       const barSec = cfg.ts[0] * beatSec;
       const bars = 8;
 
+      // tempo-safe write
+      const prevBpm = bpm;
+      bpm = cfg.tempo;
+
       for (let b=0; b<bars; b++){
         const t0 = b * barSec;
+        // 8 half-beat notes (works for 4/4 and 3/4, just feels different)
         for (let i=0; i<8; i++){
           const n = cfg.seq[i % cfg.seq.length];
           const time = t0 + i*(0.5*beatSec);
           const dur = 0.45*beatSec;
           const vel = 0.78 + 0.10*Math.sin((b+i)*0.7);
+
           if (sampleId==="riffD" && (i===2 || i===6) && (b%2===1)) continue;
           addNoteBySeconds(t, m.header, n, time, dur, vel);
         }
       }
 
+      bpm = prevBpm;
       return { midi: m, title: cfg.title, tempo: cfg.tempo, keyText: cfg.key };
     }
 
-    const SAMPLE_DEFS = [{ id:"popC" },{ id:"minorA" },{ id:"riffD" }];
+    const SAMPLE_DEFS = [
+      { id:"popC"   },
+      { id:"minorA" },
+      { id:"riffD"  }
+    ];
 
     function renderSamples(){
       const wrap = $("samples");
@@ -1332,11 +1408,15 @@
           try{
             stopAllSound("stop");
             await ensureAudio();
+            if (!piano || !piano.loaded){
+              setWarn("Piano is still loading samples—try Play again in a second.");
+              return;
+            }
             playMidi(sample.midi);
             logLine(`Playing sample: ${sample.title}`, "play");
           }catch(e){
             console.error(e);
-            setWarn("Audio failed to start. Make sure your browser allows audio.");
+            setWarn("Audio failed to start. Click play again.");
           }
         });
 
@@ -1375,15 +1455,15 @@
 
         logLine(`Style: ${info.style}`, "info");
         logLine(`Key/Mode: ${info.key}`, "info");
-        logLine(`Tempo (forced): ${Math.round(info.bpm)} BPM`, "ok");
+        logLine(`Time Sig: ${info.timeSig}`, "info");
         logLine(`Bars: ${info.bars}`, "info");
-        logLine("Done. Play or download.", "ok");
+        logLine("Done. Play, download, or save to bank.", "ok");
 
         statBpm.textContent = `${Math.round(info.bpm)} BPM`;
         statKey.textContent = info.key;
 
         updateReady();
-        setOk("Remix created (melody embellished + 7ths + broken-chord color).");
+        setOk("Remix created.");
       }catch(e){
         console.error(e);
         setWarn(e?.message || "Remix failed. Check console.");
@@ -1397,11 +1477,15 @@
       setWarn(null);
       try{
         await ensureAudio();
+        if (!piano || !piano.loaded){
+          setWarn("Piano is still loading samples—try Play again in a second.");
+          return;
+        }
         playMidi(midiIn);
-        logLine("Playing original.", "play");
+        logLine("Playing original (piano).", "play");
       }catch(e){
         console.error(e);
-        setWarn("Audio failed to start. Make sure your browser allows audio.");
+        setWarn("Audio failed to start. Click play again.");
       }
     });
 
@@ -1410,11 +1494,15 @@
       setWarn(null);
       try{
         await ensureAudio();
+        if (!piano || !piano.loaded){
+          setWarn("Piano is still loading samples—try Play again in a second.");
+          return;
+        }
         playMidi(midiOut);
-        logLine("Playing remix.", "play");
+        logLine("Playing remix (piano).", "play");
       }catch(e){
         console.error(e);
-        setWarn("Audio failed to start. Make sure your browser allows audio.");
+        setWarn("Audio failed to start. Click play again.");
       }
     });
 
@@ -1439,17 +1527,28 @@
     });
 
     // ---------------------------
-    // Bank (unchanged)
+    // Bank (save/play/stop/download/rename)
     // ---------------------------
     const BANK_KEY = "liam_remix_bank_v2";
+    let bankNowPlayingId = null;
+
     function loadBank(){
       try{
         const raw = localStorage.getItem(BANK_KEY);
         const arr = JSON.parse(raw || "[]");
         return Array.isArray(arr) ? arr : [];
-      }catch(e){ return []; }
+      }catch(e){
+        return [];
+      }
     }
     function saveBank(arr){ localStorage.setItem(BANK_KEY, JSON.stringify(arr)); }
+
+    function fmtWhen(iso){
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }catch(e){ return iso; }
+    }
 
     function bytesToBase64(u8){
       let binary = "";
@@ -1465,12 +1564,6 @@
       for (let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
       return u8;
     }
-    function fmtWhen(iso){
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }catch(e){ return iso; }
-    }
 
     function currentMeta(){
       return {
@@ -1485,6 +1578,7 @@
       const list = loadBank().sort((a,b)=> (b.ts||"").localeCompare(a.ts||""));
       const wrap = $("bankList");
       const empty = $("bankEmpty");
+
       wrap.innerHTML = "";
 
       if (!list.length){
@@ -1522,36 +1616,45 @@
         playBtn.className = "btn secondary xs";
         playBtn.textContent = "Play";
 
-        const stopBtn2 = document.createElement("button");
-        stopBtn2.className = "btn secondary xs";
-        stopBtn2.textContent = "Stop";
+        const stopBtn = document.createElement("button");
+        stopBtn.className = "btn secondary xs";
+        stopBtn.textContent = "Stop";
 
         const dlBtn = document.createElement("button");
         dlBtn.className = "btn green xs";
         dlBtn.textContent = "Download MIDI";
 
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "btn xs";
+        renameBtn.textContent = "Rename";
+
         const delBtn = document.createElement("button");
-        delBtn.className = "btn xs";
+        delBtn.className = "btn ghost xs";
         delBtn.textContent = "Delete";
-        delBtn.style.background = "transparent";
-        delBtn.style.borderColor = "rgba(255,255,255,.16)";
-        delBtn.style.fontWeight = "900";
 
         playBtn.addEventListener("click", async () => {
           try{
             setWarn(null);
             await ensureAudio();
+            if (!piano || !piano.loaded){
+              setWarn("Piano is still loading samples—try Play again in a second.");
+              return;
+            }
             const bytes = base64ToBytes(item.midiB64);
             const m = new Midi(bytes);
             playMidi(m);
-            logLine(`Playing bank item: ${item.title || "Untitled"}`, "play");
+            bankNowPlayingId = item.id;
+            logLine(`Playing bank item (piano): ${item.title || "Untitled"}`, "play");
           }catch(e){
             console.error(e);
-            setWarn("Could not play saved remix.");
+            setWarn("Could not play saved remix. Try refreshing or re-saving.");
           }
         });
 
-        stopBtn2.addEventListener("click", () => stopAllSound("stop"));
+        stopBtn.addEventListener("click", () => {
+          stopAllSound("stop");
+          bankNowPlayingId = null;
+        });
 
         dlBtn.addEventListener("click", () => {
           try{
@@ -1565,18 +1668,38 @@
           }
         });
 
+        renameBtn.addEventListener("click", () => {
+          const newTitle = prompt("Rename this remix:", item.title || "Untitled Remix");
+          if (newTitle == null) return;
+          const t = newTitle.trim();
+          if (!t){
+            setWarn("Rename cancelled (title was empty).");
+            return;
+          }
+          const arr = loadBank();
+          const idx = arr.findIndex(x => x.id === item.id);
+          if (idx >= 0){
+            arr[idx].title = t;
+            saveBank(arr);
+            renderBank();
+            setOk("Renamed bank item.");
+          }
+        });
+
         delBtn.addEventListener("click", () => {
           const ok = confirm(`Delete "${item.title || "Untitled Remix"}"?`);
           if (!ok) return;
           const arr = loadBank().filter(x => x.id !== item.id);
           saveBank(arr);
+          if (bankNowPlayingId === item.id) bankNowPlayingId = null;
           renderBank();
           setOk("Deleted bank item.");
         });
 
         actions.appendChild(playBtn);
-        actions.appendChild(stopBtn2);
+        actions.appendChild(stopBtn);
         actions.appendChild(dlBtn);
+        actions.appendChild(renameBtn);
         actions.appendChild(delBtn);
 
         row.appendChild(meta);
@@ -1619,7 +1742,7 @@
         setOk("Saved remix to bank.");
       }catch(e){
         console.error(e);
-        setWarn("Failed to save to bank.");
+        setWarn("Failed to save to bank (unexpected).");
       }
     });
 
@@ -1628,6 +1751,7 @@
       const ok = confirm("Clear the entire bank? This cannot be undone.");
       if (!ok) return;
       localStorage.removeItem(BANK_KEY);
+      bankNowPlayingId = null;
       renderBank();
       setOk("Cleared entire bank.");
     });
@@ -1636,13 +1760,14 @@
     // Init
     // ---------------------------
     logLine("Ready. Load a sample or upload a MIDI.", "info");
-    logLine("Audio loads on first Play click (sampler + fallback synth).", "info");
+    logLine("Playback is a single grand piano + reverb for all tracks.", "info");
     renderSamples();
     renderBank();
     updateReady();
   </script>
 </body>
 </html>
+
 
 
 
