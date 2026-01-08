@@ -91,6 +91,7 @@
       filter: brightness(1.05);
     }
 
+    /* ===== NEW: Project image preview ===== */
     .project-media{
       width: 100%;
       border-radius: 16px;
@@ -103,14 +104,21 @@
 
     .project-media img{
       width: 100%;
-      height: 180px;
+      height: 180px; /* consistent preview height */
       object-fit: cover;
       display: block;
+      filter: contrast(1.03) saturate(1.05);
+      transform: scale(1.01);
+    }
+
+    @media (max-width: 380px){
+      .project-media img{ height: 160px; }
     }
 
     .project-card h3 {
       margin-top: 0;
       margin-bottom: 0.6rem;
+      letter-spacing: 0.2px;
     }
 
     .project-card p {
@@ -132,6 +140,11 @@
       border: 1px solid rgba(255,255,255,0.06);
     }
 
+    .coming-soon {
+      opacity: 0.7;
+      font-style: italic;
+    }
+
     .project-btn {
       display: inline-block;
       margin-top: 1rem;
@@ -142,6 +155,7 @@
       color: #eef0ff;
       text-decoration: none;
       font-weight: 600;
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
 
     .project-btn:hover {
@@ -149,6 +163,38 @@
       transform: translateY(-2px);
     }
 
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(120,255,180,0.22);
+      background: rgba(120,255,180,0.10);
+      color: rgba(220,255,235,0.92);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 0.35rem 0 0.55rem;
+    }
+
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(120,255,180,0.85);
+      box-shadow: 0 0 0 4px rgba(120,255,180,0.12);
+    }
+
+    .bullets {
+      margin: 0.55rem 0 0;
+      padding-left: 1.1rem;
+      color: #d0d3ff;
+      line-height: 1.6;
+      font-size: 0.93rem;
+    }
+    .bullets li { margin: 0.25rem 0; }
+
+    /* Mini “Why it matters / Evidence / Deliverables” box */
     .impact {
       margin-top: 0.9rem;
       padding: 0.9rem 1rem;
@@ -156,20 +202,21 @@
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(0,0,0,0.22);
     }
-
-    .impact h4 {
+    .impact h4{
       margin: 0 0 0.55rem;
       font-size: 0.95rem;
+      letter-spacing: 0.2px;
+      opacity: 0.95;
     }
-
-    .impact ul {
+    .impact ul{
       margin: 0;
       padding-left: 1.1rem;
       color: #d0d3ff;
+      line-height: 1.6;
       font-size: 0.93rem;
     }
-
-    .impact li { margin: 0.25rem 0; }
+    .impact li{ margin: 0.25rem 0; }
+    .impact strong{ color: #eef0ff; }
   </style>
 </head>
 
@@ -192,38 +239,168 @@
 
     <div class="projects-grid">
 
-      <!-- EXISTING PROJECTS (1–4 unchanged) -->
-
-      <!-- PROJECT 5: EXTRA MUSIC PRODUCTION -->
+      <!-- PROJECT 1: AI MUSIC GENERATION -->
       <div class="project-card">
         <div class="project-media">
-          <img src="images.jpeg" alt="Experimental music production preview" />
+          <img src="AImusicgen.jpeg" alt="AI Music Generation System preview" />
         </div>
 
-        <h3>Extra Music Production</h3>
+        <h3>AI Music Generation System</h3>
         <p>
-          A curated collection of original music productions available exclusively on this website.
-          These works are not hosted on SoundCloud and are intended as downloadable listening pieces
-          showcasing experimental and collaborative composition.
+          Generates short symbolic phrases with controllable musical structure (key/mode, stepwise bias, rhythm variety),
+          plus in-browser playback, musical metrics, and an embedded listener-rating loop.
         </p>
 
         <div class="impact">
-          <h4>What’s included</h4>
+          <h4>Project impact</h4>
           <ul>
-            <li><strong>Musique concrète:</strong> Tape-based and sample-driven composition experiments.</li>
-            <li><strong>Cinema sound design:</strong> Atmospheres, textures, and narrative-driven audio.</li>
-            <li><strong>Rap collaborations:</strong> Production and arrangement work with vocal artists.</li>
-            <li><strong>New compositions:</strong> Standalone pieces exploring form, texture, and timbre.</li>
+            <li><strong>Why it matters:</strong> A fast way to prototype musical ideas and test how structure (mode, rhythm, contour) changes perceived “musicality.”</li>
+            <li><strong>Evidence built-in:</strong> Listener ratings + exportable CSV and objective structure metrics (repetition, stepwise motion, tonal stability).</li>
+            <li><strong>Deliverables:</strong> Interactive demo, piano roll visualization, copyable note output, and downloadable MIDI.</li>
           </ul>
         </div>
 
-        <span class="tag">Music Production</span>
+        <span class="tag">AI</span>
+        <span class="tag">Music</span>
+        <span class="tag">Tone.js</span>
+        <span class="tag">Evaluation</span>
+        <span class="tag">MIDI</span>
+
+        <a class="project-btn" href="/liamweirportfolio.github.io/projects/ai-music-generation/index.html">
+          Open project page
+        </a>
+      </div>
+
+      <!-- PROJECT 2: REMIX ASSISTANT -->
+      <div class="project-card">
+        <div class="project-media">
+          <img src="remixassistant.jpeg" alt="Remix Assistant preview" />
+        </div>
+
+        <div class="badge"><span class="dot"></span>New • Practical tool project</div>
+        <h3>Remix Assistant (MIDI)</h3>
+        <p>
+          Upload any MIDI and instantly generate usable remix variations:
+          reharmonizations, basslines, counter-melodies, and rhythmic transformations—plus style presets
+          (lofi / EDM / baroque-ish).
+        </p>
+
+        <div class="impact">
+          <h4>Project impact</h4>
+          <ul>
+            <li><strong>Why it matters:</strong> Turns a raw melody into arrangement-ready options fast—this is a creator tool, not just a demo.</li>
+            <li><strong>Evidence built-in:</strong> A/B comparisons + exportable results so you can show outcomes, not just features.</li>
+            <li><strong>Deliverables:</strong> Before/after previews and downloadable MIDI outputs.</li>
+          </ul>
+        </div>
+
+        <span class="tag">MIDI</span>
+        <span class="tag">Generative</span>
+        <span class="tag">HCI</span>
+        <span class="tag">Tooling</span>
+
+        <a class="project-btn" href="https://liamnweir.github.io/liamweirportfolio.github.io/projects/remix.html">
+          Open project page
+        </a>
+      </div>
+
+      <!-- PROJECT 3: TWINE TEXT GAME -->
+      <div class="project-card">
+        <div class="project-media">
+          <img src="twine.jpeg" alt="Bound to Break Twine game preview" />
+        </div>
+
+        <div class="badge"><span class="dot"></span>Interactive • Narrative systems</div>
+        <h3>Bound to Break (Twine Text Game)</h3>
+        <p>
+          A text-based interactive game where the player must choose the right path to escape from a kidnapping.
+          Built in Twine and exported as a standalone web experience.
+        </p>
+
+        <div class="impact">
+          <h4>Project impact</h4>
+          <ul>
+            <li><strong>Why it matters:</strong> Demonstrates how branching narrative design can create tension, agency, and replayability with minimal UI—purely through decision structure.</li>
+            <li><strong>What I built:</strong> A complete choice-driven story system with multiple outcomes that rewards careful reasoning and exploration.</li>
+            <li><strong>Deliverables:</strong> Playable in-browser game hosted on GitHub Pages (no installs) with instant replay for trying new routes.</li>
+          </ul>
+        </div>
+
+        <span class="tag">Twine</span>
+        <span class="tag">Interactive Fiction</span>
+        <span class="tag">Narrative Design</span>
+        <span class="tag">Web</span>
+
+        <a class="project-btn" href="/liamweirportfolio.github.io/projects/textgame.html">
+          Play the game
+        </a>
+      </div>
+
+      <!-- PROJECT 4: 2D PLATFORMER (GD.GAMES WEB BUILD) -->
+      <div class="project-card">
+        <div class="project-media">
+          <img src="journey.jpeg" alt="2D Platformer game preview" />
+        </div>
+
+        <div class="badge"><span class="dot"></span>Playable • 2D platformer</div>
+        <h3>2D Platformer (Japanese-Style Web Game)</h3>
+        <p>
+          A Japanese-inspired 2D platformer where players progress through levels by dodging obstacles,
+          collecting coins and memories, grabbing power-ups, and reaching the finish.
+        </p>
+
+        <div class="impact">
+          <h4>Project impact</h4>
+          <ul>
+            <li><strong>Why it matters:</strong> Shows end-to-end interactive design—mechanics, visuals, audio, and level flow working together as a complete player experience.</li>
+            <li><strong>What I contributed:</strong> Sound design, animation + visual polish, coding/gameplay logic, and collaboration across the build.</li>
+            <li><strong>Deliverables:</strong> Fully playable in-browser game (no installs), with collectible systems, power-ups, and multi-level progression.</li>
+          </ul>
+        </div>
+
+        <span class="tag">Game Dev</span>
+        <span class="tag">Level Design</span>
         <span class="tag">Sound Design</span>
-        <span class="tag">Experimental</span>
+        <span class="tag">Animation</span>
         <span class="tag">Collaboration</span>
 
-        <a class="project-btn" href="songs.html">
-          View & download tracks →
+        <a class="project-btn"
+           href="https://gd.games/instant-builds/a59daa74-b836-4af8-bc2b-f409d01d97be"
+           target="_blank" rel="noreferrer">
+          Play the game
+        </a>
+      </div>
+
+      <!-- PROJECT 5: EXTRA MUSIC PRODUCTION (NEW) -->
+      <div class="project-card">
+        <div class="project-media">
+          <img src="images.jpeg" alt="Extra music production preview" />
+        </div>
+
+        <div class="badge"><span class="dot"></span>Exclusive • Downloadable tracks</div>
+        <h3>Extra Music Production</h3>
+        <p>
+          A collection of music productions available exclusively on this website (not on SoundCloud).
+          This page will include multiple downloadable song files of original compositions and production work.
+        </p>
+
+        <div class="impact">
+          <h4>What you’ll find here</h4>
+          <ul>
+            <li><strong>Musique Concrète:</strong> Experimental sample/tape-based composition.</li>
+            <li><strong>Cinema sound design:</strong> Atmospheres, textures, and narrative-driven audio.</li>
+            <li><strong>Collaborations with rappers:</strong> Production, arrangement, and mixing work.</li>
+            <li><strong>New compositions:</strong> Fresh pieces exploring form, harmony, and timbre.</li>
+          </ul>
+        </div>
+
+        <span class="tag">Music</span>
+        <span class="tag">Production</span>
+        <span class="tag">Sound Design</span>
+        <span class="tag">Downloads</span>
+
+        <a class="project-btn" href="/liamweirportfolio.github.io/songs.html">
+          Open songs page
         </a>
       </div>
 
@@ -231,6 +408,7 @@
   </div>
 </body>
 </html>
+
 
 
 
