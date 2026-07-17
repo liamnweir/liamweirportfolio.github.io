@@ -1,0 +1,2982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="Professional piano tuning services from Liam Weir in North County San Diego. Request an appointment for upright, grand, and digital-hybrid piano service."
+  />
+
+  <title>Piano Tuning | Liam Weir</title>
+
+  <style>
+    /* ========================================
+       COLOR VARIABLES
+    ======================================== */
+
+    :root {
+      --background-dark: #060615;
+      --background-purple: #0b0830;
+
+      --card-background: rgba(15, 16, 48, 0.82);
+      --card-background-light: rgba(255, 255, 255, 0.07);
+
+      --main-text: #eef0ff;
+      --muted-text: #c7caed;
+      --faded-text: #969bc7;
+
+      --purple: #7c3aed;
+      --light-purple: #a78bfa;
+      --blue: #22d3ee;
+      --orange: #f97316;
+      --green: #10b981;
+
+      --border: rgba(255, 255, 255, 0.12);
+      --border-hover: rgba(255, 255, 255, 0.22);
+
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.52);
+      --small-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+
+      --border-radius: 24px;
+      --small-radius: 16px;
+      --maximum-width: 1160px;
+    }
+
+    /* ========================================
+       GENERAL PAGE STYLING
+    ======================================== */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      color: var(--main-text);
+
+      background:
+        radial-gradient(
+          1000px 700px at 8% 8%,
+          rgba(124, 58, 237, 0.34),
+          transparent 60%
+        ),
+        radial-gradient(
+          900px 650px at 92% 18%,
+          rgba(34, 211, 238, 0.22),
+          transparent 58%
+        ),
+        radial-gradient(
+          850px 600px at 45% 100%,
+          rgba(249, 115, 22, 0.13),
+          transparent 60%
+        ),
+        linear-gradient(
+          180deg,
+          var(--background-dark),
+          var(--background-purple)
+        );
+
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+
+      background-image:
+        linear-gradient(
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px
+        );
+
+      background-size: 48px 48px;
+      opacity: 0.24;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      right: -180px;
+      bottom: -180px;
+      z-index: -1;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(124, 58, 237, 0.38),
+          transparent 68%
+        );
+
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    img,
+    video {
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(
+        var(--maximum-width),
+        calc(100% - 36px)
+      );
+
+      margin: 0 auto;
+    }
+
+    .section {
+      padding: 90px 0;
+    }
+
+    .section-heading {
+      max-width: 700px;
+      margin-bottom: 34px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 12px;
+
+      color: var(--blue);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .section-label::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+
+      border-radius: 99px;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--purple),
+          var(--blue)
+        );
+    }
+
+    .section-title {
+      margin: 0;
+
+      font-size: clamp(2rem, 5vw, 3.35rem);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+
+    .section-description {
+      margin: 16px 0 0;
+
+      color: var(--muted-text);
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+
+    /* ========================================
+       NAVIGATION
+    ======================================== */
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 0.9rem 1rem;
+    }
+
+    .nav-shell {
+      width: min(
+        var(--maximum-width),
+        calc(100% - 18px)
+      );
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+
+      padding: 10px 12px;
+
+      border: 1px solid var(--border);
+      border-radius: 999px;
+
+      background: rgba(8, 9, 25, 0.64);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-name {
+      padding-left: 8px;
+
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .nav-links a {
+      padding: 9px 14px;
+
+      border-radius: 999px;
+
+      color: rgba(238, 240, 255, 0.78);
+
+      font-size: 0.92rem;
+      font-weight: 750;
+      text-decoration: none;
+
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        transform 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .nav-book-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 10px 17px;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: #ffffff;
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          #5b5ce2
+        );
+
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+
+      box-shadow:
+        0 10px 30px rgba(124, 58, 237, 0.32);
+
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .nav-book-button:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 14px 35px rgba(124, 58, 237, 0.45);
+    }
+
+    /* ========================================
+       HERO SECTION
+    ======================================== */
+
+    .hero {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+
+      padding: 145px 0 90px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 65px;
+      align-items: center;
+    }
+
+    .availability-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+
+      margin-bottom: 24px;
+      padding: 8px 13px;
+
+      border: 1px solid var(--border);
+      border-radius: 999px;
+
+      color: var(--muted-text);
+      background: rgba(255, 255, 255, 0.055);
+
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .availability-dot {
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+      background: var(--green);
+
+      box-shadow:
+        0 0 0 5px rgba(16, 185, 129, 0.13);
+    }
+
+    .hero-title {
+      margin: 0;
+
+      font-size: clamp(3.5rem, 8vw, 6.6rem);
+      line-height: 0.93;
+      letter-spacing: -0.07em;
+    }
+
+    .hero-title-gradient {
+      display: block;
+
+      color: transparent;
+
+      background:
+        linear-gradient(
+          100deg,
+          #ffffff 0%,
+          #bfdbfe 34%,
+          #a78bfa 70%,
+          #22d3ee 100%
+        );
+
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero-description {
+      max-width: 630px;
+
+      margin: 28px 0 0;
+
+      color: var(--muted-text);
+      font-size: 1.12rem;
+      line-height: 1.8;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 13px;
+
+      margin-top: 34px;
+    }
+
+    .primary-button,
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      min-height: 52px;
+      padding: 0 22px;
+
+      border-radius: 999px;
+
+      font-weight: 850;
+      text-decoration: none;
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .primary-button {
+      border: 0;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          #5458d9
+        );
+
+      box-shadow:
+        0 15px 40px rgba(124, 58, 237, 0.35);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 20px 48px rgba(124, 58, 237, 0.48);
+    }
+
+    .secondary-button {
+      border: 1px solid var(--border);
+
+      color: var(--main-text);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .secondary-button:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .hero-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+
+      margin-top: 38px;
+      padding-top: 26px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-detail {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      color: var(--muted-text);
+      font-size: 0.94rem;
+      font-weight: 650;
+    }
+
+    .detail-icon {
+      width: 37px;
+      height: 37px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    /* ========================================
+       HERO VISUAL
+    ======================================== */
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .piano-card {
+      position: relative;
+
+      min-height: 570px;
+      padding: 30px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      overflow: hidden;
+
+      border: 1px solid var(--border);
+      border-radius: 34px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.09)
+        );
+
+      box-shadow: var(--shadow);
+    }
+
+    .piano-card::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        radial-gradient(
+          500px 320px at 65% 15%,
+          rgba(34, 211, 238, 0.25),
+          transparent 65%
+        ),
+        radial-gradient(
+          500px 360px at 10% 70%,
+          rgba(124, 58, 237, 0.34),
+          transparent 65%
+        );
+
+      pointer-events: none;
+    }
+
+    .piano-keys {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+
+      width: 82%;
+      height: 250px;
+
+      display: flex;
+
+      border: 12px solid rgba(11, 12, 33, 0.95);
+      border-radius: 12px;
+
+      background: #111221;
+
+      box-shadow:
+        0 35px 60px rgba(0, 0, 0, 0.5);
+
+      transform:
+        translateX(-50%)
+        perspective(700px)
+        rotateX(13deg)
+        rotateZ(-4deg);
+    }
+
+    .white-key {
+      position: relative;
+      flex: 1;
+
+      height: 100%;
+
+      border-right: 1px solid #b8b8c4;
+      border-radius: 0 0 5px 5px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff,
+          #d8d8de
+        );
+
+      box-shadow:
+        inset 0 -13px 17px rgba(0, 0, 0, 0.14);
+    }
+
+    .white-key:last-child {
+      border-right: 0;
+    }
+
+    .black-key {
+      position: absolute;
+      top: 0;
+      right: -27%;
+
+      z-index: 2;
+
+      width: 54%;
+      height: 61%;
+
+      border-radius: 0 0 4px 4px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #171722,
+          #020207
+        );
+
+      box-shadow:
+        0 10px 10px rgba(0, 0, 0, 0.42);
+    }
+
+    .piano-card-content {
+      position: relative;
+      z-index: 3;
+
+      padding: 24px;
+
+      border: 1px solid var(--border);
+      border-radius: 20px;
+
+      background: rgba(6, 6, 21, 0.68);
+
+      backdrop-filter: blur(13px);
+      -webkit-backdrop-filter: blur(13px);
+    }
+
+    .piano-card-label {
+      color: var(--blue);
+      font-size: 0.76rem;
+      font-weight: 850;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .piano-card-title {
+      margin: 10px 0 0;
+
+      font-size: 1.55rem;
+      line-height: 1.25;
+    }
+
+    .piano-card-description {
+      margin: 10px 0 0;
+
+      color: var(--muted-text);
+      line-height: 1.65;
+    }
+
+    .floating-card {
+      position: absolute;
+      top: 25px;
+      right: -24px;
+      z-index: 5;
+
+      padding: 15px 17px;
+
+      border: 1px solid var(--border);
+      border-radius: 17px;
+
+      background: rgba(13, 14, 43, 0.84);
+
+      backdrop-filter: blur(14px);
+
+      box-shadow: var(--small-shadow);
+    }
+
+    .floating-card strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .floating-card span {
+      color: var(--muted-text);
+      font-size: 0.83rem;
+    }
+
+    /* ========================================
+       BOOKING PANEL
+    ======================================== */
+
+    .booking-wrapper {
+      padding-top: 0;
+    }
+
+    .booking-panel {
+      overflow: hidden;
+
+      border: 1px solid var(--border);
+      border-radius: 28px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.18),
+          rgba(34, 211, 238, 0.08)
+        );
+
+      box-shadow: var(--small-shadow);
+    }
+
+    .booking-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+
+      padding: 30px;
+    }
+
+    .booking-header-text h2 {
+      margin: 0;
+
+      font-size: clamp(1.75rem, 4vw, 2.45rem);
+      letter-spacing: -0.035em;
+    }
+
+    .booking-header-text p {
+      max-width: 650px;
+
+      margin: 10px 0 0;
+
+      color: var(--muted-text);
+      line-height: 1.65;
+    }
+
+    .booking-toggle {
+      min-width: 175px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+
+      padding: 14px 20px;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          #5458d9
+        );
+
+      box-shadow:
+        0 12px 30px rgba(124, 58, 237, 0.34);
+
+      font-weight: 850;
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .booking-toggle:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 16px 38px rgba(124, 58, 237, 0.44);
+    }
+
+    .booking-arrow {
+      display: inline-block;
+      transition: transform 300ms ease;
+    }
+
+    .booking-toggle.open .booking-arrow {
+      transform: rotate(180deg);
+    }
+
+    .booking-slider {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+
+      border-top: 1px solid transparent;
+
+      transition:
+        max-height 700ms ease,
+        opacity 400ms ease,
+        border-color 400ms ease;
+    }
+
+    .booking-slider.open {
+      max-height: 2200px;
+      opacity: 1;
+      border-top-color: var(--border);
+    }
+
+    .booking-form {
+      padding: 34px 30px 38px;
+    }
+
+    .form-introduction {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+
+      margin-bottom: 27px;
+      padding: 16px;
+
+      border: 1px solid var(--border);
+      border-radius: 15px;
+
+      color: var(--muted-text);
+      background: rgba(255, 255, 255, 0.045);
+
+      line-height: 1.55;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      color: var(--main-text);
+      font-size: 0.92rem;
+      font-weight: 750;
+    }
+
+    .required {
+      color: var(--light-purple);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      outline: none;
+
+      color: var(--main-text);
+      background: rgba(6, 7, 25, 0.76);
+
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 52px;
+      padding: 0 15px;
+    }
+
+    .form-group textarea {
+      min-height: 145px;
+      padding: 15px;
+      resize: vertical;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #777da8;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: rgba(167, 139, 250, 0.75);
+
+      background: rgba(10, 10, 36, 0.92);
+
+      box-shadow:
+        0 0 0 4px rgba(124, 58, 237, 0.15);
+    }
+
+    .form-group select option {
+      color: #ffffff;
+      background: #10112f;
+    }
+
+    .form-help {
+      color: var(--faded-text);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .form-submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+
+      margin-top: 27px;
+      padding-top: 25px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .form-disclaimer {
+      max-width: 560px;
+
+      margin: 0;
+
+      color: var(--faded-text);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .submit-button {
+      min-width: 190px;
+
+      padding: 15px 22px;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          #5458d9
+        );
+
+      box-shadow:
+        0 14px 36px rgba(124, 58, 237, 0.38);
+
+      font-weight: 850;
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 18px 42px rgba(124, 58, 237, 0.5);
+    }
+
+    .success-message {
+      display: none;
+
+      margin-top: 22px;
+      padding: 17px 18px;
+
+      border: 1px solid rgba(16, 185, 129, 0.38);
+      border-radius: 15px;
+
+      color: #b9f6df;
+      background: rgba(16, 185, 129, 0.1);
+
+      line-height: 1.55;
+    }
+
+    .success-message.visible {
+      display: block;
+    }
+
+    /* ========================================
+       SERVICES
+    ======================================== */
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .service-card {
+      position: relative;
+
+      padding: 28px;
+
+      overflow: hidden;
+
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.075),
+          rgba(255, 255, 255, 0.035)
+        );
+
+      box-shadow: var(--small-shadow);
+
+      transition:
+        transform 220ms ease,
+        border-color 220ms ease,
+        background 220ms ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-7px);
+      border-color: var(--border-hover);
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0.045)
+        );
+    }
+
+    .service-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 46px;
+      height: 46px;
+
+      border: 1px solid var(--border);
+      border-radius: 14px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.78),
+          rgba(34, 211, 238, 0.42)
+        );
+
+      font-weight: 900;
+    }
+
+    .service-card h3 {
+      margin: 22px 0 10px;
+
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .service-card p {
+      margin: 0;
+
+      color: var(--muted-text);
+      line-height: 1.7;
+    }
+
+    /* ========================================
+       PROCESS
+    ======================================== */
+
+    .process-layout {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 45px;
+      align-items: start;
+    }
+
+    .process-intro {
+      position: sticky;
+      top: 125px;
+    }
+
+    .process-steps {
+      display: grid;
+      gap: 18px;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+
+      padding: 24px;
+
+      border: 1px solid var(--border);
+      border-radius: 20px;
+
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .process-icon {
+      width: 48px;
+      height: 48px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 15px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          #3945ba
+        );
+
+      font-weight: 900;
+
+      box-shadow:
+        0 12px 26px rgba(124, 58, 237, 0.28);
+    }
+
+    .process-step h3 {
+      margin: 1px 0 8px;
+      font-size: 1.18rem;
+    }
+
+    .process-step p {
+      margin: 0;
+
+      color: var(--muted-text);
+      line-height: 1.7;
+    }
+
+    /* ========================================
+       SERVICE AREA
+    ======================================== */
+
+    .service-area-card {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 36px;
+      align-items: center;
+
+      padding: 40px;
+
+      border: 1px solid var(--border);
+      border-radius: 30px;
+
+      background:
+        radial-gradient(
+          600px 360px at 90% 0%,
+          rgba(34, 211, 238, 0.17),
+          transparent 68%
+        ),
+        radial-gradient(
+          600px 360px at 0% 100%,
+          rgba(124, 58, 237, 0.24),
+          transparent 68%
+        ),
+        rgba(255, 255, 255, 0.045);
+
+      box-shadow: var(--small-shadow);
+    }
+
+    .service-area-card h2 {
+      margin: 0;
+
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: -0.045em;
+    }
+
+    .service-area-card p {
+      margin: 16px 0 0;
+
+      color: var(--muted-text);
+      line-height: 1.75;
+    }
+
+    .area-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .area-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 13px;
+
+      border: 1px solid var(--border);
+      border-radius: 13px;
+
+      color: var(--muted-text);
+      background: rgba(255, 255, 255, 0.045);
+
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .area-check {
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    /* ========================================
+       FUTURE MEDIA SECTION
+    ======================================== */
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
+
+    .media-placeholder {
+      min-height: 350px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      padding: 30px;
+
+      border: 1px dashed rgba(255, 255, 255, 0.24);
+      border-radius: var(--border-radius);
+
+      color: var(--muted-text);
+      background: rgba(255, 255, 255, 0.035);
+
+      text-align: center;
+    }
+
+    .media-placeholder.small {
+      min-height: 165px;
+    }
+
+    .media-placeholder-icon {
+      width: 58px;
+      height: 58px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-bottom: 16px;
+
+      border: 1px solid var(--border);
+      border-radius: 18px;
+
+      color: var(--blue);
+      background: rgba(255, 255, 255, 0.055);
+
+      font-size: 1.4rem;
+      font-weight: 900;
+    }
+
+    .media-placeholder h3 {
+      margin: 0;
+      color: var(--main-text);
+    }
+
+    .media-placeholder p {
+      max-width: 420px;
+
+      margin: 9px 0 0;
+
+      line-height: 1.6;
+    }
+
+    .media-side {
+      display: grid;
+      gap: 20px;
+    }
+
+    /* ========================================
+       FAQ
+    ======================================== */
+
+    .faq-list {
+      display: grid;
+      gap: 13px;
+
+      max-width: 900px;
+    }
+
+    .faq-item {
+      overflow: hidden;
+
+      border: 1px solid var(--border);
+      border-radius: 17px;
+
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .faq-question {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+
+      padding: 20px 22px;
+
+      border: 0;
+
+      color: var(--main-text);
+      background: transparent;
+
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .faq-plus {
+      color: var(--light-purple);
+      font-size: 1.35rem;
+
+      transition: transform 240ms ease;
+    }
+
+    .faq-question.open .faq-plus {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+
+      transition: max-height 350ms ease;
+    }
+
+    .faq-answer p {
+      margin: 0;
+      padding: 0 22px 21px;
+
+      color: var(--muted-text);
+      line-height: 1.75;
+    }
+
+    /* ========================================
+       FINAL CALL TO ACTION
+    ======================================== */
+
+    .final-cta {
+      padding: 45px;
+
+      border: 1px solid var(--border);
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.24),
+          rgba(34, 211, 238, 0.11)
+        );
+
+      box-shadow: var(--shadow);
+
+      text-align: center;
+    }
+
+    .final-cta h2 {
+      max-width: 800px;
+
+      margin: 0 auto;
+
+      font-size: clamp(2.1rem, 5vw, 3.5rem);
+      letter-spacing: -0.05em;
+    }
+
+    .final-cta p {
+      max-width: 650px;
+
+      margin: 16px auto 0;
+
+      color: var(--muted-text);
+      font-size: 1.04rem;
+      line-height: 1.75;
+    }
+
+    .final-cta .primary-button {
+      margin-top: 27px;
+    }
+
+    /* ========================================
+       FOOTER
+    ======================================== */
+
+    footer {
+      margin-top: 90px;
+      padding: 32px 0;
+
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+
+      color: var(--faded-text);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 17px;
+    }
+
+    .footer-links a {
+      color: var(--muted-text);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+
+    /* ========================================
+       MOBILE RESPONSIVENESS
+    ======================================== */
+
+    @media (max-width: 980px) {
+      .nav-shell {
+        border-radius: 22px;
+      }
+
+      .nav-name,
+      .nav-book-button {
+        display: none;
+      }
+
+      .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+
+      .nav-links a {
+        flex-shrink: 0;
+      }
+
+      .hero-grid,
+      .process-layout,
+      .service-area-card,
+      .media-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 135px;
+      }
+
+      .hero-visual {
+        max-width: 650px;
+      }
+
+      .process-intro {
+        position: static;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .floating-card {
+        right: 15px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        width: min(
+          100% - 25px,
+          var(--maximum-width)
+        );
+      }
+
+      .section {
+        padding: 70px 0;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-bottom: 60px;
+      }
+
+      .hero-title {
+        font-size: clamp(3.2rem, 17vw, 5rem);
+      }
+
+      .hero-description {
+        font-size: 1rem;
+      }
+
+      .hero-buttons,
+      .hero-buttons a,
+      .hero-buttons button {
+        width: 100%;
+      }
+
+      .piano-card {
+        min-height: 500px;
+        padding: 18px;
+      }
+
+      .piano-keys {
+        top: 65px;
+        height: 205px;
+      }
+
+      .piano-card-content {
+        padding: 20px;
+      }
+
+      .floating-card {
+        top: 18px;
+        right: 12px;
+      }
+
+      .booking-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 24px;
+      }
+
+      .booking-toggle {
+        width: 100%;
+      }
+
+      .booking-form {
+        padding: 27px 22px 30px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: auto;
+      }
+
+      .form-submit-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .submit-button {
+        width: 100%;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .service-area-card {
+        padding: 27px;
+      }
+
+      .area-list {
+        grid-template-columns: 1fr;
+      }
+
+      .final-cta {
+        padding: 33px 22px;
+      }
+
+      .footer-content {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========================================
+       NAVIGATION
+  ========================================= -->
+
+  <nav>
+    <div class="nav-shell">
+
+      <div class="nav-name">
+        Liam Weir
+      </div>
+
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+
+        <a
+          href="piano-tuning.html"
+          class="active"
+        >
+          Piano Tuning
+        </a>
+
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+
+      <button
+        class="nav-book-button"
+        type="button"
+        onclick="openBookingForm()"
+      >
+        Book a Tuning
+      </button>
+
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ========================================
+         HERO
+    ========================================= -->
+
+    <section class="hero">
+      <div class="container hero-grid">
+
+        <div class="hero-content">
+
+          <div class="availability-badge">
+            <span class="availability-dot"></span>
+            Now accepting tuning requests
+          </div>
+
+          <h1 class="hero-title">
+            Your piano,
+            <span class="hero-title-gradient">
+              sounding its best.
+            </span>
+          </h1>
+
+          <p class="hero-description">
+            Professional, careful piano tuning services for musicians,
+            families, teachers, studios, and performance spaces in
+            North County San Diego. Each appointment begins with an
+            assessment of your piano and its current tuning needs.
+          </p>
+
+          <div class="hero-buttons">
+
+            <button
+              class="primary-button"
+              type="button"
+              onclick="openBookingForm()"
+            >
+              Request an Appointment
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <a
+              class="secondary-button"
+              href="#services"
+            >
+              View Services
+            </a>
+
+          </div>
+
+          <div class="hero-details">
+
+            <div class="hero-detail">
+              <span class="detail-icon" aria-hidden="true">
+                ♫
+              </span>
+
+              <span>
+                Upright and grand pianos
+              </span>
+            </div>
+
+            <div class="hero-detail">
+              <span class="detail-icon" aria-hidden="true">
+                ◉
+              </span>
+
+              <span>
+                North County San Diego
+              </span>
+            </div>
+
+            <div class="hero-detail">
+              <span class="detail-icon" aria-hidden="true">
+                ✓
+              </span>
+
+              <span>
+                Appointment-based service
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="hero-visual">
+
+          <div class="floating-card">
+            <strong>Personalized service</strong>
+            <span>Every piano is assessed individually</span>
+          </div>
+
+          <div class="piano-card">
+
+            <!-- Decorative piano keyboard -->
+            <div
+              class="piano-keys"
+              aria-hidden="true"
+            >
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key"></div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key"></div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key">
+                <span class="black-key"></span>
+              </div>
+
+              <div class="white-key"></div>
+            </div>
+
+            <div class="piano-card-content">
+
+              <div class="piano-card-label">
+                Piano Tuning by Liam Weir
+              </div>
+
+              <h2 class="piano-card-title">
+                Bring clarity, balance, and consistency back to your instrument.
+              </h2>
+
+              <p class="piano-card-description">
+                Request an appointment below and provide a few details
+                about your piano. I will follow up to discuss scheduling,
+                availability, and the appropriate service.
+              </p>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         SLIDING BOOKING FORM
+    ========================================= -->
+
+    <section
+      class="booking-wrapper"
+      id="booking"
+    >
+      <div class="container">
+
+        <div class="booking-panel">
+
+          <div class="booking-header">
+
+            <div class="booking-header-text">
+              <h2>Request a piano tuning</h2>
+
+              <p>
+                Tell me about your piano and preferred appointment time.
+                Submitting this form is an appointment request and does
+                not confirm the appointment until I contact you.
+              </p>
+            </div>
+
+            <button
+              class="booking-toggle"
+              id="bookingToggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="bookingSlider"
+              onclick="toggleBookingForm()"
+            >
+              <span id="bookingButtonText">
+                Open Request Form
+              </span>
+
+              <span
+                class="booking-arrow"
+                aria-hidden="true"
+              >
+                ↓
+              </span>
+            </button>
+
+          </div>
+
+          <div
+            class="booking-slider"
+            id="bookingSlider"
+          >
+
+            <!--
+              IMPORTANT:
+
+              This form is currently configured to open the visitor's
+              email app and prepare an email to you.
+
+              It does not require a paid service or server.
+
+              Change liamnweir@gmail.com in the JavaScript near the
+              bottom if you want requests sent to a different email.
+            -->
+
+            <form
+              class="booking-form"
+              id="bookingForm"
+            >
+
+              <div class="form-introduction">
+                <span aria-hidden="true">ℹ</span>
+
+                <span>
+                  Please include as much information as possible.
+                  You do not need to know your piano's exact model
+                  or service history to submit a request.
+                </span>
+              </div>
+
+              <div class="form-grid">
+
+                <div class="form-group">
+                  <label for="fullName">
+                    Full name
+                    <span class="required">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Your first and last name"
+                    autocomplete="name"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">
+                    Email address
+                    <span class="required">*</span>
+                  </label>
+
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">
+                    Phone number
+                    <span class="required">*</span>
+                  </label>
+
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="(555) 555-5555"
+                    autocomplete="tel"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="contactPreference">
+                    Preferred contact method
+                  </label>
+
+                  <select
+                    id="contactPreference"
+                    name="contactPreference"
+                  >
+                    <option value="Text message">
+                      Text message
+                    </option>
+
+                    <option value="Phone call">
+                      Phone call
+                    </option>
+
+                    <option value="Email">
+                      Email
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="city">
+                    City or neighborhood
+                    <span class="required">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    placeholder="Example: San Marcos"
+                    autocomplete="address-level2"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="pianoType">
+                    Piano type
+                    <span class="required">*</span>
+                  </label>
+
+                  <select
+                    id="pianoType"
+                    name="pianoType"
+                    required
+                  >
+                    <option value="">
+                      Select your piano type
+                    </option>
+
+                    <option value="Upright piano">
+                      Upright piano
+                    </option>
+
+                    <option value="Spinet piano">
+                      Spinet piano
+                    </option>
+
+                    <option value="Console piano">
+                      Console piano
+                    </option>
+
+                    <option value="Studio piano">
+                      Studio piano
+                    </option>
+
+                    <option value="Baby grand piano">
+                      Baby grand piano
+                    </option>
+
+                    <option value="Grand piano">
+                      Grand piano
+                    </option>
+
+                    <option value="Unsure">
+                      I am not sure
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pianoBrand">
+                    Piano brand
+                  </label>
+
+                  <input
+                    type="text"
+                    id="pianoBrand"
+                    name="pianoBrand"
+                    placeholder="Example: Yamaha, Kawai, Baldwin"
+                  />
+
+                  <span class="form-help">
+                    Leave blank if you are unsure.
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label for="lastTuned">
+                    When was it last tuned?
+                  </label>
+
+                  <select
+                    id="lastTuned"
+                    name="lastTuned"
+                  >
+                    <option value="Unsure">
+                      I am not sure
+                    </option>
+
+                    <option value="Less than 6 months ago">
+                      Less than 6 months ago
+                    </option>
+
+                    <option value="6 to 12 months ago">
+                      6 to 12 months ago
+                    </option>
+
+                    <option value="1 to 2 years ago">
+                      1 to 2 years ago
+                    </option>
+
+                    <option value="More than 2 years ago">
+                      More than 2 years ago
+                    </option>
+
+                    <option value="Never tuned">
+                      It has never been tuned
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="preferredDate">
+                    Preferred appointment date
+                  </label>
+
+                  <input
+                    type="date"
+                    id="preferredDate"
+                    name="preferredDate"
+                  />
+
+                  <span class="form-help">
+                    This date is a request and is not automatically confirmed.
+                  </span>
+                </div>
+
+                <div class="form-group">
+                  <label for="preferredTime">
+                    Preferred time
+                  </label>
+
+                  <select
+                    id="preferredTime"
+                    name="preferredTime"
+                  >
+                    <option value="Flexible">
+                      I am flexible
+                    </option>
+
+                    <option value="Morning">
+                      Morning
+                    </option>
+
+                    <option value="Afternoon">
+                      Afternoon
+                    </option>
+
+                    <option value="Evening">
+                      Evening
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="serviceReason">
+                    What would you like help with?
+                  </label>
+
+                  <select
+                    id="serviceReason"
+                    name="serviceReason"
+                  >
+                    <option value="Routine tuning">
+                      Routine piano tuning
+                    </option>
+
+                    <option value="Piano sounds out of tune">
+                      The piano sounds noticeably out of tune
+                    </option>
+
+                    <option value="Recently moved piano">
+                      The piano was recently moved
+                    </option>
+
+                    <option value="Preparing for performance">
+                      Preparing for a performance or recording
+                    </option>
+
+                    <option value="Recently purchased piano">
+                      Recently purchased piano
+                    </option>
+
+                    <option value="Assessment">
+                      General assessment
+                    </option>
+
+                    <option value="Other">
+                      Other
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="message">
+                    Additional details
+                  </label>
+
+                  <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Tell me anything else that may be helpful, such as unusual sounds, sticking keys, recent moves, access instructions, parking information, or scheduling needs."
+                  ></textarea>
+                </div>
+
+              </div>
+
+              <div class="form-submit-row">
+
+                <p class="form-disclaimer">
+                  By submitting this request, you are asking to be
+                  contacted about piano tuning services. Your requested
+                  date is not confirmed until you receive a response.
+                </p>
+
+                <button
+                  class="submit-button"
+                  type="submit"
+                >
+                  Send Tuning Request
+                </button>
+
+              </div>
+
+              <div
+                class="success-message"
+                id="successMessage"
+                role="status"
+              >
+                Your email application should now open with your request
+                already filled in. Review the information and press Send
+                to complete your request.
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         SERVICES
+    ========================================= -->
+
+    <section
+      class="section"
+      id="services"
+    >
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="section-label">
+            Services
+          </div>
+
+          <h2 class="section-title">
+            Thoughtful service for your instrument.
+          </h2>
+
+          <p class="section-description">
+            The correct service depends on the condition of the piano,
+            how long it has been since its last tuning, and how the
+            instrument will be used.
+          </p>
+        </div>
+
+        <div class="services-grid">
+
+          <article class="service-card">
+            <div class="service-number">01</div>
+
+            <h3>Standard Piano Tuning</h3>
+
+            <p>
+              A tuning appointment focused on improving the overall
+              pitch, balance, and consistency of your piano.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">02</div>
+
+            <h3>Pitch Assessment</h3>
+
+            <p>
+              An evaluation for pianos that have not been tuned recently
+              or may be significantly above or below standard pitch.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">03</div>
+
+            <h3>Performance Preparation</h3>
+
+            <p>
+              Appointment planning for recitals, recording sessions,
+              lessons, events, and other situations where tuning
+              consistency is especially important.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         PROCESS
+    ========================================= -->
+
+    <section class="section">
+      <div class="container process-layout">
+
+        <div class="process-intro">
+
+          <div class="section-label">
+            The Process
+          </div>
+
+          <h2 class="section-title">
+            Simple from request to appointment.
+          </h2>
+
+          <p class="section-description">
+            Provide a few details about your instrument and scheduling
+            needs. I will then follow up with the next available options.
+          </p>
+
+        </div>
+
+        <div class="process-steps">
+
+          <article class="process-step">
+            <div class="process-icon">1</div>
+
+            <div>
+              <h3>Submit your request</h3>
+
+              <p>
+                Complete the booking form with your contact information,
+                location, piano type, and preferred appointment date.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <div class="process-icon">2</div>
+
+            <div>
+              <h3>Discuss your piano</h3>
+
+              <p>
+                I will follow up to learn more about the instrument,
+                answer questions, and determine the appropriate service.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <div class="process-icon">3</div>
+
+            <div>
+              <h3>Confirm the appointment</h3>
+
+              <p>
+                We will agree on a date, arrival window, location,
+                and any other important appointment details.
+              </p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <div class="process-icon">4</div>
+
+            <div>
+              <h3>Tuning and assessment</h3>
+
+              <p>
+                At the appointment, the piano will be assessed and
+                tuned according to its condition and service needs.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         SERVICE AREA
+    ========================================= -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="service-area-card">
+
+          <div>
+            <div class="section-label">
+              Service Area
+            </div>
+
+            <h2>
+              Serving North County San Diego.
+            </h2>
+
+            <p>
+              Request an appointment even if your exact neighborhood is
+              not shown. Travel availability may depend on your location,
+              appointment timing, and current schedule.
+            </p>
+
+            <button
+              class="primary-button"
+              type="button"
+              onclick="openBookingForm()"
+              style="margin-top: 24px;"
+            >
+              Check Availability
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="area-list">
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              San Marcos
+            </div>
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              Vista
+            </div>
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              Oceanside
+            </div>
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              Carlsbad
+            </div>
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              Encinitas
+            </div>
+
+            <div class="area-item">
+              <span class="area-check">✓</span>
+              Escondido
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         FUTURE PHOTOS AND VIDEOS
+    ========================================= -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="section-label">
+            Photos and Videos
+          </div>
+
+          <h2 class="section-title">
+            See the work behind the tuning.
+          </h2>
+
+          <p class="section-description">
+            These spaces are ready for the photos and videos you plan
+            to add later. They can be replaced without redesigning
+            the rest of the page.
+          </p>
+        </div>
+
+        <div class="media-grid">
+
+          <div class="media-placeholder">
+            <div class="media-placeholder-icon">
+              ▶
+            </div>
+
+            <h3>Featured tuning video</h3>
+
+            <p>
+              This area can later hold a video of you tuning,
+              demonstrating the process, or introducing your service.
+            </p>
+          </div>
+
+          <div class="media-side">
+
+            <div class="media-placeholder small">
+              <div class="media-placeholder-icon">
+                +
+              </div>
+
+              <h3>Work photo</h3>
+
+              <p>
+                Add a professional tuning photo here.
+              </p>
+            </div>
+
+            <div class="media-placeholder small">
+              <div class="media-placeholder-icon">
+                +
+              </div>
+
+              <h3>Piano photo</h3>
+
+              <p>
+                Add an instrument or before-and-after photo here.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         FAQ
+    ========================================= -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="section-label">
+            Frequently Asked Questions
+          </div>
+
+          <h2 class="section-title">
+            Before your appointment.
+          </h2>
+        </div>
+
+        <div class="faq-list">
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              How often should a piano be tuned?
+
+              <span
+                class="faq-plus"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Tuning frequency depends on the piano, environment,
+                usage, age, and condition. Many regularly played pianos
+                benefit from consistent maintenance, while instruments
+                used for performances or recording may require more
+                frequent attention.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              What if I do not know when it was last tuned?
+
+              <span
+                class="faq-plus"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                That is completely fine. Select “I am not sure” in the
+                request form. The piano can be assessed during the
+                appointment to determine its current condition.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              Should I tune a piano after moving it?
+
+              <span
+                class="faq-plus"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Moving and environmental changes can affect a piano.
+                Include the move date in your request so the timing
+                and condition of the instrument can be discussed.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              Is submitting the form a confirmed reservation?
+
+              <span
+                class="faq-plus"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                No. The form sends an appointment request. Your
+                appointment is confirmed only after you receive a
+                response and both the date and time have been agreed upon.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              Do I need to know my piano's exact model?
+
+              <span
+                class="faq-plus"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                No. Provide the brand or piano type if you know it.
+                You can also submit the request without that information
+                and provide a photo later if needed.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         FINAL CALL TO ACTION
+    ========================================= -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="final-cta">
+
+          <h2>
+            Ready to bring your piano back into tune?
+          </h2>
+
+          <p>
+            Submit a request with information about your instrument,
+            location, and preferred appointment date. I will follow up
+            to discuss availability and next steps.
+          </p>
+
+          <button
+            class="primary-button"
+            type="button"
+            onclick="openBookingForm()"
+          >
+            Request Your Appointment
+            <span aria-hidden="true">→</span>
+          </button>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================
+       FOOTER
+  ========================================= -->
+
+  <footer>
+    <div class="container footer-content">
+
+      <div>
+        © <span id="currentYear"></span> Liam Weir.
+        All rights reserved.
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================
+       JAVASCRIPT
+  ========================================= -->
+
+  <script>
+    /*
+      OPEN OR CLOSE THE SLIDING BOOKING FORM
+    */
+
+    function toggleBookingForm() {
+      const slider =
+        document.getElementById("bookingSlider");
+
+      const button =
+        document.getElementById("bookingToggle");
+
+      const buttonText =
+        document.getElementById("bookingButtonText");
+
+      const isOpen =
+        slider.classList.contains("open");
+
+      slider.classList.toggle("open");
+      button.classList.toggle("open");
+
+      button.setAttribute(
+        "aria-expanded",
+        String(!isOpen)
+      );
+
+      buttonText.textContent =
+        isOpen
+          ? "Open Request Form"
+          : "Close Request Form";
+    }
+
+
+    /*
+      OPEN THE FORM FROM ANY BOOKING BUTTON
+    */
+
+    function openBookingForm() {
+      const bookingSection =
+        document.getElementById("booking");
+
+      const slider =
+        document.getElementById("bookingSlider");
+
+      const button =
+        document.getElementById("bookingToggle");
+
+      const buttonText =
+        document.getElementById("bookingButtonText");
+
+      if (!slider.classList.contains("open")) {
+        slider.classList.add("open");
+        button.classList.add("open");
+
+        button.setAttribute(
+          "aria-expanded",
+          "true"
+        );
+
+        buttonText.textContent =
+          "Close Request Form";
+      }
+
+      bookingSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+      window.setTimeout(function () {
+        document
+          .getElementById("fullName")
+          .focus();
+      }, 700);
+    }
+
+
+    /*
+      SET THE EARLIEST AVAILABLE DATE TO TODAY
+    */
+
+    const preferredDateInput =
+      document.getElementById("preferredDate");
+
+    const today =
+      new Date().toISOString().split("T")[0];
+
+    preferredDateInput.setAttribute(
+      "min",
+      today
+    );
+
+
+    /*
+      SEND FORM INFORMATION THROUGH EMAIL
+
+      Change the email below if you want requests
+      sent somewhere other than liamnweir@gmail.com.
+    */
+
+    const bookingForm =
+      document.getElementById("bookingForm");
+
+    bookingForm.addEventListener(
+      "submit",
+      function (event) {
+        event.preventDefault();
+
+        if (!bookingForm.checkValidity()) {
+          bookingForm.reportValidity();
+          return;
+        }
+
+        const fullName =
+          document.getElementById("fullName").value;
+
+        const email =
+          document.getElementById("email").value;
+
+        const phone =
+          document.getElementById("phone").value;
+
+        const contactPreference =
+          document.getElementById(
+            "contactPreference"
+          ).value;
+
+        const city =
+          document.getElementById("city").value;
+
+        const pianoType =
+          document.getElementById(
+            "pianoType"
+          ).value;
+
+        const pianoBrand =
+          document.getElementById(
+            "pianoBrand"
+          ).value || "Not provided";
+
+        const lastTuned =
+          document.getElementById(
+            "lastTuned"
+          ).value;
+
+        const preferredDate =
+          document.getElementById(
+            "preferredDate"
+          ).value || "Flexible / not provided";
+
+        const preferredTime =
+          document.getElementById(
+            "preferredTime"
+          ).value;
+
+        const serviceReason =
+          document.getElementById(
+            "serviceReason"
+          ).value;
+
+        const message =
+          document.getElementById(
+            "message"
+          ).value || "No additional details provided.";
+
+        const emailSubject =
+          "Piano Tuning Request from " + fullName;
+
+        const emailBody =
+`New Piano Tuning Appointment Request
+
+CUSTOMER INFORMATION
+Name: ${fullName}
+Email: ${email}
+Phone: ${phone}
+Preferred contact method: ${contactPreference}
+City or neighborhood: ${city}
+
+PIANO INFORMATION
+Piano type: ${pianoType}
+Piano brand: ${pianoBrand}
+Last tuned: ${lastTuned}
+
+APPOINTMENT REQUEST
+Preferred date: ${preferredDate}
+Preferred time: ${preferredTime}
+Reason for service: ${serviceReason}
+
+ADDITIONAL DETAILS
+${message}`;
+
+        const mailtoLink =
+          "mailto:liamnweir@gmail.com" +
+          "?subject=" +
+          encodeURIComponent(emailSubject) +
+          "&body=" +
+          encodeURIComponent(emailBody);
+
+        document
+          .getElementById("successMessage")
+          .classList.add("visible");
+
+        window.location.href = mailtoLink;
+      }
+    );
+
+
+    /*
+      FAQ OPENING AND CLOSING
+    */
+
+    const faqQuestions =
+      document.querySelectorAll(
+        ".faq-question"
+      );
+
+    faqQuestions.forEach(function (question) {
+      question.addEventListener(
+        "click",
+        function () {
+          const answer =
+            question.nextElementSibling;
+
+          const isOpen =
+            question.classList.contains("open");
+
+          question.classList.toggle("open");
+
+          question.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+          );
+
+          if (isOpen) {
+            answer.style.maxHeight = null;
+          } else {
+            answer.style.maxHeight =
+              answer.scrollHeight + "px";
+          }
+        }
+      );
+    });
+
+
+    /*
+      AUTOMATICALLY UPDATE THE COPYRIGHT YEAR
+    */
+
+    document.getElementById(
+      "currentYear"
+    ).textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
