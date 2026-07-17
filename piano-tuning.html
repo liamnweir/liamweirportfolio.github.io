@@ -1,56 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  />
+  >
 
   <meta
     name="description"
-    content="Professional piano tuning services from Liam Weir in North County San Diego. Request an appointment for upright, grand, and digital-hybrid piano service."
-  />
+    content="Piano tuning, light regulation, and piano cleaning services from Liam Weir in North County San Diego."
+  >
 
   <title>Piano Tuning | Liam Weir</title>
 
   <style>
-    /* ========================================
-       COLOR VARIABLES
-    ======================================== */
-
     :root {
-      --background-dark: #060615;
-      --background-purple: #0b0830;
+      --background: #070711;
+      --background-soft: #0d0c20;
+      --card: rgba(18, 18, 42, 0.82);
+      --card-light: rgba(255, 255, 255, 0.055);
 
-      --card-background: rgba(15, 16, 48, 0.82);
-      --card-background-light: rgba(255, 255, 255, 0.07);
-
-      --main-text: #eef0ff;
-      --muted-text: #c7caed;
-      --faded-text: #969bc7;
+      --text: #f6f4ff;
+      --muted: #c8c5df;
+      --faded: #918eac;
 
       --purple: #7c3aed;
-      --light-purple: #a78bfa;
-      --blue: #22d3ee;
-      --orange: #f97316;
-      --green: #10b981;
+      --purple-light: #aa8bff;
+      --blue: #38bdf8;
+      --green: #34d399;
+      --gold: #e8c878;
 
       --border: rgba(255, 255, 255, 0.12);
-      --border-hover: rgba(255, 255, 255, 0.22);
+      --border-strong: rgba(255, 255, 255, 0.21);
 
-      --shadow: 0 30px 80px rgba(0, 0, 0, 0.52);
-      --small-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+      --shadow:
+        0 30px 90px rgba(0, 0, 0, 0.55);
 
-      --border-radius: 24px;
-      --small-radius: 16px;
-      --maximum-width: 1160px;
+      --shadow-small:
+        0 20px 55px rgba(0, 0, 0, 0.35);
+
+      --radius: 26px;
+      --radius-small: 17px;
+      --max-width: 1180px;
     }
-
-    /* ========================================
-       GENERAL PAGE STYLING
-    ======================================== */
 
     * {
       box-sizing: border-box;
@@ -58,43 +52,39 @@
 
     html {
       scroll-behavior: smooth;
+      scroll-padding-top: 110px;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
 
+      color: var(--text);
+
       font-family:
+        Inter,
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
-        Roboto,
-        Arial,
         sans-serif;
-
-      color: var(--main-text);
 
       background:
         radial-gradient(
-          1000px 700px at 8% 8%,
-          rgba(124, 58, 237, 0.34),
-          transparent 60%
+          900px 650px at 6% 5%,
+          rgba(124, 58, 237, 0.28),
+          transparent 65%
         ),
         radial-gradient(
-          900px 650px at 92% 18%,
-          rgba(34, 211, 238, 0.22),
-          transparent 58%
-        ),
-        radial-gradient(
-          850px 600px at 45% 100%,
-          rgba(249, 115, 22, 0.13),
-          transparent 60%
+          850px 600px at 96% 14%,
+          rgba(56, 189, 248, 0.17),
+          transparent 62%
         ),
         linear-gradient(
           180deg,
-          var(--background-dark),
-          var(--background-purple)
+          #06060e 0%,
+          #0b0920 48%,
+          #070711 100%
         );
 
       overflow-x: hidden;
@@ -109,43 +99,22 @@
 
       background-image:
         linear-gradient(
-          rgba(255, 255, 255, 0.035) 1px,
+          rgba(255, 255, 255, 0.025) 1px,
           transparent 1px
         ),
         linear-gradient(
           90deg,
-          rgba(255, 255, 255, 0.035) 1px,
+          rgba(255, 255, 255, 0.025) 1px,
           transparent 1px
         );
 
-      background-size: 48px 48px;
-      opacity: 0.24;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      width: 450px;
-      height: 450px;
-      right: -180px;
-      bottom: -180px;
-      z-index: -1;
-
-      border-radius: 50%;
-
-      background:
-        radial-gradient(
-          circle,
-          rgba(124, 58, 237, 0.38),
-          transparent 68%
+      background-size: 52px 52px;
+      mask-image:
+        linear-gradient(
+          to bottom,
+          black,
+          transparent 75%
         );
-
-      filter: blur(20px);
-      pointer-events: none;
-    }
-
-    a {
-      color: inherit;
     }
 
     button,
@@ -155,49 +124,54 @@
       font: inherit;
     }
 
-    img,
-    video {
-      max-width: 100%;
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: inherit;
     }
 
     .container {
       width: min(
-        var(--maximum-width),
-        calc(100% - 36px)
+        var(--max-width),
+        calc(100% - 38px)
       );
 
       margin: 0 auto;
     }
 
     .section {
-      padding: 90px 0;
+      padding: 92px 0;
     }
 
     .section-heading {
-      max-width: 700px;
-      margin-bottom: 34px;
+      max-width: 760px;
+      margin-bottom: 38px;
     }
 
-    .section-label {
+    .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
 
-      margin-bottom: 12px;
+      margin-bottom: 14px;
 
       color: var(--blue);
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.14em;
+
+      font-size: 0.8rem;
+      font-weight: 850;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
-    .section-label::before {
+    .eyebrow::before {
       content: "";
-      width: 24px;
+      width: 26px;
       height: 2px;
 
-      border-radius: 99px;
+      border-radius: 100px;
 
       background:
         linear-gradient(
@@ -210,22 +184,23 @@
     .section-title {
       margin: 0;
 
-      font-size: clamp(2rem, 5vw, 3.35rem);
-      line-height: 1.08;
-      letter-spacing: -0.045em;
+      font-size: clamp(2.2rem, 5vw, 3.7rem);
+      line-height: 1.06;
+      letter-spacing: -0.052em;
     }
 
     .section-description {
-      margin: 16px 0 0;
+      margin: 18px 0 0;
 
-      color: var(--muted-text);
-      font-size: 1.05rem;
-      line-height: 1.75;
+      color: var(--muted);
+
+      font-size: 1.07rem;
+      line-height: 1.8;
     }
 
-    /* ========================================
+    /* =====================================
        NAVIGATION
-    ======================================== */
+    ===================================== */
 
     nav {
       position: fixed;
@@ -237,38 +212,39 @@
       display: flex;
       justify-content: center;
 
-      padding: 0.9rem 1rem;
+      padding: 14px 16px;
     }
 
     .nav-shell {
       width: min(
-        var(--maximum-width),
-        calc(100% - 18px)
+        var(--max-width),
+        calc(100% - 12px)
       );
 
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 18px;
 
       padding: 10px 12px;
 
       border: 1px solid var(--border);
       border-radius: 999px;
 
-      background: rgba(8, 9, 25, 0.64);
+      background: rgba(8, 8, 22, 0.74);
 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
 
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      box-shadow:
+        0 16px 45px rgba(0, 0, 0, 0.42);
     }
 
-    .nav-name {
-      padding-left: 8px;
+    .nav-logo {
+      padding-left: 9px;
 
       font-weight: 900;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.035em;
       white-space: nowrap;
     }
 
@@ -276,17 +252,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .nav-links a {
-      padding: 9px 14px;
+      padding: 9px 13px;
 
       border-radius: 999px;
 
-      color: rgba(238, 240, 255, 0.78);
+      color: rgba(246, 244, 255, 0.74);
 
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 750;
       text-decoration: none;
 
@@ -299,7 +275,7 @@
     .nav-links a:hover,
     .nav-links a.active {
       color: #ffffff;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.09);
       transform: translateY(-1px);
     }
 
@@ -308,27 +284,26 @@
       align-items: center;
       justify-content: center;
 
-      padding: 10px 17px;
+      padding: 11px 18px;
 
       border: 0;
       border-radius: 999px;
 
       color: #ffffff;
+
       background:
         linear-gradient(
           135deg,
           var(--purple),
-          #5b5ce2
+          #514fd4
         );
 
-      font-weight: 800;
-      text-decoration: none;
-      white-space: nowrap;
-
       box-shadow:
-        0 10px 30px rgba(124, 58, 237, 0.32);
+        0 12px 32px rgba(124, 58, 237, 0.34);
 
+      font-weight: 850;
       cursor: pointer;
+      white-space: nowrap;
 
       transition:
         transform 180ms ease,
@@ -339,12 +314,12 @@
       transform: translateY(-2px);
 
       box-shadow:
-        0 14px 35px rgba(124, 58, 237, 0.45);
+        0 16px 38px rgba(124, 58, 237, 0.46);
     }
 
-    /* ========================================
-       HERO SECTION
-    ======================================== */
+    /* =====================================
+       HERO
+    ===================================== */
 
     .hero {
       min-height: 100vh;
@@ -352,32 +327,32 @@
       display: flex;
       align-items: center;
 
-      padding: 145px 0 90px;
+      padding: 145px 0 86px;
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 65px;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 68px;
       align-items: center;
     }
 
-    .availability-badge {
+    .availability {
       display: inline-flex;
       align-items: center;
       gap: 10px;
 
       margin-bottom: 24px;
-      padding: 8px 13px;
+      padding: 9px 14px;
 
       border: 1px solid var(--border);
       border-radius: 999px;
 
-      color: var(--muted-text);
-      background: rgba(255, 255, 255, 0.055);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
 
       font-size: 0.9rem;
-      font-weight: 700;
+      font-weight: 720;
     }
 
     .availability-dot {
@@ -385,21 +360,27 @@
       height: 9px;
 
       border-radius: 50%;
+
       background: var(--green);
 
       box-shadow:
-        0 0 0 5px rgba(16, 185, 129, 0.13);
+        0 0 0 5px rgba(52, 211, 153, 0.13);
     }
 
     .hero-title {
       margin: 0;
 
-      font-size: clamp(3.5rem, 8vw, 6.6rem);
-      line-height: 0.93;
-      letter-spacing: -0.07em;
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: clamp(3.4rem, 7.8vw, 6.7rem);
+      line-height: 0.94;
+      letter-spacing: -0.065em;
     }
 
-    .hero-title-gradient {
+    .hero-title span {
       display: block;
 
       color: transparent;
@@ -408,9 +389,8 @@
         linear-gradient(
           100deg,
           #ffffff 0%,
-          #bfdbfe 34%,
-          #a78bfa 70%,
-          #22d3ee 100%
+          #dacdff 42%,
+          #9bdcf8 100%
         );
 
       background-clip: text;
@@ -418,13 +398,19 @@
     }
 
     .hero-description {
-      max-width: 630px;
+      max-width: 680px;
 
       margin: 28px 0 0;
 
-      color: var(--muted-text);
-      font-size: 1.12rem;
-      line-height: 1.8;
+      color: var(--muted);
+
+      font-size: 1.1rem;
+      line-height: 1.82;
+    }
+
+    .hero-description strong {
+      color: #ffffff;
+      font-weight: 760;
     }
 
     .hero-buttons {
@@ -437,13 +423,14 @@
 
     .primary-button,
     .secondary-button {
+      min-height: 53px;
+
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
 
-      min-height: 52px;
-      padding: 0 22px;
+      padding: 0 23px;
 
       border-radius: 999px;
 
@@ -453,9 +440,9 @@
 
       transition:
         transform 180ms ease,
-        border-color 180ms ease,
+        box-shadow 180ms ease,
         background 180ms ease,
-        box-shadow 180ms ease;
+        border-color 180ms ease;
     }
 
     .primary-button {
@@ -467,281 +454,371 @@
         linear-gradient(
           135deg,
           var(--purple),
-          #5458d9
+          #5354d7
         );
 
       box-shadow:
-        0 15px 40px rgba(124, 58, 237, 0.35);
+        0 16px 42px rgba(124, 58, 237, 0.37);
     }
 
     .primary-button:hover {
       transform: translateY(-3px);
 
       box-shadow:
-        0 20px 48px rgba(124, 58, 237, 0.48);
+        0 21px 48px rgba(124, 58, 237, 0.49);
     }
 
     .secondary-button {
       border: 1px solid var(--border);
 
-      color: var(--main-text);
-      background: rgba(255, 255, 255, 0.055);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .secondary-button:hover {
       transform: translateY(-3px);
-      border-color: var(--border-hover);
-      background: rgba(255, 255, 255, 0.09);
+
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.085);
     }
 
-    .hero-details {
+    .hero-points {
       display: flex;
       flex-wrap: wrap;
-      gap: 24px;
+      gap: 13px 25px;
 
-      margin-top: 38px;
-      padding-top: 26px;
+      margin-top: 36px;
+      padding-top: 27px;
 
       border-top: 1px solid var(--border);
     }
 
-    .hero-detail {
+    .hero-point {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 9px;
 
-      color: var(--muted-text);
-      font-size: 0.94rem;
-      font-weight: 650;
+      color: var(--muted);
+
+      font-size: 0.92rem;
+      font-weight: 680;
     }
 
-    .detail-icon {
-      width: 37px;
-      height: 37px;
+    .hero-check {
+      width: 27px;
+      height: 27px;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 50%;
 
-      background: rgba(255, 255, 255, 0.055);
+      color: var(--green);
+      background: rgba(52, 211, 153, 0.1);
+
+      font-weight: 900;
     }
 
-    /* ========================================
-       HERO VISUAL
-    ======================================== */
+    /* =====================================
+       HERO PHOTO AREA
+    ===================================== */
 
     .hero-visual {
       position: relative;
     }
 
-    .piano-card {
+    .hero-photo {
       position: relative;
 
-      min-height: 570px;
-      padding: 30px;
+      min-height: 590px;
 
       display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      align-items: flex-end;
 
       overflow: hidden;
 
       border: 1px solid var(--border);
-      border-radius: 34px;
+      border-radius: 35px;
 
       background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.02),
-          rgba(255, 255, 255, 0.09)
-        );
+        radial-gradient(
+          600px 380px at 30% 15%,
+          rgba(124, 58, 237, 0.38),
+          transparent 65%
+        ),
+        radial-gradient(
+          550px 400px at 100% 80%,
+          rgba(56, 189, 248, 0.2),
+          transparent 68%
+        ),
+        #111126;
 
       box-shadow: var(--shadow);
     }
 
-    .piano-card::before {
-      content: "";
-
+    .hero-photo-placeholder {
       position: absolute;
       inset: 0;
 
-      background:
-        radial-gradient(
-          500px 320px at 65% 15%,
-          rgba(34, 211, 238, 0.25),
-          transparent 65%
-        ),
-        radial-gradient(
-          500px 360px at 10% 70%,
-          rgba(124, 58, 237, 0.34),
-          transparent 65%
-        );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
-      pointer-events: none;
+      padding: 40px 35px 150px;
+
+      color: var(--muted);
+
+      text-align: center;
     }
 
-    .piano-keys {
-      position: absolute;
-      top: 75px;
-      left: 50%;
-
-      width: 82%;
-      height: 250px;
+    .camera-icon {
+      width: 72px;
+      height: 72px;
 
       display: flex;
+      align-items: center;
+      justify-content: center;
 
-      border: 12px solid rgba(11, 12, 33, 0.95);
-      border-radius: 12px;
+      margin-bottom: 18px;
 
-      background: #111221;
+      border: 1px solid var(--border);
+      border-radius: 22px;
 
-      box-shadow:
-        0 35px 60px rgba(0, 0, 0, 0.5);
+      color: var(--blue);
+      background: rgba(255, 255, 255, 0.065);
 
-      transform:
-        translateX(-50%)
-        perspective(700px)
-        rotateX(13deg)
-        rotateZ(-4deg);
+      font-size: 1.65rem;
     }
 
-    .white-key {
-      position: relative;
-      flex: 1;
+    .hero-photo-placeholder h2 {
+      margin: 0;
 
-      height: 100%;
+      color: #ffffff;
 
-      border-right: 1px solid #b8b8c4;
-      border-radius: 0 0 5px 5px;
-
-      background:
-        linear-gradient(
-          180deg,
-          #ffffff,
-          #d8d8de
-        );
-
-      box-shadow:
-        inset 0 -13px 17px rgba(0, 0, 0, 0.14);
+      font-size: 1.35rem;
     }
 
-    .white-key:last-child {
-      border-right: 0;
+    .hero-photo-placeholder p {
+      max-width: 380px;
+
+      margin: 10px 0 0;
+
+      line-height: 1.65;
     }
 
-    .black-key {
-      position: absolute;
-      top: 0;
-      right: -27%;
-
-      z-index: 2;
-
-      width: 54%;
-      height: 61%;
-
-      border-radius: 0 0 4px 4px;
-
-      background:
-        linear-gradient(
-          180deg,
-          #171722,
-          #020207
-        );
-
-      box-shadow:
-        0 10px 10px rgba(0, 0, 0, 0.42);
-    }
-
-    .piano-card-content {
+    .hero-photo-caption {
       position: relative;
       z-index: 3;
 
-      padding: 24px;
+      width: calc(100% - 40px);
+
+      margin: 20px;
+      padding: 23px;
 
       border: 1px solid var(--border);
       border-radius: 20px;
 
-      background: rgba(6, 6, 21, 0.68);
+      background: rgba(6, 6, 17, 0.76);
 
-      backdrop-filter: blur(13px);
-      -webkit-backdrop-filter: blur(13px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
-    .piano-card-label {
-      color: var(--blue);
+    .photo-caption-label {
+      color: var(--gold);
+
       font-size: 0.76rem;
       font-weight: 850;
-      letter-spacing: 0.13em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
-    .piano-card-title {
-      margin: 10px 0 0;
+    .hero-photo-caption h3 {
+      margin: 9px 0 0;
 
-      font-size: 1.55rem;
-      line-height: 1.25;
+      font-size: 1.38rem;
+      line-height: 1.35;
     }
 
-    .piano-card-description {
-      margin: 10px 0 0;
+    .hero-photo-caption p {
+      margin: 9px 0 0;
 
-      color: var(--muted-text);
+      color: var(--muted);
       line-height: 1.65;
     }
 
-    .floating-card {
+    .floating-note {
       position: absolute;
-      top: 25px;
+      top: 28px;
       right: -24px;
       z-index: 5;
 
-      padding: 15px 17px;
+      max-width: 205px;
+      padding: 16px 18px;
 
       border: 1px solid var(--border);
-      border-radius: 17px;
+      border-radius: 18px;
 
-      background: rgba(13, 14, 43, 0.84);
+      background: rgba(12, 12, 32, 0.88);
 
       backdrop-filter: blur(14px);
 
-      box-shadow: var(--small-shadow);
+      box-shadow: var(--shadow-small);
     }
 
-    .floating-card strong {
+    .floating-note strong {
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 5px;
     }
 
-    .floating-card span {
-      color: var(--muted-text);
-      font-size: 0.83rem;
+    .floating-note span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
     }
 
-    /* ========================================
+    /* =====================================
+       ABOUT / EXPERIENCE
+    ===================================== */
+
+    .about-card {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 48px;
+      align-items: center;
+
+      padding: 46px;
+
+      border: 1px solid var(--border);
+      border-radius: 32px;
+
+      background:
+        radial-gradient(
+          550px 380px at 0% 0%,
+          rgba(124, 58, 237, 0.22),
+          transparent 67%
+        ),
+        rgba(255, 255, 255, 0.045);
+
+      box-shadow: var(--shadow-small);
+    }
+
+    .about-portrait {
+      min-height: 440px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 30px;
+
+      border: 1px dashed rgba(255, 255, 255, 0.23);
+      border-radius: 24px;
+
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+
+      text-align: center;
+    }
+
+    .about-portrait p {
+      max-width: 310px;
+      margin: 12px auto 0;
+      line-height: 1.65;
+    }
+
+    .about-copy h2 {
+      margin: 0;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: clamp(2.3rem, 5vw, 3.7rem);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+    }
+
+    .about-copy p {
+      margin: 19px 0 0;
+
+      color: var(--muted);
+      line-height: 1.82;
+    }
+
+    .about-copy strong {
+      color: #ffffff;
+    }
+
+    .experience-list {
+      display: grid;
+      gap: 13px;
+
+      margin-top: 27px;
+    }
+
+    .experience-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+
+      padding: 15px;
+
+      border: 1px solid var(--border);
+      border-radius: 15px;
+
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .experience-icon {
+      width: 38px;
+      height: 38px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 12px;
+
+      color: var(--purple-light);
+      background: rgba(124, 58, 237, 0.13);
+
+      font-weight: 900;
+    }
+
+    .experience-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .experience-item span {
+      color: var(--muted);
+
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    /* =====================================
        BOOKING PANEL
-    ======================================== */
-
-    .booking-wrapper {
-      padding-top: 0;
-    }
+    ===================================== */
 
     .booking-panel {
       overflow: hidden;
 
       border: 1px solid var(--border);
-      border-radius: 28px;
+      border-radius: 29px;
 
       background:
         linear-gradient(
           135deg,
-          rgba(124, 58, 237, 0.18),
-          rgba(34, 211, 238, 0.08)
+          rgba(124, 58, 237, 0.19),
+          rgba(56, 189, 248, 0.075)
         );
 
-      box-shadow: var(--small-shadow);
+      box-shadow: var(--shadow-small);
     }
 
     .booking-header {
@@ -750,27 +827,27 @@
       justify-content: space-between;
       gap: 25px;
 
-      padding: 30px;
+      padding: 31px;
     }
 
-    .booking-header-text h2 {
+    .booking-header h2 {
       margin: 0;
 
-      font-size: clamp(1.75rem, 4vw, 2.45rem);
-      letter-spacing: -0.035em;
+      font-size: clamp(1.8rem, 4vw, 2.55rem);
+      letter-spacing: -0.04em;
     }
 
-    .booking-header-text p {
-      max-width: 650px;
+    .booking-header p {
+      max-width: 680px;
 
       margin: 10px 0 0;
 
-      color: var(--muted-text);
+      color: var(--muted);
       line-height: 1.65;
     }
 
     .booking-toggle {
-      min-width: 175px;
+      min-width: 185px;
 
       display: inline-flex;
       align-items: center;
@@ -788,11 +865,11 @@
         linear-gradient(
           135deg,
           var(--purple),
-          #5458d9
+          #5354d7
         );
 
       box-shadow:
-        0 12px 30px rgba(124, 58, 237, 0.34);
+        0 13px 33px rgba(124, 58, 237, 0.35);
 
       font-weight: 850;
       cursor: pointer;
@@ -806,7 +883,7 @@
       transform: translateY(-2px);
 
       box-shadow:
-        0 16px 38px rgba(124, 58, 237, 0.44);
+        0 17px 39px rgba(124, 58, 237, 0.46);
     }
 
     .booking-arrow {
@@ -826,25 +903,25 @@
       border-top: 1px solid transparent;
 
       transition:
-        max-height 700ms ease,
-        opacity 400ms ease,
-        border-color 400ms ease;
+        max-height 800ms ease,
+        opacity 420ms ease,
+        border-color 420ms ease;
     }
 
     .booking-slider.open {
-      max-height: 2200px;
+      max-height: 2400px;
       opacity: 1;
       border-top-color: var(--border);
     }
 
     .booking-form {
-      padding: 34px 30px 38px;
+      padding: 34px 31px 39px;
     }
 
-    .form-introduction {
+    .form-note {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
+      gap: 13px;
 
       margin-bottom: 27px;
       padding: 16px;
@@ -852,10 +929,10 @@
       border: 1px solid var(--border);
       border-radius: 15px;
 
-      color: var(--muted-text);
-      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
 
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
     .form-grid {
@@ -875,13 +952,12 @@
     }
 
     .form-group label {
-      color: var(--main-text);
       font-size: 0.92rem;
-      font-weight: 750;
+      font-weight: 760;
     }
 
     .required {
-      color: var(--light-purple);
+      color: var(--purple-light);
     }
 
     .form-group input,
@@ -893,8 +969,8 @@
       border-radius: 13px;
       outline: none;
 
-      color: var(--main-text);
-      background: rgba(6, 7, 25, 0.76);
+      color: var(--text);
+      background: rgba(6, 6, 20, 0.77);
 
       transition:
         border-color 180ms ease,
@@ -904,7 +980,7 @@
 
     .form-group input,
     .form-group select {
-      height: 52px;
+      height: 53px;
       padding: 0 15px;
     }
 
@@ -916,27 +992,27 @@
 
     .form-group input::placeholder,
     .form-group textarea::placeholder {
-      color: #777da8;
+      color: #77748e;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-      border-color: rgba(167, 139, 250, 0.75);
+      border-color: rgba(170, 139, 255, 0.75);
 
-      background: rgba(10, 10, 36, 0.92);
+      background: rgba(10, 10, 31, 0.94);
 
       box-shadow:
-        0 0 0 4px rgba(124, 58, 237, 0.15);
+        0 0 0 4px rgba(124, 58, 237, 0.14);
     }
 
     .form-group select option {
       color: #ffffff;
-      background: #10112f;
+      background: #12112c;
     }
 
     .form-help {
-      color: var(--faded-text);
+      color: var(--faded);
       font-size: 0.8rem;
       line-height: 1.45;
     }
@@ -945,26 +1021,26 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 22px;
+      gap: 24px;
 
-      margin-top: 27px;
+      margin-top: 28px;
       padding-top: 25px;
 
       border-top: 1px solid var(--border);
     }
 
     .form-disclaimer {
-      max-width: 560px;
+      max-width: 570px;
 
       margin: 0;
 
-      color: var(--faded-text);
+      color: var(--faded);
       font-size: 0.84rem;
       line-height: 1.55;
     }
 
     .submit-button {
-      min-width: 190px;
+      min-width: 195px;
 
       padding: 15px 22px;
 
@@ -977,7 +1053,7 @@
         linear-gradient(
           135deg,
           var(--purple),
-          #5458d9
+          #5354d7
         );
 
       box-shadow:
@@ -995,7 +1071,7 @@
       transform: translateY(-2px);
 
       box-shadow:
-        0 18px 42px rgba(124, 58, 237, 0.5);
+        0 19px 43px rgba(124, 58, 237, 0.5);
     }
 
     .success-message {
@@ -1004,11 +1080,11 @@
       margin-top: 22px;
       padding: 17px 18px;
 
-      border: 1px solid rgba(16, 185, 129, 0.38);
+      border: 1px solid rgba(52, 211, 153, 0.36);
       border-radius: 15px;
 
-      color: #b9f6df;
-      background: rgba(16, 185, 129, 0.1);
+      color: #baf6df;
+      background: rgba(52, 211, 153, 0.09);
 
       line-height: 1.55;
     }
@@ -1017,34 +1093,38 @@
       display: block;
     }
 
-    /* ========================================
+    /* =====================================
        SERVICES
-    ======================================== */
+    ===================================== */
 
     .services-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 21px;
     }
 
     .service-card {
       position: relative;
 
-      padding: 28px;
+      min-height: 350px;
+      padding: 29px;
+
+      display: flex;
+      flex-direction: column;
 
       overflow: hidden;
 
       border: 1px solid var(--border);
-      border-radius: var(--border-radius);
+      border-radius: var(--radius);
 
       background:
         linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.075),
-          rgba(255, 255, 255, 0.035)
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.03)
         );
 
-      box-shadow: var(--small-shadow);
+      box-shadow: var(--shadow-small);
 
       transition:
         transform 220ms ease,
@@ -1052,27 +1132,130 @@
         background 220ms ease;
     }
 
+    .service-card::after {
+      content: "";
+
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -85px;
+      bottom: -85px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(124, 58, 237, 0.2),
+          transparent 70%
+        );
+    }
+
     .service-card:hover {
       transform: translateY(-7px);
-      border-color: var(--border-hover);
+      border-color: var(--border-strong);
 
       background:
         linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.1),
-          rgba(255, 255, 255, 0.045)
+          rgba(255, 255, 255, 0.095),
+          rgba(255, 255, 255, 0.04)
         );
     }
 
-    .service-number {
-      display: inline-flex;
+    .service-icon {
+      width: 52px;
+      height: 52px;
+
+      display: flex;
       align-items: center;
       justify-content: center;
 
-      width: 46px;
-      height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.8),
+          rgba(56, 189, 248, 0.4)
+        );
+
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .service-card h3 {
+      margin: 23px 0 11px;
+
+      font-size: 1.36rem;
+      letter-spacing: -0.025em;
+    }
+
+    .service-card p {
+      margin: 0;
+
+      color: var(--muted);
+      line-height: 1.72;
+    }
+
+    .service-list {
+      display: grid;
+      gap: 9px;
+
+      margin-top: 21px;
+      padding: 0;
+
+      list-style: none;
+    }
+
+    .service-list li {
+      display: flex;
+      gap: 9px;
+
+      color: var(--muted);
+
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .service-list li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    /* =====================================
+       PROCESS
+    ===================================== */
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .process-step {
+      padding: 25px;
 
       border: 1px solid var(--border);
+      border-radius: 21px;
+
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .process-number {
+      width: 43px;
+      height: 43px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-bottom: 20px;
+
       border-radius: 14px;
 
       color: #ffffff;
@@ -1080,141 +1263,144 @@
       background:
         linear-gradient(
           135deg,
-          rgba(124, 58, 237, 0.78),
-          rgba(34, 211, 238, 0.42)
-        );
-
-      font-weight: 900;
-    }
-
-    .service-card h3 {
-      margin: 22px 0 10px;
-
-      font-size: 1.3rem;
-      letter-spacing: -0.02em;
-    }
-
-    .service-card p {
-      margin: 0;
-
-      color: var(--muted-text);
-      line-height: 1.7;
-    }
-
-    /* ========================================
-       PROCESS
-    ======================================== */
-
-    .process-layout {
-      display: grid;
-      grid-template-columns: 0.8fr 1.2fr;
-      gap: 45px;
-      align-items: start;
-    }
-
-    .process-intro {
-      position: sticky;
-      top: 125px;
-    }
-
-    .process-steps {
-      display: grid;
-      gap: 18px;
-    }
-
-    .process-step {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 18px;
-
-      padding: 24px;
-
-      border: 1px solid var(--border);
-      border-radius: 20px;
-
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .process-icon {
-      width: 48px;
-      height: 48px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 15px;
-
-      color: #ffffff;
-
-      background:
-        linear-gradient(
-          135deg,
           var(--purple),
-          #3945ba
+          #444ac0
         );
 
       font-weight: 900;
 
       box-shadow:
-        0 12px 26px rgba(124, 58, 237, 0.28);
+        0 11px 25px rgba(124, 58, 237, 0.28);
     }
 
     .process-step h3 {
-      margin: 1px 0 8px;
-      font-size: 1.18rem;
+      margin: 0 0 9px;
+      font-size: 1.16rem;
     }
 
     .process-step p {
       margin: 0;
 
-      color: var(--muted-text);
+      color: var(--muted);
+
+      font-size: 0.93rem;
       line-height: 1.7;
     }
 
-    /* ========================================
+    /* =====================================
+       MEDIA
+    ===================================== */
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 21px;
+    }
+
+    .media-placeholder {
+      min-height: 390px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      padding: 32px;
+
+      border: 1px dashed rgba(255, 255, 255, 0.24);
+      border-radius: var(--radius);
+
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+
+      text-align: center;
+    }
+
+    .media-placeholder.small {
+      min-height: 184px;
+    }
+
+    .media-icon {
+      width: 58px;
+      height: 58px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-bottom: 15px;
+
+      border: 1px solid var(--border);
+      border-radius: 18px;
+
+      color: var(--blue);
+      background: rgba(255, 255, 255, 0.055);
+
+      font-size: 1.35rem;
+    }
+
+    .media-placeholder h3 {
+      margin: 0;
+      color: #ffffff;
+    }
+
+    .media-placeholder p {
+      max-width: 430px;
+
+      margin: 10px 0 0;
+
+      line-height: 1.65;
+    }
+
+    .media-side {
+      display: grid;
+      gap: 21px;
+    }
+
+    /* =====================================
        SERVICE AREA
-    ======================================== */
+    ===================================== */
 
     .service-area-card {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 36px;
+      gap: 40px;
       align-items: center;
 
-      padding: 40px;
+      padding: 44px;
 
       border: 1px solid var(--border);
-      border-radius: 30px;
+      border-radius: 32px;
 
       background:
         radial-gradient(
-          600px 360px at 90% 0%,
-          rgba(34, 211, 238, 0.17),
+          600px 350px at 95% 0%,
+          rgba(56, 189, 248, 0.16),
           transparent 68%
         ),
         radial-gradient(
-          600px 360px at 0% 100%,
-          rgba(124, 58, 237, 0.24),
+          600px 380px at 0% 100%,
+          rgba(124, 58, 237, 0.22),
           transparent 68%
         ),
-        rgba(255, 255, 255, 0.045);
+        rgba(255, 255, 255, 0.04);
 
-      box-shadow: var(--small-shadow);
+      box-shadow: var(--shadow-small);
     }
 
     .service-area-card h2 {
       margin: 0;
 
-      font-size: clamp(2rem, 5vw, 3rem);
-      letter-spacing: -0.045em;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -0.05em;
     }
 
     .service-area-card p {
-      margin: 16px 0 0;
+      margin: 17px 0 0;
 
-      color: var(--muted-text);
-      line-height: 1.75;
+      color: var(--muted);
+      line-height: 1.78;
     }
 
     .area-list {
@@ -1228,103 +1414,32 @@
       align-items: center;
       gap: 10px;
 
-      padding: 13px;
+      padding: 14px;
 
       border: 1px solid var(--border);
-      border-radius: 13px;
+      border-radius: 14px;
 
-      color: var(--muted-text);
-      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
 
       font-size: 0.92rem;
-      font-weight: 700;
+      font-weight: 720;
     }
 
-    .area-check {
+    .area-item span {
       color: var(--green);
       font-weight: 900;
     }
 
-    /* ========================================
-       FUTURE MEDIA SECTION
-    ======================================== */
-
-    .media-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 20px;
-    }
-
-    .media-placeholder {
-      min-height: 350px;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      padding: 30px;
-
-      border: 1px dashed rgba(255, 255, 255, 0.24);
-      border-radius: var(--border-radius);
-
-      color: var(--muted-text);
-      background: rgba(255, 255, 255, 0.035);
-
-      text-align: center;
-    }
-
-    .media-placeholder.small {
-      min-height: 165px;
-    }
-
-    .media-placeholder-icon {
-      width: 58px;
-      height: 58px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      margin-bottom: 16px;
-
-      border: 1px solid var(--border);
-      border-radius: 18px;
-
-      color: var(--blue);
-      background: rgba(255, 255, 255, 0.055);
-
-      font-size: 1.4rem;
-      font-weight: 900;
-    }
-
-    .media-placeholder h3 {
-      margin: 0;
-      color: var(--main-text);
-    }
-
-    .media-placeholder p {
-      max-width: 420px;
-
-      margin: 9px 0 0;
-
-      line-height: 1.6;
-    }
-
-    .media-side {
-      display: grid;
-      gap: 20px;
-    }
-
-    /* ========================================
+    /* =====================================
        FAQ
-    ======================================== */
+    ===================================== */
 
     .faq-list {
       display: grid;
       gap: 13px;
 
-      max-width: 900px;
+      max-width: 930px;
     }
 
     .faq-item {
@@ -1333,7 +1448,7 @@
       border: 1px solid var(--border);
       border-radius: 17px;
 
-      background: rgba(255, 255, 255, 0.045);
+      background: rgba(255, 255, 255, 0.042);
     }
 
     .faq-question {
@@ -1342,23 +1457,23 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
+      gap: 16px;
 
-      padding: 20px 22px;
+      padding: 21px 22px;
 
       border: 0;
 
-      color: var(--main-text);
+      color: var(--text);
       background: transparent;
 
-      font-weight: 800;
+      font-weight: 820;
       text-align: left;
       cursor: pointer;
     }
 
     .faq-plus {
-      color: var(--light-purple);
-      font-size: 1.35rem;
+      color: var(--purple-light);
+      font-size: 1.4rem;
 
       transition: transform 240ms ease;
     }
@@ -1376,27 +1491,27 @@
 
     .faq-answer p {
       margin: 0;
-      padding: 0 22px 21px;
+      padding: 0 22px 22px;
 
-      color: var(--muted-text);
+      color: var(--muted);
       line-height: 1.75;
     }
 
-    /* ========================================
-       FINAL CALL TO ACTION
-    ======================================== */
+    /* =====================================
+       FINAL CTA
+    ===================================== */
 
     .final-cta {
-      padding: 45px;
+      padding: 49px 32px;
 
       border: 1px solid var(--border);
-      border-radius: 30px;
+      border-radius: 32px;
 
       background:
         linear-gradient(
           135deg,
           rgba(124, 58, 237, 0.24),
-          rgba(34, 211, 238, 0.11)
+          rgba(56, 189, 248, 0.1)
         );
 
       box-shadow: var(--shadow);
@@ -1409,31 +1524,38 @@
 
       margin: 0 auto;
 
-      font-size: clamp(2.1rem, 5vw, 3.5rem);
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.08;
       letter-spacing: -0.05em;
     }
 
     .final-cta p {
-      max-width: 650px;
+      max-width: 660px;
 
-      margin: 16px auto 0;
+      margin: 17px auto 0;
 
-      color: var(--muted-text);
+      color: var(--muted);
+
       font-size: 1.04rem;
       line-height: 1.75;
     }
 
     .final-cta .primary-button {
-      margin-top: 27px;
+      margin-top: 28px;
     }
 
-    /* ========================================
+    /* =====================================
        FOOTER
-    ======================================== */
+    ===================================== */
 
     footer {
       margin-top: 90px;
-      padding: 32px 0;
+      padding: 33px 0;
 
       border-top: 1px solid var(--border);
     }
@@ -1442,20 +1564,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
+      gap: 25px;
 
-      color: var(--faded-text);
+      color: var(--faded);
       font-size: 0.9rem;
     }
 
     .footer-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 17px;
+      gap: 18px;
     }
 
     .footer-links a {
-      color: var(--muted-text);
+      color: var(--muted);
       text-decoration: none;
     }
 
@@ -1463,24 +1585,24 @@
       color: #ffffff;
     }
 
-    /* ========================================
-       MOBILE RESPONSIVENESS
-    ======================================== */
+    /* =====================================
+       RESPONSIVE
+    ===================================== */
 
-    @media (max-width: 980px) {
+    @media (max-width: 1000px) {
       .nav-shell {
         border-radius: 22px;
       }
 
-      .nav-name,
+      .nav-logo,
       .nav-book-button {
         display: none;
       }
 
       .nav-links {
         width: 100%;
-        overflow-x: auto;
         justify-content: flex-start;
+        overflow-x: auto;
       }
 
       .nav-links a {
@@ -1488,52 +1610,47 @@
       }
 
       .hero-grid,
-      .process-layout,
+      .about-card,
       .service-area-card,
       .media-grid {
         grid-template-columns: 1fr;
       }
 
       .hero {
-        padding-top: 135px;
+        min-height: auto;
       }
 
       .hero-visual {
-        max-width: 650px;
+        max-width: 700px;
       }
 
-      .process-intro {
-        position: static;
-      }
-
-      .services-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .floating-card {
+      .floating-note {
         right: 15px;
+      }
+
+      .process-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 760px) {
       .container {
         width: min(
-          100% - 25px,
-          var(--maximum-width)
+          var(--max-width),
+          calc(100% - 25px)
         );
       }
 
       .section {
-        padding: 70px 0;
+        padding: 72px 0;
       }
 
       .hero {
-        min-height: auto;
-        padding-bottom: 60px;
+        padding: 132px 0 65px;
       }
 
       .hero-title {
-        font-size: clamp(3.2rem, 17vw, 5rem);
+        font-size: clamp(3.15rem, 16vw, 5.1rem);
       }
 
       .hero-description {
@@ -1541,28 +1658,31 @@
       }
 
       .hero-buttons,
-      .hero-buttons a,
-      .hero-buttons button {
+      .hero-buttons button,
+      .hero-buttons a {
         width: 100%;
       }
 
-      .piano-card {
-        min-height: 500px;
-        padding: 18px;
+      .hero-photo {
+        min-height: 520px;
       }
 
-      .piano-keys {
-        top: 65px;
-        height: 205px;
+      .hero-photo-placeholder {
+        padding-bottom: 180px;
       }
 
-      .piano-card-content {
-        padding: 20px;
-      }
-
-      .floating-card {
-        top: 18px;
+      .floating-note {
+        top: 15px;
         right: 12px;
+      }
+
+      .about-card {
+        gap: 30px;
+        padding: 25px;
+      }
+
+      .about-portrait {
+        min-height: 330px;
       }
 
       .booking-header {
@@ -1576,7 +1696,7 @@
       }
 
       .booking-form {
-        padding: 27px 22px 30px;
+        padding: 27px 22px 31px;
       }
 
       .form-grid {
@@ -1596,20 +1716,17 @@
         width: 100%;
       }
 
-      .services-grid {
+      .services-grid,
+      .process-grid {
         grid-template-columns: 1fr;
       }
 
       .service-area-card {
-        padding: 27px;
+        padding: 28px;
       }
 
       .area-list {
         grid-template-columns: 1fr;
-      }
-
-      .final-cta {
-        padding: 33px 22px;
       }
 
       .footer-content {
@@ -1626,8 +1743,8 @@
       *,
       *::before,
       *::after {
-        scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>
@@ -1635,14 +1752,12 @@
 
 <body>
 
-  <!-- ========================================
-       NAVIGATION
-  ========================================= -->
+  <!-- NAVIGATION -->
 
   <nav>
     <div class="nav-shell">
 
-      <div class="nav-name">
+      <div class="nav-logo">
         Liam Weir
       </div>
 
@@ -1666,7 +1781,7 @@
         type="button"
         onclick="openBookingForm()"
       >
-        Book a Tuning
+        Request a Tuning
       </button>
 
     </div>
@@ -1674,32 +1789,37 @@
 
   <main>
 
-    <!-- ========================================
-         HERO
-    ========================================= -->
+    <!-- HERO -->
 
     <section class="hero">
       <div class="container hero-grid">
 
-        <div class="hero-content">
+        <div>
 
-          <div class="availability-badge">
+          <div class="availability">
             <span class="availability-dot"></span>
-            Now accepting tuning requests
+            Accepting piano service requests
           </div>
 
           <h1 class="hero-title">
-            Your piano,
-            <span class="hero-title-gradient">
-              sounding its best.
-            </span>
+            Care for the piano.
+            <span>Respect for the music.</span>
           </h1>
 
           <p class="hero-description">
-            Professional, careful piano tuning services for musicians,
-            families, teachers, studios, and performance spaces in
-            North County San Diego. Each appointment begins with an
-            assessment of your piano and its current tuning needs.
+            I have played piano for as long as I can remember, and that
+            lifelong connection has grown into a deep passion for
+            everything surrounding the instrument. I have performed as a
+            pianist and keyboardist in multiple bands and concerts, and
+            working on and tuning pianos became a natural extension of
+            that love.
+          </p>
+
+          <p class="hero-description">
+            My studies in <strong>electronic music at UC Santa Cruz</strong>
+            have also strengthened my understanding of sound, pitch,
+            harmony, listening, and music creation. I bring that musical
+            background and careful ear to every piano I work with.
           </p>
 
           <div class="hero-buttons">
@@ -1717,41 +1837,26 @@
               class="secondary-button"
               href="#services"
             >
-              View Services
+              Explore Services
             </a>
 
           </div>
 
-          <div class="hero-details">
+          <div class="hero-points">
 
-            <div class="hero-detail">
-              <span class="detail-icon" aria-hidden="true">
-                ♫
-              </span>
-
-              <span>
-                Upright and grand pianos
-              </span>
+            <div class="hero-point">
+              <span class="hero-check">✓</span>
+              Musician-centered service
             </div>
 
-            <div class="hero-detail">
-              <span class="detail-icon" aria-hidden="true">
-                ◉
-              </span>
-
-              <span>
-                North County San Diego
-              </span>
+            <div class="hero-point">
+              <span class="hero-check">✓</span>
+              Upright and grand pianos
             </div>
 
-            <div class="hero-detail">
-              <span class="detail-icon" aria-hidden="true">
-                ✓
-              </span>
-
-              <span>
-                Appointment-based service
-              </span>
+            <div class="hero-point">
+              <span class="hero-check">✓</span>
+              North County San Diego
             </div>
 
           </div>
@@ -1759,67 +1864,41 @@
 
         <div class="hero-visual">
 
-          <div class="floating-card">
-            <strong>Personalized service</strong>
-            <span>Every piano is assessed individually</span>
+          <div class="floating-note">
+            <strong>A musician's ear</strong>
+
+            <span>
+              Piano service informed by years of playing,
+              performing, and studying sound.
+            </span>
           </div>
 
-          <div class="piano-card">
+          <div class="hero-photo">
 
-            <!-- Decorative piano keyboard -->
-            <div
-              class="piano-keys"
-              aria-hidden="true"
-            >
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
+            <div class="hero-photo-placeholder">
+              <div class="camera-icon">▣</div>
 
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
+              <h2>Your main professional photo</h2>
 
-              <div class="white-key"></div>
-
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
-
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
-
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
-
-              <div class="white-key"></div>
-
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
-
-              <div class="white-key">
-                <span class="black-key"></span>
-              </div>
-
-              <div class="white-key"></div>
+              <p>
+                Later, this space can display a high-quality photo of
+                you tuning or sitting at a piano.
+              </p>
             </div>
 
-            <div class="piano-card-content">
+            <div class="hero-photo-caption">
 
-              <div class="piano-card-label">
+              <div class="photo-caption-label">
                 Piano Tuning by Liam Weir
               </div>
 
-              <h2 class="piano-card-title">
-                Bring clarity, balance, and consistency back to your instrument.
-              </h2>
+              <h3>
+                Detailed, thoughtful service built around the instrument.
+              </h3>
 
-              <p class="piano-card-description">
-                Request an appointment below and provide a few details
-                about your piano. I will follow up to discuss scheduling,
-                availability, and the appropriate service.
+              <p>
+                Tuning, light regulation, and cleaning for musicians,
+                families, teachers, studios, and piano owners.
               </p>
 
             </div>
@@ -1829,12 +1908,117 @@
       </div>
     </section>
 
-    <!-- ========================================
-         SLIDING BOOKING FORM
-    ========================================= -->
+    <!-- ABOUT -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="about-card">
+
+          <div class="about-portrait">
+            <div>
+              <div class="camera-icon" style="margin-left:auto; margin-right:auto;">
+                +
+              </div>
+
+              <strong style="color:white;">
+                Add a performance or piano photo
+              </strong>
+
+              <p>
+                A photo of you playing live, performing with a band,
+                or working on a piano would fit well here.
+              </p>
+            </div>
+          </div>
+
+          <div class="about-copy">
+
+            <div class="eyebrow">
+              About Liam
+            </div>
+
+            <h2>
+              A lifelong pianist with a genuine passion for the instrument.
+            </h2>
+
+            <p>
+              Piano has been part of my life from an early age. Over the
+              years, I have played as a <strong>pianist and keyboardist
+              in multiple bands and live concerts</strong>, giving me
+              firsthand experience with how important a responsive,
+              balanced, and well-tuned instrument can be.
+            </p>
+
+            <p>
+              My interest eventually expanded beyond playing. I became
+              fascinated by the piano itself—how it produces sound, how
+              small adjustments affect the playing experience, and how
+              careful tuning can restore clarity and musicality. Working
+              on pianos became a natural continuation of my life as a
+              musician.
+            </p>
+
+            <p>
+              Through my electronic music studies at UC Santa Cruz, I
+              developed an even deeper understanding of pitch, timbre,
+              acoustics, synthesis, critical listening, and music
+              production. That education continues to influence both my
+              creative work and the attention I bring to piano service.
+            </p>
+
+            <div class="experience-list">
+
+              <div class="experience-item">
+                <div class="experience-icon">♫</div>
+
+                <div>
+                  <strong>Lifelong pianist</strong>
+
+                  <span>
+                    Years of direct experience listening to,
+                    performing on, and caring about pianos.
+                  </span>
+                </div>
+              </div>
+
+              <div class="experience-item">
+                <div class="experience-icon">◉</div>
+
+                <div>
+                  <strong>Live performance experience</strong>
+
+                  <span>
+                    Experience performing as a keyboardist and pianist
+                    in bands and concert settings.
+                  </span>
+                </div>
+              </div>
+
+              <div class="experience-item">
+                <div class="experience-icon">≈</div>
+
+                <div>
+                  <strong>Electronic music education</strong>
+
+                  <span>
+                    Academic experience with sound, pitch, timbre,
+                    recording, critical listening, and music creation.
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- BOOKING FORM -->
 
     <section
-      class="booking-wrapper"
+      class="section"
       id="booking"
     >
       <div class="container">
@@ -1843,13 +2027,13 @@
 
           <div class="booking-header">
 
-            <div class="booking-header-text">
-              <h2>Request a piano tuning</h2>
+            <div>
+              <h2>Request piano service</h2>
 
               <p>
-                Tell me about your piano and preferred appointment time.
-                Submitting this form is an appointment request and does
-                not confirm the appointment until I contact you.
+                Provide your contact information, piano details, and
+                preferred appointment date. I will contact you to discuss
+                the instrument and confirm availability.
               </p>
             </div>
 
@@ -1880,30 +2064,18 @@
             id="bookingSlider"
           >
 
-            <!--
-              IMPORTANT:
-
-              This form is currently configured to open the visitor's
-              email app and prepare an email to you.
-
-              It does not require a paid service or server.
-
-              Change liamnweir@gmail.com in the JavaScript near the
-              bottom if you want requests sent to a different email.
-            -->
-
             <form
               class="booking-form"
               id="bookingForm"
             >
 
-              <div class="form-introduction">
+              <div class="form-note">
                 <span aria-hidden="true">ℹ</span>
 
                 <span>
-                  Please include as much information as possible.
-                  You do not need to know your piano's exact model
-                  or service history to submit a request.
+                  You do not need to know your piano's exact model,
+                  age, or service history. Provide whatever information
+                  you currently have.
                 </span>
               </div>
 
@@ -1922,7 +2094,7 @@
                     placeholder="Your first and last name"
                     autocomplete="name"
                     required
-                  />
+                  >
                 </div>
 
                 <div class="form-group">
@@ -1938,7 +2110,7 @@
                     placeholder="you@example.com"
                     autocomplete="email"
                     required
-                  />
+                  >
                 </div>
 
                 <div class="form-group">
@@ -1954,7 +2126,7 @@
                     placeholder="(555) 555-5555"
                     autocomplete="tel"
                     required
-                  />
+                  >
                 </div>
 
                 <div class="form-group">
@@ -1993,7 +2165,7 @@
                     placeholder="Example: San Marcos"
                     autocomplete="address-level2"
                     required
-                  />
+                  >
                 </div>
 
                 <div class="form-group">
@@ -2051,7 +2223,7 @@
                     id="pianoBrand"
                     name="pianoBrand"
                     placeholder="Example: Yamaha, Kawai, Baldwin"
-                  />
+                  >
 
                   <span class="form-help">
                     Leave blank if you are unsure.
@@ -2094,6 +2266,51 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="serviceType">
+                    Service requested
+                    <span class="required">*</span>
+                  </label>
+
+                  <select
+                    id="serviceType"
+                    name="serviceType"
+                    required
+                  >
+                    <option value="">
+                      Select a service
+                    </option>
+
+                    <option value="Standard piano tuning">
+                      Standard piano tuning
+                    </option>
+
+                    <option value="Regulation">
+                      Regulation
+                    </option>
+
+                    <option value="Cleaning">
+                      Cleaning
+                    </option>
+
+                    <option value="Tuning and regulation">
+                      Tuning and regulation
+                    </option>
+
+                    <option value="Tuning and cleaning">
+                      Tuning and cleaning
+                    </option>
+
+                    <option value="Multiple services">
+                      Multiple services
+                    </option>
+
+                    <option value="Unsure">
+                      I am not sure
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
                   <label for="preferredDate">
                     Preferred appointment date
                   </label>
@@ -2102,10 +2319,10 @@
                     type="date"
                     id="preferredDate"
                     name="preferredDate"
-                  />
+                  >
 
                   <span class="form-help">
-                    This date is a request and is not automatically confirmed.
+                    The date is not confirmed until you receive a response.
                   </span>
                 </div>
 
@@ -2137,53 +2354,14 @@
                 </div>
 
                 <div class="form-group full-width">
-                  <label for="serviceReason">
-                    What would you like help with?
-                  </label>
-
-                  <select
-                    id="serviceReason"
-                    name="serviceReason"
-                  >
-                    <option value="Routine tuning">
-                      Routine piano tuning
-                    </option>
-
-                    <option value="Piano sounds out of tune">
-                      The piano sounds noticeably out of tune
-                    </option>
-
-                    <option value="Recently moved piano">
-                      The piano was recently moved
-                    </option>
-
-                    <option value="Preparing for performance">
-                      Preparing for a performance or recording
-                    </option>
-
-                    <option value="Recently purchased piano">
-                      Recently purchased piano
-                    </option>
-
-                    <option value="Assessment">
-                      General assessment
-                    </option>
-
-                    <option value="Other">
-                      Other
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group full-width">
                   <label for="message">
-                    Additional details
+                    Piano condition and additional details
                   </label>
 
                   <textarea
                     id="message"
                     name="message"
-                    placeholder="Tell me anything else that may be helpful, such as unusual sounds, sticking keys, recent moves, access instructions, parking information, or scheduling needs."
+                    placeholder="Describe any sticky keys, uneven keys, unwanted sounds, tuning concerns, dust buildup, recent moves, parking information, or scheduling needs."
                   ></textarea>
                 </div>
 
@@ -2192,16 +2370,16 @@
               <div class="form-submit-row">
 
                 <p class="form-disclaimer">
-                  By submitting this request, you are asking to be
-                  contacted about piano tuning services. Your requested
-                  date is not confirmed until you receive a response.
+                  Submitting this form creates an appointment request.
+                  Your appointment is confirmed only after you receive
+                  a response and agree on the date, time, and service.
                 </p>
 
                 <button
                   class="submit-button"
                   type="submit"
                 >
-                  Send Tuning Request
+                  Send Service Request
                 </button>
 
               </div>
@@ -2211,9 +2389,9 @@
                 id="successMessage"
                 role="status"
               >
-                Your email application should now open with your request
-                already filled in. Review the information and press Send
-                to complete your request.
+                Your email application should now open with your piano
+                service request prepared. Review it and press Send to
+                finish submitting your request.
               </div>
 
             </form>
@@ -2222,9 +2400,7 @@
       </div>
     </section>
 
-    <!-- ========================================
-         SERVICES
-    ========================================= -->
+    <!-- SERVICES -->
 
     <section
       class="section"
@@ -2233,54 +2409,157 @@
       <div class="container">
 
         <div class="section-heading">
-          <div class="section-label">
-            Services
+
+          <div class="eyebrow">
+            Piano Services
           </div>
 
           <h2 class="section-title">
-            Thoughtful service for your instrument.
+            Practical care for the sound, feel, and appearance of your piano.
           </h2>
 
           <p class="section-description">
-            The correct service depends on the condition of the piano,
-            how long it has been since its last tuning, and how the
-            instrument will be used.
+            Every instrument is different. The appropriate service will
+            depend on your piano's condition, maintenance history, and
+            the specific concerns you would like addressed.
           </p>
+
         </div>
 
         <div class="services-grid">
 
           <article class="service-card">
-            <div class="service-number">01</div>
+
+            <div class="service-icon">
+              01
+            </div>
 
             <h3>Standard Piano Tuning</h3>
 
             <p>
-              A tuning appointment focused on improving the overall
-              pitch, balance, and consistency of your piano.
+              Careful adjustment of the piano's strings to improve pitch,
+              balance, clarity, and consistency across the keyboard.
             </p>
+
+            <ul class="service-list">
+              <li>Overall pitch assessment</li>
+              <li>Adjustment across the keyboard</li>
+              <li>Improved harmonic balance</li>
+              <li>Final playing and listening check</li>
+            </ul>
+
           </article>
 
           <article class="service-card">
-            <div class="service-number">02</div>
 
-            <h3>Pitch Assessment</h3>
+            <div class="service-icon">
+              02
+            </div>
+
+            <h3>Regulation</h3>
 
             <p>
-              An evaluation for pianos that have not been tuned recently
-              or may be significantly above or below standard pitch.
+              Adjustment of accessible playing components to improve the
+              feel and responsiveness of keys that are sticky, uneven,
+              slow, or otherwise uncomfortable to play.
             </p>
+
+            <ul class="service-list">
+              <li>Sticky or sluggish key assessment</li>
+              <li>Uneven key response</li>
+              <li>Minor key alignment concerns</li>
+              <li>Basic playability improvements</li>
+            </ul>
+
           </article>
 
           <article class="service-card">
-            <div class="service-number">03</div>
 
-            <h3>Performance Preparation</h3>
+            <div class="service-icon">
+              03
+            </div>
+
+            <h3>Cleaning</h3>
 
             <p>
-              Appointment planning for recitals, recording sessions,
-              lessons, events, and other situations where tuning
-              consistency is especially important.
+              Detail-oriented cleaning to reduce dust and debris,
+              freshen the appearance of the instrument, and help your
+              piano look properly cared for.
+            </p>
+
+            <ul class="service-list">
+              <li>Exterior dusting and polishing</li>
+              <li>Careful cleaning around keys</li>
+              <li>Dust removal beneath accessible strings</li>
+              <li>General cosmetic refresh</li>
+            </ul>
+
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+
+    <section class="section">
+      <div class="container">
+
+        <div class="section-heading">
+
+          <div class="eyebrow">
+            What to Expect
+          </div>
+
+          <h2 class="section-title">
+            A straightforward and personal service process.
+          </h2>
+
+        </div>
+
+        <div class="process-grid">
+
+          <article class="process-step">
+            <div class="process-number">1</div>
+
+            <h3>Send a request</h3>
+
+            <p>
+              Tell me about your piano, location, concerns, and
+              preferred appointment date.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <div class="process-number">2</div>
+
+            <h3>Discuss the instrument</h3>
+
+            <p>
+              I will follow up to clarify the piano's condition and
+              determine which service is appropriate.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <div class="process-number">3</div>
+
+            <h3>Confirm the visit</h3>
+
+            <p>
+              We will agree on the service, appointment date, arrival
+              time, and other important details.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <div class="process-number">4</div>
+
+            <h3>Care for the piano</h3>
+
+            <p>
+              I will assess the piano in person and complete the agreed
+              service with care and attention.
             </p>
           </article>
 
@@ -2288,91 +2567,83 @@
       </div>
     </section>
 
-    <!-- ========================================
-         PROCESS
-    ========================================= -->
+    <!-- PHOTOS AND VIDEO -->
 
     <section class="section">
-      <div class="container process-layout">
+      <div class="container">
 
-        <div class="process-intro">
+        <div class="section-heading">
 
-          <div class="section-label">
-            The Process
+          <div class="eyebrow">
+            Piano Work
           </div>
 
           <h2 class="section-title">
-            Simple from request to appointment.
+            Photos and sound make the work feel real.
           </h2>
 
           <p class="section-description">
-            Provide a few details about your instrument and scheduling
-            needs. I will then follow up with the next available options.
+            When you send your photos and videos, these placeholders can
+            be replaced with actual tuning footage, performance photos,
+            cleaning examples, and before-and-after recordings.
           </p>
 
         </div>
 
-        <div class="process-steps">
+        <div class="media-grid">
 
-          <article class="process-step">
-            <div class="process-icon">1</div>
+          <div class="media-placeholder">
 
-            <div>
-              <h3>Submit your request</h3>
+            <div class="media-icon">
+              ▶
+            </div>
+
+            <h3>Featured tuning or performance video</h3>
+
+            <p>
+              A short video of you tuning, playing, or explaining your
+              approach will make the business feel much more personal
+              and credible.
+            </p>
+
+          </div>
+
+          <div class="media-side">
+
+            <div class="media-placeholder small">
+
+              <div class="media-icon">
+                +
+              </div>
+
+              <h3>Tuning photo</h3>
 
               <p>
-                Complete the booking form with your contact information,
-                location, piano type, and preferred appointment date.
+                Add a clear photo of you working on a piano.
               </p>
+
             </div>
-          </article>
 
-          <article class="process-step">
-            <div class="process-icon">2</div>
+            <div class="media-placeholder small">
 
-            <div>
-              <h3>Discuss your piano</h3>
+              <div class="media-icon">
+                +
+              </div>
+
+              <h3>Before-and-after cleaning</h3>
 
               <p>
-                I will follow up to learn more about the instrument,
-                answer questions, and determine the appropriate service.
+                Add a photo comparison showing the cleaning service.
               </p>
+
             </div>
-          </article>
 
-          <article class="process-step">
-            <div class="process-icon">3</div>
-
-            <div>
-              <h3>Confirm the appointment</h3>
-
-              <p>
-                We will agree on a date, arrival window, location,
-                and any other important appointment details.
-              </p>
-            </div>
-          </article>
-
-          <article class="process-step">
-            <div class="process-icon">4</div>
-
-            <div>
-              <h3>Tuning and assessment</h3>
-
-              <p>
-                At the appointment, the piano will be assessed and
-                tuned according to its condition and service needs.
-              </p>
-            </div>
-          </article>
-
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ========================================
-         SERVICE AREA
-    ========================================= -->
+    <!-- SERVICE AREA -->
 
     <section class="section">
       <div class="container">
@@ -2380,7 +2651,8 @@
         <div class="service-area-card">
 
           <div>
-            <div class="section-label">
+
+            <div class="eyebrow">
               Service Area
             </div>
 
@@ -2389,51 +2661,52 @@
             </h2>
 
             <p>
-              Request an appointment even if your exact neighborhood is
-              not shown. Travel availability may depend on your location,
-              appointment timing, and current schedule.
+              Submit a request even if your exact neighborhood is not
+              listed. Travel availability may depend on your location,
+              scheduling needs, and current appointment calendar.
             </p>
 
             <button
               class="primary-button"
               type="button"
               onclick="openBookingForm()"
-              style="margin-top: 24px;"
+              style="margin-top: 25px;"
             >
               Check Availability
               <span aria-hidden="true">→</span>
             </button>
+
           </div>
 
           <div class="area-list">
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               San Marcos
             </div>
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               Vista
             </div>
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               Oceanside
             </div>
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               Carlsbad
             </div>
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               Encinitas
             </div>
 
             <div class="area-item">
-              <span class="area-check">✓</span>
+              <span>✓</span>
               Escondido
             </div>
 
@@ -2442,90 +2715,21 @@
       </div>
     </section>
 
-    <!-- ========================================
-         FUTURE PHOTOS AND VIDEOS
-    ========================================= -->
+    <!-- FAQ -->
 
     <section class="section">
       <div class="container">
 
         <div class="section-heading">
-          <div class="section-label">
-            Photos and Videos
-          </div>
 
-          <h2 class="section-title">
-            See the work behind the tuning.
-          </h2>
-
-          <p class="section-description">
-            These spaces are ready for the photos and videos you plan
-            to add later. They can be replaced without redesigning
-            the rest of the page.
-          </p>
-        </div>
-
-        <div class="media-grid">
-
-          <div class="media-placeholder">
-            <div class="media-placeholder-icon">
-              ▶
-            </div>
-
-            <h3>Featured tuning video</h3>
-
-            <p>
-              This area can later hold a video of you tuning,
-              demonstrating the process, or introducing your service.
-            </p>
-          </div>
-
-          <div class="media-side">
-
-            <div class="media-placeholder small">
-              <div class="media-placeholder-icon">
-                +
-              </div>
-
-              <h3>Work photo</h3>
-
-              <p>
-                Add a professional tuning photo here.
-              </p>
-            </div>
-
-            <div class="media-placeholder small">
-              <div class="media-placeholder-icon">
-                +
-              </div>
-
-              <h3>Piano photo</h3>
-
-              <p>
-                Add an instrument or before-and-after photo here.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================
-         FAQ
-    ========================================= -->
-
-    <section class="section">
-      <div class="container">
-
-        <div class="section-heading">
-          <div class="section-label">
+          <div class="eyebrow">
             Frequently Asked Questions
           </div>
 
           <h2 class="section-title">
-            Before your appointment.
+            Helpful information before requesting service.
           </h2>
+
         </div>
 
         <div class="faq-list">
@@ -2539,23 +2743,18 @@
             >
               How often should a piano be tuned?
 
-              <span
-                class="faq-plus"
-                aria-hidden="true"
-              >
-                +
-              </span>
+              <span class="faq-plus">+</span>
             </button>
 
             <div class="faq-answer">
               <p>
-                Tuning frequency depends on the piano, environment,
-                usage, age, and condition. Many regularly played pianos
-                benefit from consistent maintenance, while instruments
-                used for performances or recording may require more
-                frequent attention.
+                Tuning frequency depends on the instrument, environment,
+                amount of use, age, and condition. Pianos used for
+                performances, teaching, or recording may require more
+                frequent attention than lightly played home instruments.
               </p>
             </div>
+
           </div>
 
           <div class="faq-item">
@@ -2565,23 +2764,66 @@
               type="button"
               aria-expanded="false"
             >
-              What if I do not know when it was last tuned?
+              What does regulation help with?
 
-              <span
-                class="faq-plus"
-                aria-hidden="true"
-              >
-                +
-              </span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Regulation can address certain playability concerns such
+                as keys that feel sticky, uneven, slow, or inconsistent.
+                The piano must be assessed to determine whether the issue
+                fits the regulation service offered.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              What is included in piano cleaning?
+
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Cleaning may include exterior dusting and polishing,
+                cleaning around the keys, removal of dust from accessible
+                interior areas, and a general cosmetic refresh. The
+                exact work depends on the piano's construction and
+                condition.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="faq-item">
+
+            <button
+              class="faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              What if I do not know my piano's history?
+
+              <span class="faq-plus">+</span>
             </button>
 
             <div class="faq-answer">
               <p>
                 That is completely fine. Select “I am not sure” in the
-                request form. The piano can be assessed during the
-                appointment to determine its current condition.
+                request form and provide any information you do know.
+                The piano can be assessed in person.
               </p>
             </div>
+
           </div>
 
           <div class="faq-item">
@@ -2591,84 +2833,26 @@
               type="button"
               aria-expanded="false"
             >
-              Should I tune a piano after moving it?
+              Is the requested date automatically confirmed?
 
-              <span
-                class="faq-plus"
-                aria-hidden="true"
-              >
-                +
-              </span>
+              <span class="faq-plus">+</span>
             </button>
 
             <div class="faq-answer">
               <p>
-                Moving and environmental changes can affect a piano.
-                Include the move date in your request so the timing
-                and condition of the instrument can be discussed.
+                No. The form creates an appointment request. The visit is
+                confirmed only after you receive a response and both
+                parties agree on the service, date, and time.
               </p>
             </div>
-          </div>
 
-          <div class="faq-item">
-
-            <button
-              class="faq-question"
-              type="button"
-              aria-expanded="false"
-            >
-              Is submitting the form a confirmed reservation?
-
-              <span
-                class="faq-plus"
-                aria-hidden="true"
-              >
-                +
-              </span>
-            </button>
-
-            <div class="faq-answer">
-              <p>
-                No. The form sends an appointment request. Your
-                appointment is confirmed only after you receive a
-                response and both the date and time have been agreed upon.
-              </p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-
-            <button
-              class="faq-question"
-              type="button"
-              aria-expanded="false"
-            >
-              Do I need to know my piano's exact model?
-
-              <span
-                class="faq-plus"
-                aria-hidden="true"
-              >
-                +
-              </span>
-            </button>
-
-            <div class="faq-answer">
-              <p>
-                No. Provide the brand or piano type if you know it.
-                You can also submit the request without that information
-                and provide a photo later if needed.
-              </p>
-            </div>
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- ========================================
-         FINAL CALL TO ACTION
-    ========================================= -->
+    <!-- FINAL CALL TO ACTION -->
 
     <section class="section">
       <div class="container">
@@ -2676,13 +2860,13 @@
         <div class="final-cta">
 
           <h2>
-            Ready to bring your piano back into tune?
+            Give your piano the care it deserves.
           </h2>
 
           <p>
-            Submit a request with information about your instrument,
-            location, and preferred appointment date. I will follow up
-            to discuss availability and next steps.
+            Tell me about your instrument and what you would like help
+            with. I will contact you to discuss the piano, recommend the
+            appropriate service, and arrange an appointment.
           </p>
 
           <button
@@ -2690,7 +2874,7 @@
             type="button"
             onclick="openBookingForm()"
           >
-            Request Your Appointment
+            Request Piano Service
             <span aria-hidden="true">→</span>
           </button>
 
@@ -2700,9 +2884,7 @@
 
   </main>
 
-  <!-- ========================================
-       FOOTER
-  ========================================= -->
+  <!-- FOOTER -->
 
   <footer>
     <div class="container footer-content">
@@ -2714,6 +2896,7 @@
 
       <div class="footer-links">
         <a href="index.html">Home</a>
+        <a href="piano-tuning.html">Piano Tuning</a>
         <a href="projects.html">Projects</a>
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
@@ -2722,15 +2905,7 @@
     </div>
   </footer>
 
-  <!-- ========================================
-       JAVASCRIPT
-  ========================================= -->
-
   <script>
-    /*
-      OPEN OR CLOSE THE SLIDING BOOKING FORM
-    */
-
     function toggleBookingForm() {
       const slider =
         document.getElementById("bookingSlider");
@@ -2757,11 +2932,6 @@
           ? "Open Request Form"
           : "Close Request Form";
     }
-
-
-    /*
-      OPEN THE FORM FROM ANY BOOKING BUTTON
-    */
 
     function openBookingForm() {
       const bookingSection =
@@ -2801,29 +2971,23 @@
       }, 700);
     }
 
-
-    /*
-      SET THE EARLIEST AVAILABLE DATE TO TODAY
-    */
-
     const preferredDateInput =
       document.getElementById("preferredDate");
 
+    const localToday = new Date();
+
+    localToday.setMinutes(
+      localToday.getMinutes() -
+      localToday.getTimezoneOffset()
+    );
+
     const today =
-      new Date().toISOString().split("T")[0];
+      localToday.toISOString().split("T")[0];
 
     preferredDateInput.setAttribute(
       "min",
       today
     );
-
-
-    /*
-      SEND FORM INFORMATION THROUGH EMAIL
-
-      Change the email below if you want requests
-      sent somewhere other than liamnweir@gmail.com.
-    */
 
     const bookingForm =
       document.getElementById("bookingForm");
@@ -2870,6 +3034,11 @@
             "lastTuned"
           ).value;
 
+        const serviceType =
+          document.getElementById(
+            "serviceType"
+          ).value;
+
         const preferredDate =
           document.getElementById(
             "preferredDate"
@@ -2880,21 +3049,16 @@
             "preferredTime"
           ).value;
 
-        const serviceReason =
-          document.getElementById(
-            "serviceReason"
-          ).value;
-
         const message =
           document.getElementById(
             "message"
           ).value || "No additional details provided.";
 
         const emailSubject =
-          "Piano Tuning Request from " + fullName;
+          "Piano Service Request from " + fullName;
 
         const emailBody =
-`New Piano Tuning Appointment Request
+`NEW PIANO SERVICE REQUEST
 
 CUSTOMER INFORMATION
 Name: ${fullName}
@@ -2908,12 +3072,12 @@ Piano type: ${pianoType}
 Piano brand: ${pianoBrand}
 Last tuned: ${lastTuned}
 
-APPOINTMENT REQUEST
+SERVICE REQUEST
+Requested service: ${serviceType}
 Preferred date: ${preferredDate}
 Preferred time: ${preferredTime}
-Reason for service: ${serviceReason}
 
-ADDITIONAL DETAILS
+PIANO CONDITION AND ADDITIONAL DETAILS
 ${message}`;
 
         const mailtoLink =
@@ -2930,11 +3094,6 @@ ${message}`;
         window.location.href = mailtoLink;
       }
     );
-
-
-    /*
-      FAQ OPENING AND CLOSING
-    */
 
     const faqQuestions =
       document.querySelectorAll(
@@ -2967,11 +3126,6 @@ ${message}`;
         }
       );
     });
-
-
-    /*
-      AUTOMATICALLY UPDATE THE COPYRIGHT YEAR
-    */
 
     document.getElementById(
       "currentYear"
